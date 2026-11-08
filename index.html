@@ -47,6 +47,75 @@ body.is-teacher .teacher-only-block{display:block}
 .login-hint{font-size:12px;color:var(--muted);background:var(--surface-2);border-radius:10px;padding:10px 12px;margin-bottom:12px;line-height:1.6}
 @media(max-width:560px){.auth-status{display:none}.lesson-block .mini-btn{opacity:1}}
 
+
+/* 課堂體能計時器 */
+.timer-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.timer-tab{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:13px;cursor:pointer}
+.timer-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.timer-panel{padding:22px;text-align:center;overflow:hidden}
+.timer-phase{font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.timer-phase.work{color:#147b57}
+.timer-phase.rest{color:#c86b2c}
+.timer-phase.done{color:#276fc2}
+.timer-display{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:clamp(56px,11vw,110px);font-weight:900;letter-spacing:.02em;line-height:1.05;margin:8px 0 4px;color:var(--text);font-variant-numeric:tabular-nums}
+.timer-display small{font-size:.35em;color:var(--blue);font-weight:800}
+.timer-display.warning{color:#c2413a}
+.timer-sub{font-size:13px;color:var(--muted);margin-bottom:12px}
+.timer-progress-track{height:10px;background:var(--surface-2);border-radius:999px;overflow:hidden;margin:0 auto 10px;max-width:560px}
+.timer-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#276fc2,#2ea37a);border-radius:999px;transition:width .2s linear}
+.timer-meta{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:16px}
+.timer-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.timer-btn{height:48px;padding:0 22px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:800;font-size:14px;cursor:pointer}
+.timer-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy);min-width:140px}
+.timer-btn.primary.running{background:#c2413a;border-color:#c2413a}
+.timer-btn.danger{color:#b74b45}
+.timer-btn:disabled{opacity:.45;cursor:not-allowed}
+.timer-settings{max-width:680px;margin:0 auto;text-align:left;background:var(--surface-2);border-radius:14px;padding:14px}
+.timer-settings h3{font-size:13px;margin:0 0 10px}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.preset-btn{height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:700;cursor:pointer}
+.preset-btn.active{background:var(--blue-2);border-color:var(--blue);color:var(--navy)}
+.timer-input-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.timer-input-row input{width:72px;height:36px;border:1px solid var(--line);border-radius:9px;padding:0 10px;background:var(--surface);font-size:14px;font-weight:700;text-align:center}
+.timer-input-row label{color:var(--muted);font-weight:600}
+.lap-list{max-height:140px;overflow:auto;margin-top:10px;display:grid;gap:6px}
+.lap-item{display:flex;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:12px;font-weight:600}
+.timer-note{font-size:12px;color:var(--muted);line-height:1.7}
+.timer-sound{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted);justify-content:center;margin-top:10px}
+@media(max-width:560px){.timer-controls .timer-btn{flex:1}.timer-btn.primary{min-width:0}}
+
+
+/* 線上測驗 */
+.quiz-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.quiz-tab{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:13px;cursor:pointer}
+.quiz-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.quiz-tab.teacher-only{border-style:dashed}
+.quiz-setup{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.quiz-setup label{font-size:12px;font-weight:700;color:var(--muted)}
+.quiz-setup input,.quiz-setup select{width:100%;height:38px;border:1px solid var(--line);border-radius:9px;padding:0 10px;background:var(--surface);font-size:14px}
+.quiz-question-card{padding:20px}
+.quiz-q-progress{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden;margin-bottom:14px}
+.quiz-q-progress-fill{height:100%;background:var(--blue);border-radius:999px;transition:width .2s}
+.quiz-option{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;background:var(--surface)}
+.quiz-option:hover{border-color:var(--blue)}
+.quiz-option.selected{border-color:var(--blue);background:var(--blue-2)}
+.quiz-option input{margin-top:3px;accent-color:var(--blue)}
+.quiz-option.correct{border-color:#2ea37a;background:#eaf5ee}
+.quiz-option.wrong{border-color:#c2413a;background:#fdecea}
+.quiz-result-big{font-size:64px;font-weight:900;line-height:1;text-align:center}
+.quiz-result-big small{font-size:20px;color:var(--muted)}
+.quiz-table{width:100%;border-collapse:collapse;font-size:13px}
+.quiz-table th,.quiz-table td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}
+.quiz-table th{color:var(--muted);font-size:12px}
+.quiz-bank-item{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:var(--surface)}
+.quiz-drop{border:2px dashed var(--line);border-radius:14px;padding:18px;text-align:center;background:var(--surface-2);cursor:pointer}
+.quiz-drop.dragover{border-color:var(--blue);background:var(--blue-2)}
+.quiz-field{margin-bottom:10px}
+.quiz-field label{font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px}
+.quiz-field input,.quiz-field textarea,.quiz-field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:var(--surface);font-size:14px}
+.quiz-field textarea{min-height:64px;resize:vertical}
+@media(max-width:640px){.quiz-setup{grid-template-columns:1fr 1fr}.quiz-result-big{font-size:48px}}
+
 </style>
 </head>
 <body>
@@ -59,6 +128,8 @@ body.is-teacher .teacher-only-block{display:block}
     <a class="nav-link" href="#schedule" data-view="schedule"><span class="nav-ico">▦</span>學期課表</a>
     <a class="nav-link" href="#curriculum" data-view="curriculum"><span class="nav-ico">▤</span>教學內容</a>
     <a class="nav-link" href="#resources" data-view="resources"><span class="nav-ico">↗</span>教學資源連結</a>
+    <a class="nav-link" href="#timer" data-view="timer"><span class="nav-ico">◷</span>體能計時器</a>
+    <a class="nav-link" href="#quiz" data-view="quiz"><span class="nav-ico">✎</span>線上測驗</a>
   </nav>
   <div class="sidebar-bottom">
     <div class="term-card"><small>目前學期</small><strong>115 學年度・第 1 學期</strong></div>
@@ -95,6 +166,8 @@ body.is-teacher .teacher-only-block{display:block}
             <button class="quick-action" data-open-modal><span class="quick-icon">＋</span><span><strong>新增教學單元</strong><small>建立年級課程內容</small></span><span class="arrow">›</span></button>
             <button class="quick-action" data-open-link-modal><span class="quick-icon warm">↗</span><span><strong>新增教學資源連結</strong><small>收藏常用工具或網站</small></span><span class="arrow">›</span></button>
             <button class="quick-action" data-go="curriculum"><span class="quick-icon">▤</span><span><strong>查看年級進度</strong><small>瀏覽高一至高三規劃</small></span><span class="arrow">›</span></button>
+            <button class="quick-action" data-go="timer"><span class="quick-icon" style="background:#eaf3ff;color:#276fc2">◷</span><span><strong>課堂體能計時器</strong><small>倒數・碼錶・間歇訓練，上課投影用</small></span><span class="arrow">›</span></button>
+            <button class="quick-action" data-go="quiz"><span class="quick-icon" style="background:#eaf5ee;color:#397e5c">✎</span><span><strong>體育線上測驗</strong><small>Excel 匯入題庫・學生作答・成績統計</small></span><span class="arrow">›</span></button>
           </div>
         </section>
       </div>
@@ -131,6 +204,75 @@ body.is-teacher .teacher-only-block{display:block}
         <div class="resource-list-grid" id="resourceList"></div>
       </section>
     </section>
+
+    <section class="view" id="view-timer" aria-labelledby="timerTitle">
+      <div class="page-head"><div><div class="eyebrow">課堂工具</div><h1 id="timerTitle">課堂體能計時器</h1><p>倒數計時、碼錶、間歇訓練三合一。上課投影用，大字體＋提示音。</p></div><div class="head-actions"><button class="btn btn-secondary" id="timerFullscreenBtn" type="button">⛶ 全螢幕投影</button><label class="timer-sound" style="margin:0"><input type="checkbox" id="timerSoundToggle" checked> 提示音</label></div></div>
+      <div class="timer-tabs" role="tablist" aria-label="計時器模式"><button class="timer-tab active" data-timer-mode="countdown" type="button">倒數計時</button><button class="timer-tab" data-timer-mode="stopwatch" type="button">碼錶</button><button class="timer-tab" data-timer-mode="interval" type="button">間歇訓練</button></div>
+      <section class="panel timer-panel" id="timerPanel" aria-live="polite">
+        <div class="timer-phase" id="timerPhase">準備開始</div>
+        <div class="timer-display" id="timerDisplay">01:00<small>.00</small></div>
+        <div class="timer-sub" id="timerSub">倒數計時 ・ 仰臥起坐測驗 60 秒</div>
+        <div class="timer-progress-track"><div class="timer-progress-fill" id="timerProgressFill"></div></div>
+        <div class="timer-meta" id="timerMeta">倒數模式 ・ 還沒開始</div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" id="timerStartBtn" type="button">▶ 開始</button>
+          <button class="timer-btn" id="timerLapBtn" type="button">＋ 計圈 / 紀錄</button>
+          <button class="timer-btn danger" id="timerResetBtn" type="button">↺ 重置</button>
+        </div>
+        <div id="timerCountdownSettings" class="timer-settings">
+          <h3>倒數預設 — 點一下就設定好</h3>
+          <div class="preset-row" id="countdownPresets">
+            <button class="preset-btn" data-seconds="30" type="button">30 秒・折返跑</button>
+            <button class="preset-btn active" data-seconds="60" type="button">60 秒・仰臥起坐 / 棒式</button>
+            <button class="preset-btn" data-seconds="90" type="button">90 秒</button>
+            <button class="preset-btn" data-seconds="120" type="button">2 分鐘</button>
+            <button class="preset-btn" data-seconds="180" type="button">3 分鐘・800M 熱身</button>
+            <button class="preset-btn" data-seconds="300" type="button">5 分鐘</button>
+            <button class="preset-btn" data-seconds="600" type="button">10 分鐘</button>
+          </div>
+          <div class="timer-input-row"><label for="cdMin">自訂</label><input id="cdMin" type="number" min="0" max="59" value="1"><span>分</span><input id="cdSec" type="number" min="0" max="59" value="0"><span>秒</span><button class="preset-btn" id="cdApplyBtn" type="button">套用自訂</button><span style="color:var(--muted)">例如體適能測驗：仰臥起坐 60 秒、立定跳遠不用計時、800 / 1600M 用碼錶</span></div>
+        </div>
+        <div id="timerIntervalSettings" class="timer-settings" style="display:none">
+          <h3>間歇預設 — 運動 / 休息 / 組數</h3>
+          <div class="preset-row" id="intervalPresets">
+            <button class="preset-btn active" data-work="20" data-rest="10" data-rounds="8" type="button">Tabata 20 / 10 秒 × 8 組</button>
+            <button class="preset-btn" data-work="30" data-rest="15" data-rounds="6" type="button">30 / 15 秒 × 6 組</button>
+            <button class="preset-btn" data-work="40" data-rest="20" data-rounds="6" type="button">40 / 20 秒 × 6 組</button>
+            <button class="preset-btn" data-work="60" data-rest="30" data-rounds="4" type="button">60 / 30 秒 × 4 組</button>
+          </div>
+          <div class="timer-input-row"><label>運動</label><input id="intWork" type="number" min="5" max="300" value="20"><span>秒</span><label>休息</label><input id="intRest" type="number" min="5" max="300" value="10"><span>秒</span><label>組數</label><input id="intRounds" type="number" min="1" max="20" value="8"><span>組</span><button class="preset-btn" id="intApplyBtn" type="button">套用自訂</button></div>
+          <p style="font-size:12px;color:var(--muted);margin:10px 0 0">換組時會嗶一聲提醒，全部做完會長嗶一聲。適合循環訓練、肌力與心肺課。</p>
+        </div>
+        <div id="timerStopwatchSettings" class="timer-settings" style="display:none">
+          <h3>碼錶 — 800M / 1600M、計圈用</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0 0 8px">按「計圈 / 紀錄」可以記下每一圈或每一位學生的成績，成績會留在下面，不會存到 Supabase，換頁前請先抄下來。</p>
+          <div class="lap-list" id="timerLapList"><div class="timer-note" style="text-align:center;padding:8px">還沒有紀錄，按「計圈 / 紀錄」開始記</div></div>
+          <div style="text-align:center;margin-top:10px"><button class="preset-btn" id="timerClearLapsBtn" type="button">清除紀錄</button></div>
+        </div>
+      </section>
+      <section class="panel panel-pad"><h2 style="font-size:14px;margin:0 0 8px">上課怎麼用</h2><p class="timer-note">1. 投影前先點「全螢幕投影」，全班都看得到大字體。<br>2. 體適能測驗：仰臥起坐用「倒數計時 60 秒」；800M / 1600M 用「碼錶」，每位學生跑完按一次「計圈」。<br>3. 循環訓練：用「間歇訓練 Tabata」，運動 20 秒、休息 10 秒，自動換組不用一直看錶。<br>4. 提示音需要先點一次「開始」才會啟用（瀏覽器規定），建議上課前先按一次開始再重置測試。</p></section>
+    </section>
+
+
+    <section class="view" id="view-quiz" aria-labelledby="quizTitle">
+      <div class="page-head"><div><div class="eyebrow">課堂評量</div><h1 id="quizTitle">體育線上測驗</h1><p>學生不用登入，輸入姓名、班級、座號就能作答。老師登入後可匯入題庫、查看成績。</p></div><div class="head-actions"><span class="tag" id="quizCountTag">題庫 0 題</span><button class="btn btn-secondary" id="quizExportResultsBtn" type="button">匯出成績 CSV</button></div></div>
+      <div class="quiz-tabs" role="tablist" aria-label="測驗分頁"><button class="quiz-tab active" data-quiz-tab="student" type="button">學生測驗</button><button class="quiz-tab teacher-only" data-quiz-tab="bank" type="button">題庫管理（教師）</button><button class="quiz-tab teacher-only" data-quiz-tab="results" type="button">學生成績（教師）</button></div>
+      <div id="quizStudentPanel">
+        <section class="panel panel-pad" id="quizSetupPanel"><h2 style="font-size:15px;margin:0 0 10px">開始測驗</h2><div class="quiz-setup"><div><label for="quizStudentName">姓名 *</label><input id="quizStudentName" placeholder="例如：王小明"></div><div><label for="quizStudentClass">班級 *</label><select id="quizStudentClass"><option value="">請選擇</option><option>高一甲</option><option>高一乙</option><option>高一丙</option><option>高二甲</option><option>高二乙</option><option>高二丙</option><option>高三甲</option><option>高三乙</option><option>其他</option></select></div><div><label for="quizStudentSeat">座號 *</label><input id="quizStudentSeat" type="number" min="1" max="60" placeholder="例如：12"></div><div><label for="quizCountSelect">題數</label><select id="quizCountSelect"><option value="5">5 題</option><option value="10" selected>10 題</option><option value="20">20 題</option><option value="all">全部題目</option></select></div></div><div class="quiz-setup" style="grid-template-columns:1fr 1fr"><div><label for="quizOrderSelect">出題順序</label><select id="quizOrderSelect"><option value="random">隨機出題</option><option value="seq">依題庫順序</option></select></div><div><label for="quizCategorySelect">測驗範圍</label><select id="quizCategorySelect"><option value="all">全部類別</option></select></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" id="quizStartBtn" type="button">開始作答 →</button><span class="timer-note" style="align-self:center">作答完按繳交，立刻看分數與解析。成績會存到老師後台。</span></div><p id="quizSetupHint" class="timer-note" style="margin:10px 0 0"></p></section>
+        <section class="panel panel-pad" id="quizDoingPanel" style="display:none"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><strong id="quizDoingTitle">第 1 題</strong><span class="tag" id="quizDoingCategory" style="margin-left:8px"></span></div><div style="font-size:12px;color:var(--muted)"><span id="quizDoingStudent"></span> ・ <span id="quizDoingAnswered"></span></div></div><div class="quiz-q-progress"><div class="quiz-q-progress-fill" id="quizProgressFill"></div></div><div class="quiz-question-card"><h3 id="quizQuestionText" style="font-size:17px;line-height:1.6;margin:0 0 14px"></h3><div id="quizOptions"></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-secondary" id="quizPrevBtn" type="button">← 上一題</button><button class="btn btn-secondary" id="quizNextBtn" type="button">下一題 →</button><button class="btn btn-primary" id="quizSubmitBtn" type="button" style="margin-left:auto">繳交測驗</button></div></section>
+        <section class="panel panel-pad" id="quizResultPanel" style="display:none"><h2 style="font-size:15px;margin:0 0 10px">測驗結果</h2><div class="quiz-result-big" id="quizResultScore">0<small> 分</small></div><p id="quizResultMeta" style="text-align:center;color:var(--muted);font-size:13px"></p><div id="quizResultReview" style="margin-top:14px"></div><div style="display:flex;gap:10px;justify-content:center;margin-top:14px"><button class="btn btn-secondary" id="quizRetryBtn" type="button">再考一次</button><button class="btn btn-primary" id="quizBackSetupBtn" type="button">回測驗首頁</button></div></section>
+      </div>
+      <div id="quizBankPanel" style="display:none">
+        <section class="panel panel-pad"><h2 style="font-size:15px;margin:0 0 6px">用 Excel 匯入題庫</h2><p class="timer-note" style="margin:0 0 12px">Excel 欄位順序：<strong>題目 | 選項A | 選項B | 選項C | 選項D | 正確答案(A/B/C/D) | 分類 | 解析</strong>。第一列是標題列，從第二列開始是題目。也可以上傳 CSV。</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px"><button class="btn btn-secondary" id="quizTemplateBtn" type="button">↓ 下載範例 Excel 格式 (CSV)</button><button class="btn btn-secondary" id="quizSampleBtn" type="button">載入 5 題體育範例題</button></div><div class="quiz-drop" id="quizDropZone"><div style="font-weight:800">拖放 Excel / CSV 到這裡，或點一下選擇檔案</div><div class="timer-note" style="margin-top:6px">支援 .xlsx .xls .csv</div><input type="file" id="quizFileInput" accept=".xlsx,.xls,.csv" style="display:none"></div><div id="quizImportPreview" style="margin-top:12px"></div></section>
+        <section class="panel panel-pad"><h2 style="font-size:15px;margin:0 0 10px">手動新增題目</h2><div class="quiz-field"><label for="qNewQuestion">題目 *</label><textarea id="qNewQuestion" placeholder="例如：運動前為什麼要做暖身？"></textarea></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="quiz-field"><label>選項 A *</label><input id="qOptA" placeholder="選項 A"></div><div class="quiz-field"><label>選項 B *</label><input id="qOptB" placeholder="選項 B"></div><div class="quiz-field"><label>選項 C</label><input id="qOptC" placeholder="選項 C（可留空變 2 選 1）"></div><div class="quiz-field"><label>選項 D</label><input id="qOptD" placeholder="選項 D"></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div class="quiz-field"><label>正確答案 *</label><select id="qCorrect"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div><div class="quiz-field"><label>分類</label><input id="qCategory" placeholder="例如：體適能、運動安全" value="體育常識"></div><div class="quiz-field"><label>解析（學生答完會看到）</label><input id="qExplain" placeholder="例如：暖身可以提升體溫、預防受傷"></div></div><input type="hidden" id="qEditingId"><div style="display:flex;gap:10px"><button class="btn btn-primary" id="qAddBtn" type="button">＋ 新增題目</button><button class="btn btn-secondary" id="qCancelEditBtn" type="button" style="display:none">取消編輯</button></div></section>
+        <section class="panel panel-pad"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="font-size:15px;margin:0">題庫清單</h2><span class="tag" id="quizBankCount">共 0 題</span></div><div id="quizBankList" style="margin-top:12px"></div></section>
+      </div>
+      <div id="quizResultsPanel" style="display:none">
+        <section class="panel panel-pad"><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><h2 style="font-size:15px;margin:0">學生成績</h2><select id="quizResultClassFilter" class="select-control" style="max-width:160px"><option value="all">全部班級</option></select><input id="quizResultSearch" placeholder="搜尋姓名、座號" style="height:36px;border:1px solid var(--line);border-radius:9px;padding:0 10px;flex:1;min-width:140px"><button class="btn btn-secondary" id="quizRefreshResultsBtn" type="button">重新整理</button></div><div id="quizStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px"></div><div id="quizResultsList" style="margin-top:14px"></div></section>
+      </div>
+      <section class="panel panel-pad"><h2 style="font-size:14px;margin:0 0 8px">老師操作流程</h2><p class="timer-note">1. 先在 Supabase 執行 <strong>supabase_setup_quiz.sql</strong> 建立 quiz_questions / quiz_results 兩張表（只需一次）。<br>2. 登入後到「題庫管理」用 Excel 一次匯入，或手動一題一題新增。<br>3. 學生在「學生測驗」輸入姓名、班級、座號 → 開始作答 → 繳交，成績自動存到「學生成績」。<br>4. 訪客看不到題庫管理與成績，只有老師登入才看得到。</p></section>
+    </section>
+
   </main>
 </div>
 </div>
@@ -144,6 +286,7 @@ body.is-teacher .teacher-only-block{display:block}
 <div class="modal-backdrop" id="linkModalBackdrop" role="presentation"><section class="modal link-modal" role="dialog" aria-modal="true" aria-labelledby="linkModalTitle"><div class="modal-head"><div class="modal-title-wrap"><span class="link-title-icon" aria-hidden="true">↗</span><h2 id="linkModalTitle">新增教學資源連結</h2></div><button class="modal-close" id="closeLinkModal" aria-label="關閉視窗">×</button></div><form id="linkForm"><input type="hidden" id="editingResourceId"><div class="field"><label for="resourceName">工具或網站名稱</label><input id="resourceName" name="resourceName" required placeholder="例如：114學年度高一體育教學資源"></div><div class="field"><label for="resourceUrl">URL 網址</label><input id="resourceUrl" name="resourceUrl" type="url" required placeholder="https://docs.google.com/spreadsheets/..."></div><div class="field-row"><div class="field"><label for="resourceCategory">所屬分類</label><select id="resourceCategory" name="resourceCategory"><option>課程教材</option><option>成績與行政</option><option>體育互動教學</option><option>教學工具</option><option>其他</option></select></div><div class="field"><label for="resourceType">圖標種類</label><select id="resourceType" name="resourceType"><option>Google 試算表 / 表格</option><option>Google 文件</option><option>Google 簡報</option><option>Google 雲端硬碟</option><option>YouTube 影片</option><option>外部網站</option><option>其他工具</option></select></div></div><div class="field"><label for="resourceDescription">簡短描述（選填）</label><input id="resourceDescription" name="resourceDescription" placeholder="例如：用於登記各班體適能紀錄"></div><div class="field"><label for="resourceTags">標籤（用半角逗號分隔）</label><input id="resourceTags" name="resourceTags" placeholder="體育, 教學, 高一"></div><div class="modal-actions"><button type="button" class="btn btn-secondary" id="cancelLinkModal">取消</button><button type="submit" class="btn btn-link" id="linkSubmitBtn">儲存變更</button></div></form></section></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 /* Supabase 設定（公開金鑰可放在前端，勿放私密金鑰） */
 const SUPABASE_URL = "https://ethxjdihoqysmugygdta.supabase.co";
@@ -193,7 +336,7 @@ let curriculum = JSON.parse(JSON.stringify(fallbackCurriculum));
 let resources = [...fallbackResources];
 let activeGrade = '1';
 
-const viewNames={home:'首頁',schedule:'學期課表',curriculum:'教學內容',resources:'教學資源連結'};
+const viewNames={home:'首頁',schedule:'學期課表',curriculum:'教學內容',resources:'教學資源連結',timer:'體能計時器',quiz:'線上測驗'};
 function showView(name){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));document.querySelectorAll('.nav-link').forEach(a=>a.classList.toggle('active',a.dataset.view===name));document.getElementById('crumbTitle').textContent=viewNames[name]||'首頁';document.getElementById('sidebar').classList.remove('open');document.getElementById('scrim').classList.remove('show');document.getElementById('menuBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});}
 document.querySelectorAll('[data-view]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showView(a.dataset.view)}));
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.go)));
@@ -264,6 +407,7 @@ async function refreshAuth(){
   isTeacher = !!(currentUser && currentUser.id === TEACHER_UID);
   updateAuthUI();
   renderUnits(); renderResources(); renderSchedule();
+  if(typeof quizRefreshCounts==='function'){ quizRefreshCounts(); renderQuizBank(); renderQuizResults(); loadQuizFromSupabase(); }
 }
 if(supabaseClient) supabaseClient.auth.onAuthStateChange(()=>refreshAuth());
 
@@ -309,12 +453,8 @@ function renderProgress(){
     const countEl=card.querySelector('.unit-count'); if(countEl) countEl.textContent=count+' 個單元';
     const fill=card.querySelector('.progress-fill'); if(fill) fill.style.width=avg+'%';
     const footVal=card.querySelector('.progress-foot span:last-child'); if(footVal) footVal.textContent=avg+'%';
-    // 標題與副標：有資料時顯示第一個單元的名稱，沒有資料時保持年級總覽標題
     const titleEl=card.querySelector('h3'); const descEl=card.querySelector('p');
-    if(count && titleEl && descEl){
-      titleEl.textContent=list[0].title;
-      descEl.textContent=list[0].description||'';
-    }
+    if(count && titleEl && descEl){ titleEl.textContent=list[0].title; descEl.textContent=list[0].description||''; }
   });
 }
 function renderAll(){ renderSchedule(); renderUnits(); renderResources(); renderProgress(); }
@@ -596,6 +736,531 @@ document.getElementById('seedDemoBtn')?.addEventListener('click', async ()=>{
     await loadFromSupabase();
   }catch(err){ toast('寫入失敗：'+err.message); }
 });
+
+/* ===== 課堂體能計時器 ===== */
+let timerMode='countdown';
+let timerRunning=false;
+let timerTimerId=null;
+let countdownTotalMs=60000;
+let countdownRemainingMs=60000;
+let stopwatchElapsedMs=0;
+let intervalWorkMs=20000, intervalRestMs=10000, intervalRounds=8;
+let intervalCurrentRound=1, intervalIsWork=true, intervalRemainingMs=20000;
+let timerLaps=[];
+let timerAudioCtx=null;
+function timerFormat(ms){
+  const total=Math.max(0, Math.ceil(ms/10));
+  const cs=String(total%100).padStart(2,'0');
+  const sec=Math.floor(total/100)%60;
+  const min=Math.floor(total/6000);
+  return {text: String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0'), cs};
+}
+function timerBeep(freq, dur, type){
+  if(!document.getElementById('timerSoundToggle')?.checked) return;
+  try{
+    if(!timerAudioCtx) timerAudioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(timerAudioCtx.state==='suspended') timerAudioCtx.resume();
+    const o=timerAudioCtx.createOscillator(), g=timerAudioCtx.createGain();
+    o.type=type||'sine'; o.frequency.value=freq||880;
+    g.gain.setValueAtTime(0.0001, timerAudioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.35, timerAudioCtx.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, timerAudioCtx.currentTime+(dur||0.15));
+    o.connect(g); g.connect(timerAudioCtx.destination);
+    o.start(); o.stop(timerAudioCtx.currentTime+(dur||0.15)+0.02);
+  }catch(e){}
+}
+function timerRender(){
+  const display=document.getElementById('timerDisplay'); if(!display) return;
+  const phase=document.getElementById('timerPhase');
+  const sub=document.getElementById('timerSub');
+  const fill=document.getElementById('timerProgressFill');
+  const meta=document.getElementById('timerMeta');
+  const startBtn=document.getElementById('timerStartBtn');
+  if(startBtn){ startBtn.textContent=timerRunning?'⏸ 暫停':'▶ 開始'; startBtn.classList.toggle('running', timerRunning); }
+  let ms=0, progress=0, phaseText='準備開始', phaseClass='', subText='', metaText='';
+  if(timerMode==='countdown'){
+    ms=countdownRemainingMs; progress=countdownTotalMs? (1-ms/countdownTotalMs)*100:0;
+    phaseText=countdownRemainingMs<=0?'完成':(timerRunning?'倒數中':'準備開始'); phaseClass=countdownRemainingMs<=0?'done':'';
+    subText='倒數計時 ・ '+Math.round(countdownTotalMs/1000)+' 秒';
+    metaText='倒數模式 ・ '+(timerRunning?'進行中':(countdownRemainingMs<=0?'已結束':'還沒開始'));
+    display.classList.toggle('warning', ms<=10000 && ms>0 && timerRunning);
+  } else if(timerMode==='stopwatch'){
+    ms=stopwatchElapsedMs; progress=0;
+    phaseText=timerRunning?'計時中':'碼錶'; phaseClass=timerRunning?'work':'';
+    subText='碼錶 ・ 800M / 1600M、計圈用'; metaText='碼錶模式 ・ 共 '+timerLaps.length+' 筆紀錄';
+    display.classList.remove('warning');
+  } else {
+    ms=intervalRemainingMs;
+    const totalOne=intervalWorkMs+intervalRestMs;
+    const doneMs=((intervalCurrentRound-1)*totalOne)+(intervalIsWork? (intervalWorkMs-ms) : (intervalWorkMs+(intervalRestMs-ms)));
+    const totalMs=intervalRounds*totalOne;
+    progress=totalMs? (doneMs/totalMs)*100:0;
+    phaseText=intervalIsWork?'運動！':'休息'; phaseClass=intervalIsWork?'work':'rest';
+    if(!timerRunning && intervalCurrentRound===1 && intervalIsWork && intervalRemainingMs===intervalWorkMs) { phaseText='準備開始'; phaseClass=''; }
+    subText='間歇訓練 ・ 運動 '+Math.round(intervalWorkMs/1000)+' 秒 / 休息 '+Math.round(intervalRestMs/1000)+' 秒';
+    metaText='第 '+intervalCurrentRound+' 組 / 共 '+intervalRounds+' 組 ・ '+(intervalIsWork?'運動中':'休息中');
+    display.classList.toggle('warning', intervalIsWork && ms<=3000 && timerRunning);
+  }
+  const f=timerFormat(ms);
+  display.innerHTML=f.text+'<small>.'+f.cs+'</small>';
+  if(phase){ phase.textContent=phaseText; phase.className='timer-phase '+phaseClass; }
+  if(sub) sub.textContent=subText;
+  if(fill) fill.style.width=Math.max(0,Math.min(100,progress))+'%';
+  if(meta) meta.textContent=metaText;
+}
+function timerTick(){
+  if(timerMode==='countdown'){
+    countdownRemainingMs-=100;
+    if(countdownRemainingMs<=0){ countdownRemainingMs=0; timerStop(); timerBeep(880,0.7,'sine'); timerBeep(880,0.7,'sine'); toast('倒數結束！'); }
+    else if(countdownRemainingMs<=3000 && countdownRemainingMs>0 && Math.ceil(countdownRemainingMs/1000)!==Math.ceil((countdownRemainingMs+100)/1000)){ timerBeep(1200,0.08,'square'); }
+  } else if(timerMode==='stopwatch'){
+    stopwatchElapsedMs+=100;
+  } else {
+    intervalRemainingMs-=100;
+    if(intervalRemainingMs<=0){
+      if(intervalIsWork){
+        if(intervalCurrentRound>=intervalRounds){ intervalRemainingMs=0; timerStop(); timerBeep(880,0.8,'sine'); toast('間歇訓練完成！'); }
+        else { intervalIsWork=false; intervalRemainingMs=intervalRestMs; timerBeep(1320,0.15,'square'); }
+      } else {
+        intervalCurrentRound++; intervalIsWork=true; intervalRemainingMs=intervalWorkMs; timerBeep(880,0.2,'square');
+      }
+    }
+  }
+  timerRender();
+}
+function timerStart(){
+  if(timerRunning) return;
+  if(timerMode==='countdown' && countdownRemainingMs<=0) countdownRemainingMs=countdownTotalMs;
+  if(timerMode==='interval' && intervalRemainingMs<=0 && intervalCurrentRound>=intervalRounds){ timerReset(); }
+  timerRunning=true; timerTimerId=setInterval(timerTick,100); timerRender();
+}
+function timerPause(){
+  timerRunning=false; if(timerTimerId){ clearInterval(timerTimerId); timerTimerId=null; } timerRender();
+}
+function timerStop(){ timerPause(); }
+function timerReset(){
+  timerPause();
+  if(timerMode==='countdown') countdownRemainingMs=countdownTotalMs;
+  if(timerMode==='stopwatch') stopwatchElapsedMs=0;
+  if(timerMode==='interval'){ intervalCurrentRound=1; intervalIsWork=true; intervalRemainingMs=intervalWorkMs; }
+  timerRender();
+}
+function timerSetMode(mode){
+  timerPause(); timerMode=mode;
+  document.querySelectorAll('[data-timer-mode]').forEach(b=>b.classList.toggle('active', b.dataset.timerMode===mode));
+  document.getElementById('timerCountdownSettings').style.display=mode==='countdown'?'block':'none';
+  document.getElementById('timerIntervalSettings').style.display=mode==='interval'?'block':'none';
+  document.getElementById('timerStopwatchSettings').style.display=mode==='stopwatch'?'block':'none';
+  timerReset(); timerRender();
+}
+function timerRenderLaps(){
+  const list=document.getElementById('timerLapList'); if(!list) return;
+  if(!timerLaps.length){ list.innerHTML='<div class="timer-note" style="text-align:center;padding:8px">還沒有紀錄，按「計圈 / 紀錄」開始記</div>'; return; }
+  list.innerHTML='';
+  timerLaps.forEach((lap,i)=>{
+    const div=document.createElement('div'); div.className='lap-item';
+    const left=document.createElement('span'); left.textContent='第 '+(i+1)+' 筆';
+    const right=document.createElement('span'); right.textContent=timerFormat(lap.ms).text+'.'+timerFormat(lap.ms).cs+'  ・ '+lap.label;
+    div.append(left,right); list.appendChild(div);
+  });
+}
+document.querySelectorAll('[data-timer-mode]').forEach(b=>b.addEventListener('click', ()=>timerSetMode(b.dataset.timerMode)));
+document.getElementById('timerStartBtn')?.addEventListener('click', ()=>{ if(timerRunning) timerPause(); else timerStart(); });
+document.getElementById('timerResetBtn')?.addEventListener('click', ()=>{ timerReset(); toast('計時器已重置。'); });
+document.getElementById('timerLapBtn')?.addEventListener('click', ()=>{
+  let ms=0, label='';
+  if(timerMode==='stopwatch'){ ms=stopwatchElapsedMs; label='碼錶'; }
+  else if(timerMode==='countdown'){ ms=countdownTotalMs-countdownRemainingMs; label='倒數已過'; }
+  else { ms=0; label='第 '+intervalCurrentRound+' 組 '+(intervalIsWork?'運動':'休息'); }
+  const f=timerFormat(ms);
+  timerLaps.unshift({ms, label});
+  if(timerMode==='stopwatch') timerRenderLaps();
+  else toast('已紀錄：'+f.text+'.'+f.cs+'（'+label+'）');
+  timerRender();
+});
+document.getElementById('timerClearLapsBtn')?.addEventListener('click', ()=>{ timerLaps=[]; timerRenderLaps(); timerRender(); });
+document.querySelectorAll('#countdownPresets .preset-btn').forEach(b=>b.addEventListener('click', ()=>{
+  document.querySelectorAll('#countdownPresets .preset-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  countdownTotalMs=Number(b.dataset.seconds)*1000; countdownRemainingMs=countdownTotalMs; timerPause(); timerRender();
+  document.getElementById('cdMin').value=Math.floor(Number(b.dataset.seconds)/60);
+  document.getElementById('cdSec').value=Number(b.dataset.seconds)%60;
+}));
+document.getElementById('cdApplyBtn')?.addEventListener('click', ()=>{
+  const m=Math.max(0,Number(document.getElementById('cdMin').value)||0), s=Math.max(0,Math.min(59,Number(document.getElementById('cdSec').value)||0));
+  if(m===0 && s===0) return toast('請設定大於 0 的時間。');
+  countdownTotalMs=(m*60+s)*1000; countdownRemainingMs=countdownTotalMs; timerPause(); timerRender(); toast('已設定倒數 '+m+' 分 '+s+' 秒。');
+});
+document.querySelectorAll('#intervalPresets .preset-btn').forEach(b=>b.addEventListener('click', ()=>{
+  document.querySelectorAll('#intervalPresets .preset-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  intervalWorkMs=Number(b.dataset.work)*1000; intervalRestMs=Number(b.dataset.rest)*1000; intervalRounds=Number(b.dataset.rounds);
+  document.getElementById('intWork').value=b.dataset.work; document.getElementById('intRest').value=b.dataset.rest; document.getElementById('intRounds').value=b.dataset.rounds;
+  timerPause(); intervalCurrentRound=1; intervalIsWork=true; intervalRemainingMs=intervalWorkMs; timerRender();
+}));
+document.getElementById('intApplyBtn')?.addEventListener('click', ()=>{
+  const w=Math.max(5,Number(document.getElementById('intWork').value)||20), r=Math.max(5,Number(document.getElementById('intRest').value)||10), rounds=Math.max(1,Math.min(20,Number(document.getElementById('intRounds').value)||8));
+  intervalWorkMs=w*1000; intervalRestMs=r*1000; intervalRounds=rounds; timerPause(); intervalCurrentRound=1; intervalIsWork=true; intervalRemainingMs=intervalWorkMs; timerRender(); toast('已設定間歇 '+w+' / '+r+' 秒 × '+rounds+' 組。');
+});
+document.getElementById('timerFullscreenBtn')?.addEventListener('click', ()=>{
+  const el=document.getElementById('timerPanel');
+  if(document.fullscreenElement) document.exitFullscreen();
+  else if(el.requestFullscreen) el.requestFullscreen();
+});
+timerRender(); timerRenderLaps();
+
+
+/* ===== 線上測驗 ===== */
+let quizQuestions = [
+  {id:'demo1', question:'運動前為什麼要做暖身？', options:['提升體溫、增加關節活動度，預防受傷','讓身體更累','只是習慣，沒有作用','為了拖延上課時間'], correct:0, category:'運動安全', explanation:'暖身可以慢慢提升體溫、心跳與肌肉溫度，讓身體準備好運動，減少受傷。'},
+  {id:'demo2', question:'以下哪一項是心肺耐力最好的訓練方式？', options:['短跑衝刺 10 秒','長時間慢跑、游泳、騎腳踏車','只做伸展','站著不動'], correct:1, category:'體適能', explanation:'心肺耐力需要持續、中等強度的有氧運動，例如慢跑、游泳。'},
+  {id:'demo3', question:'進行 800 公尺測驗時，最重要的配速策略是？', options:['一開始就用全力衝刺','前段穩定、中後段再加速，保留體力','走完全程','跟別人聊天'], correct:1, category:'田徑', explanation:'800M 要平均配速，前段太快後段會沒力，建議前段穩定、後段再加速。'},
+  {id:'demo4', question:'打籃球時，正確的傳球手勢應該是？', options:['單手隨便丟','雙手持球於胸前，用手指力量推出','用腳踢球','閉眼睛傳'], correct:1, category:'球類', explanation:'胸前傳球要雙手持球、手指撥球、手腕下壓，球才會穩。'},
+  {id:'demo5', question:'運動後出現肌肉痠痛，下列哪個處理方式最正確？', options:['完全不動、躺一整天','輕度伸展、補充水分、充足休息','馬上再做高強度訓練','冰敷到凍傷'], correct:1, category:'運動保健', explanation:'輕度伸展、補水與休息可以幫助恢復，延遲性痠痛通常 2-3 天會改善。'}
+];
+let quizResults = [];
+let quizSession = null;
+let quizBankLoadedFromSupabase = false;
+let quizResultsLoadedFromSupabase = false;
+function quizUpdateCategoryOptions(){
+  const sel=document.getElementById('quizCategorySelect'); if(!sel) return;
+  const cats=[...new Set(quizQuestions.map(q=>q.category).filter(Boolean))];
+  const cur=sel.value;
+  sel.innerHTML='<option value="all">全部類別</option>'+cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  if(cats.includes(cur)) sel.value=cur;
+  const filt=document.getElementById('quizResultClassFilter'); if(filt){
+    const classes=[...new Set(quizResults.map(r=>r.class_name).filter(Boolean))];
+    const curF=filt.value;
+    filt.innerHTML='<option value="all">全部班級</option>'+classes.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+    if(classes.includes(curF)) filt.value=curF;
+  }
+}
+function quizRefreshCounts(){
+  const tag=document.getElementById('quizCountTag'); if(tag) tag.textContent='題庫 '+quizQuestions.length+' 題';
+  const bankCount=document.getElementById('quizBankCount'); if(bankCount) bankCount.textContent='共 '+quizQuestions.length+' 題';
+  const hint=document.getElementById('quizSetupHint'); if(hint){
+    if(!quizQuestions.length) hint.textContent='目前題庫是空的，老師登入後到「題庫管理」用 Excel 匯入或手動新增，學生才能作答。';
+    else hint.textContent='目前題庫共 '+quizQuestions.length+' 題，'+(quizBankLoadedFromSupabase?'已連接 Supabase，成績會同步到老師後台。':'示範題庫（尚未建立測驗資料表時顯示）。老師執行 supabase_setup_quiz.sql 後就會改讀資料庫。');
+  }
+  quizUpdateCategoryOptions();
+}
+async function loadQuizFromSupabase(){
+  if(!supabaseClient) { quizRefreshCounts(); renderQuizBank(); renderQuizResults(); return; }
+  try{
+    const {data: q, error: qErr} = await supabaseClient.from('quiz_questions').select('*').order('created_at',{ascending:true});
+    if(qErr) throw qErr;
+    quizBankLoadedFromSupabase = true;
+    quizQuestions = (q||[]).map(row=>({id:row.id, question:row.question, options: Array.isArray(row.options)? row.options : JSON.parse(row.options||'[]'), correct: row.correct_answer ?? row.correct ?? 0, category: row.category||'體育常識', explanation: row.explanation||''}));
+    if(!quizQuestions.length){
+      // 若資料庫是空的，先不覆蓋示範題，提示老師匯入即可 - 但為了讓學生看到真實空狀態，我們保留示範題顯示，並在 hint 說明
+    }
+  }catch(err){ console.warn('quiz_questions load failed', err); quizBankLoadedFromSupabase=false; }
+  try{
+    const {data: r, error: rErr} = await supabaseClient.from('quiz_results').select('*').order('created_at',{ascending:false}).limit(200);
+    if(rErr) throw rErr;
+    quizResultsLoadedFromSupabase = true;
+    quizResults = (r||[]).map(row=>({id:row.id, student_name:row.student_name, class_name:row.class_name, seat_number:row.seat_number, score:row.score, total:row.total, answers: Array.isArray(row.answers)? row.answers : (row.answers? JSON.parse(row.answers):[]), created_at:row.created_at, quiz_title:row.quiz_title||''}));
+  }catch(err){ console.warn('quiz_results load failed', err); quizResultsLoadedFromSupabase=false; }
+  quizRefreshCounts(); renderQuizBank(); renderQuizResults();
+}
+function renderQuizBank(){
+  const list=document.getElementById('quizBankList'); if(!list) return;
+  const isTeacherPanel = document.getElementById('quizBankPanel');
+  if(!isTeacher){ list.innerHTML='<p class="timer-note">請先以教師身分登入，才能管理題庫。</p>'; return; }
+  if(!quizQuestions.length){ list.innerHTML='<p class="timer-note">還沒有題目。先用 Excel 匯入或手動新增。</p>'; return; }
+  list.innerHTML='';
+  quizQuestions.forEach((q,i)=>{
+    const div=document.createElement('div'); div.className='quiz-bank-item';
+    const head=document.createElement('div'); head.style.cssText='display:flex;justify-content:space-between;gap:10px;align-items:flex-start';
+    const title=document.createElement('div'); title.innerHTML='<strong>第 '+(i+1)+' 題 ・ '+q.category+'</strong><div style="margin-top:4px;line-height:1.6">'+q.question+'</div>';
+    const btns=document.createElement('div'); btns.style.cssText='display:flex;gap:6px;flex-shrink:0';
+    const edit=document.createElement('button'); edit.className='mini-btn'; edit.textContent='編輯'; edit.type='button';
+    edit.addEventListener('click', ()=>{ document.getElementById('qEditingId').value=q.id; document.getElementById('qNewQuestion').value=q.question; document.getElementById('qOptA').value=q.options[0]||''; document.getElementById('qOptB').value=q.options[1]||''; document.getElementById('qOptC').value=q.options[2]||''; document.getElementById('qOptD').value=q.options[3]||''; document.getElementById('qCorrect').value=q.correct; document.getElementById('qCategory').value=q.category; document.getElementById('qExplain').value=q.explanation||''; document.getElementById('qAddBtn').textContent='更新題目'; document.getElementById('qCancelEditBtn').style.display='inline-block'; document.getElementById('qNewQuestion').focus(); window.scrollTo({top: document.getElementById('qNewQuestion').getBoundingClientRect().top + window.scrollY - 100, behavior:'smooth'}); });
+    const del=document.createElement('button'); del.className='mini-btn danger'; del.textContent='刪除'; del.type='button';
+    del.addEventListener('click', async ()=>{ if(!confirm('確定要刪除這題嗎？')) return; await quizDeleteQuestion(q.id); });
+    btns.append(edit, del); head.append(title, btns); div.appendChild(head);
+    const opts=document.createElement('div'); opts.style.cssText='margin-top:8px;font-size:13px;line-height:1.7;color:var(--muted)';
+    opts.innerHTML=q.options.map((o,oi)=>'<div>'+['A','B','C','D'][oi]+'. '+o+(oi===Number(q.correct)?' <strong style="color:#2ea37a">✓ 正確答案</strong>':'')+'</div>').join('')+(q.explanation?'<div style="margin-top:4px">解析：'+q.explanation+'</div>':'');
+    div.appendChild(opts); list.appendChild(div);
+  });
+}
+async function quizDeleteQuestion(id){
+  if(!requireTeacher()) return;
+  if(quizBankLoadedFromSupabase && supabaseClient){
+    const {error}=await supabaseClient.from('quiz_questions').delete().eq('id', id);
+    if(error) return toast('刪除失敗：'+error.message);
+  }
+  quizQuestions=quizQuestions.filter(q=>String(q.id)!==String(id));
+  quizRefreshCounts(); renderQuizBank(); toast('已刪除題目。');
+}
+function renderQuizResults(){
+  const list=document.getElementById('quizResultsList'); if(!list) return;
+  const statsEl=document.getElementById('quizStats'); if(statsEl){
+    const total=quizResults.length;
+    const avg=total?Math.round(quizResults.reduce((s,r)=>s+Number(r.score||0),0)/total):0;
+    const max=total?Math.max(...quizResults.map(r=>Number(r.score||0))):0;
+    const pass=total?quizResults.filter(r=>Number(r.total||0)>0 && (Number(r.score||0)/Number(r.total||0))>=0.6).length:0;
+    const passRate=total?Math.round(pass/total*100):0;
+    statsEl.innerHTML='<div class="stat-card" style="padding:12px"><div class="stat-label">作答人次</div><div style="font-size:22px;font-weight:900">'+total+'</div></div><div class="stat-card" style="padding:12px"><div class="stat-label">平均分數</div><div style="font-size:22px;font-weight:900">'+avg+' 分</div></div><div class="stat-card" style="padding:12px"><div class="stat-label">最高分</div><div style="font-size:22px;font-weight:900">'+max+' 分</div></div><div class="stat-card" style="padding:12px"><div class="stat-label">及格率 (60分以上)</div><div style="font-size:22px;font-weight:900">'+passRate+'%</div></div>';
+  }
+  if(!isTeacher){ list.innerHTML='<p class="timer-note">請先以教師身分登入，才能查看學生成績。</p>'; return; }
+  const classF=document.getElementById('quizResultClassFilter')?.value||'all';
+  const q=document.getElementById('quizResultSearch')?.value.trim().toLowerCase()||'';
+  let rows=quizResults.filter(r=>(classF==='all'||r.class_name===classF)&&(!q || (r.student_name||'').toLowerCase().includes(q) || String(r.seat_number||'').includes(q)));
+  if(!rows.length){ list.innerHTML='<p class="timer-note">還沒有學生成績。學生作答繳交後就會出現在這裡。</p>'; return; }
+  let html='<table class="quiz-table"><thead><tr><th>時間</th><th>班級</th><th>座號</th><th>姓名</th><th>分數</th><th>正確率</th><th>操作</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const pct=r.total?Math.round(Number(r.score)/Number(r.total)*100):0;
+    const d=r.created_at? new Date(r.created_at).toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+    html+='<tr><td>'+d+'</td><td>'+(r.class_name||'')+'</td><td>'+(r.seat_number||'')+'</td><td><strong>'+(r.student_name||'')+'</strong></td><td>'+r.score+' / '+r.total+'</td><td>'+pct+'%</td><td><button class="mini-btn" data-view-result="'+r.id+'" type="button">看作答</button> <button class="mini-btn danger" data-del-result="'+r.id+'" type="button">刪除</button></td></tr>';
+  });
+  html+='</tbody></table><div id="quizResultDetail" style="margin-top:12px"></div>';
+  list.innerHTML=html;
+  list.querySelectorAll('[data-view-result]').forEach(b=>b.addEventListener('click', ()=>{
+    const r=quizResults.find(x=>String(x.id)===b.dataset.viewResult); if(!r) return;
+    const detail=document.getElementById('quizResultDetail');
+    const sessQs = quizQuestions; // answers store question text, so we can show from answers
+    let h='<div class="quiz-bank-item"><strong>'+r.student_name+'（'+r.class_name+' '+r.seat_number+'號）・ '+r.score+' / '+r.total+' 分</strong><div style="margin-top:8px">';
+    (r.answers||[]).forEach((a,i)=>{
+      const ok = a.selected===a.correct;
+      h+='<div style="margin-bottom:8px;padding:8px;border:1px solid var(--line);border-radius:9px;background:'+(ok?'#eaf5ee':'#fdecea')+'"><div><strong>第 '+(i+1)+' 題：</strong>'+a.question+'</div><div style="font-size:13px">學生選：'+(a.options[a.selected]||'未作答')+' ・ 正確：'+(a.options[a.correct]||'')+' '+(ok?'✓ 答對':'✗ 答錯')+'</div>'+(a.explanation?'<div style="font-size:12px;color:var(--muted)">解析：'+a.explanation+'</div>':'')+'</div>';
+    });
+    h+='</div></div>'; detail.innerHTML=h;
+  }));
+  list.querySelectorAll('[data-del-result]').forEach(b=>b.addEventListener('click', async ()=>{
+    if(!confirm('確定要刪除這筆成績嗎？')) return;
+    const id=b.dataset.delResult;
+    if(quizResultsLoadedFromSupabase && supabaseClient){
+      const {error}=await supabaseClient.from('quiz_results').delete().eq('id', id);
+      if(error) return toast('刪除失敗：'+error.message);
+    }
+    quizResults=quizResults.filter(r=>String(r.id)!==String(id)); quizUpdateCategoryOptions(); renderQuizResults(); toast('已刪除成績。');
+  }));
+}
+function quizSwitchTab(tab){
+  document.querySelectorAll('[data-quiz-tab]').forEach(b=>b.classList.toggle('active', b.dataset.quizTab===tab));
+  document.getElementById('quizStudentPanel').style.display=tab==='student'?'block':'none';
+  document.getElementById('quizBankPanel').style.display=tab==='bank'?'block':'none';
+  document.getElementById('quizResultsPanel').style.display=tab==='results'?'block':'none';
+  if(tab==='bank' && !isTeacher) toast('題庫管理需要教師登入。');
+  if(tab==='results' && !isTeacher) toast('學生成績需要教師登入。');
+  if(tab==='bank') renderQuizBank();
+  if(tab==='results') renderQuizResults();
+}
+document.querySelectorAll('[data-quiz-tab]').forEach(b=>b.addEventListener('click', ()=>quizSwitchTab(b.dataset.quizTab)));
+document.getElementById('quizRefreshResultsBtn')?.addEventListener('click', async ()=>{ await loadQuizFromSupabase(); toast('成績已重新整理。'); });
+document.getElementById('quizResultClassFilter')?.addEventListener('change', renderQuizResults);
+document.getElementById('quizResultSearch')?.addEventListener('input', renderQuizResults);
+document.getElementById('quizExportResultsBtn')?.addEventListener('click', ()=>{
+  if(!requireTeacher()) return;
+  if(!quizResults.length) return toast('還沒有成績可以匯出。');
+  const header=['時間','班級','座號','姓名','分數','總分','正確率%'];
+  const rows=quizResults.map(r=>[r.created_at? new Date(r.created_at).toLocaleString('zh-TW'):'', r.class_name||'', r.seat_number||'', r.student_name||'', r.score, r.total, r.total?Math.round(r.score/r.total*100):0]);
+  const csv=[header, ...rows].map(row=>row.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='體育測驗成績_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+});
+/* 學生作答 */
+document.getElementById('quizStartBtn')?.addEventListener('click', ()=>{
+  const name=document.getElementById('quizStudentName').value.trim();
+  const cls=document.getElementById('quizStudentClass').value;
+  const seat=document.getElementById('quizStudentSeat').value.trim();
+  if(!name) return toast('請先輸入姓名。');
+  if(!cls) return toast('請先選擇班級。');
+  if(!seat) return toast('請先輸入座號。');
+  if(!quizQuestions.length) return toast('題庫目前是空的，請老師先匯入題庫。');
+  const cat=document.getElementById('quizCategorySelect').value;
+  let pool=quizQuestions.filter(q=>cat==='all'||q.category===cat);
+  if(!pool.length) return toast('這個類別目前沒有題目。');
+  const countSel=document.getElementById('quizCountSelect').value;
+  const count=countSel==='all'? pool.length : Math.min(Number(countSel), pool.length);
+  let picked=[...pool];
+  if(document.getElementById('quizOrderSelect').value==='random'){ picked.sort(()=>Math.random()-0.5); }
+  picked=picked.slice(0, count);
+  quizSession={student:{name, class:cls, seat}, questions:picked, answers:Array(picked.length).fill(null), current:0};
+  document.getElementById('quizSetupPanel').style.display='none';
+  document.getElementById('quizResultPanel').style.display='none';
+  document.getElementById('quizDoingPanel').style.display='block';
+  document.getElementById('quizDoingStudent').textContent=name+' ・ '+cls+' '+seat+'號';
+  quizRenderQuestion();
+});
+function quizRenderQuestion(){
+  if(!quizSession) return;
+  const q=quizSession.questions[quizSession.current];
+  document.getElementById('quizDoingTitle').textContent='第 '+(quizSession.current+1)+' 題 / 共 '+quizSession.questions.length+' 題';
+  document.getElementById('quizDoingCategory').textContent=q.category||'';
+  document.getElementById('quizDoingAnswered').textContent='已作答 '+quizSession.answers.filter(a=>a!==null).length+' 題';
+  document.getElementById('quizProgressFill').style.width=((quizSession.current+1)/quizSession.questions.length*100)+'%';
+  document.getElementById('quizQuestionText').textContent=q.question;
+  const opts=document.getElementById('quizOptions'); opts.innerHTML='';
+  q.options.forEach((opt, i)=>{
+    if(!opt && i>=2) return; // C/D 可留空
+    const label=document.createElement('label'); label.className='quiz-option'+(quizSession.answers[quizSession.current]===i?' selected':'');
+    const radio=document.createElement('input'); radio.type='radio'; radio.name='quizOpt'; radio.checked=quizSession.answers[quizSession.current]===i;
+    radio.addEventListener('change', ()=>{ quizSession.answers[quizSession.current]=i; quizRenderQuestion(); });
+    const span=document.createElement('span'); span.innerHTML='<strong>'+['A','B','C','D'][i]+'.</strong> '+opt;
+    label.append(radio, span); label.addEventListener('click', ()=>{ quizSession.answers[quizSession.current]=i; quizRenderQuestion(); });
+    opts.appendChild(label);
+  });
+  document.getElementById('quizPrevBtn').disabled=quizSession.current===0;
+  document.getElementById('quizNextBtn').disabled=quizSession.current===quizSession.questions.length-1;
+}
+document.getElementById('quizPrevBtn')?.addEventListener('click', ()=>{ if(quizSession.current>0){ quizSession.current--; quizRenderQuestion(); }});
+document.getElementById('quizNextBtn')?.addEventListener('click', ()=>{ if(quizSession.current<quizSession.questions.length-1){ quizSession.current++; quizRenderQuestion(); }});
+document.getElementById('quizSubmitBtn')?.addEventListener('click', async ()=>{
+  if(!quizSession) return;
+  const unanswered=quizSession.answers.filter(a=>a===null).length;
+  if(unanswered>0 && !confirm('還有 '+unanswered+' 題沒作答，確定要繳交嗎？')) return;
+  const answers=quizSession.questions.map((q,i)=>({question:q.question, options:q.options, selected:quizSession.answers[i], correct:q.correct, explanation:q.explanation||''}));
+  const score=answers.filter(a=>a.selected===a.correct).length;
+  const total=answers.length;
+  const result={student_name:quizSession.student.name, class_name:quizSession.student.class, seat_number:Number(quizSession.student.seat), score, total, answers, created_at:new Date().toISOString()};
+  // 存到 Supabase（若有建表），失敗也不擋學生看分數
+  if(supabaseClient && quizBankLoadedFromSupabase){
+    try{
+      const {data, error}=await supabaseClient.from('quiz_results').insert([{student_name:result.student_name, class_name:result.class_name, seat_number:result.seat_number, score:result.score, total:result.total, answers:result.answers, quiz_title:'體育線上測驗'}]).select().single();
+      if(!error && data) result.id=data.id;
+    }catch(e){ console.warn(e); }
+  }
+  quizResults.unshift({id: result.id||('local-'+Date.now()), ...result});
+  quizUpdateCategoryOptions(); renderQuizResults();
+  document.getElementById('quizDoingPanel').style.display='none';
+  document.getElementById('quizResultPanel').style.display='block';
+  document.getElementById('quizResultScore').innerHTML=score+'<small> / '+total+' 分</small>';
+  document.getElementById('quizResultMeta').textContent=quizSession.student.name+' ・ '+quizSession.student.class+' '+quizSession.student.seat+'號 ・ 正確率 '+Math.round(score/total*100)+'% ・ 成績已存到老師後台';
+  const review=document.getElementById('quizResultReview'); review.innerHTML='';
+  answers.forEach((a,i)=>{
+    const div=document.createElement('div'); div.className='quiz-option'+(a.selected===a.correct?' correct':' wrong');
+    div.innerHTML='<div><strong>第 '+(i+1)+' 題：</strong>'+a.question+'</div><div style="margin-top:6px;font-size:13px">你選：'+(a.options[a.selected]||'未作答')+' ・ 正確：'+(a.options[a.correct]||'')+' '+(a.selected===a.correct?'✓ 答對':'✗ 答錯')+'</div>'+(a.explanation?'<div style="font-size:12px;color:var(--muted);margin-top:4px">解析：'+a.explanation+'</div>':'');
+    review.appendChild(div);
+  });
+});
+document.getElementById('quizRetryBtn')?.addEventListener('click', ()=>{ document.getElementById('quizResultPanel').style.display='none'; document.getElementById('quizSetupPanel').style.display='block'; });
+document.getElementById('quizBackSetupBtn')?.addEventListener('click', ()=>{ document.getElementById('quizResultPanel').style.display='none'; document.getElementById('quizSetupPanel').style.display='block'; });
+/* 題庫：手動新增 / 編輯 */
+document.getElementById('qAddBtn')?.addEventListener('click', async ()=>{
+  if(!requireTeacher()) return;
+  const question=document.getElementById('qNewQuestion').value.trim();
+  const a=document.getElementById('qOptA').value.trim(), b=document.getElementById('qOptB').value.trim(), c=document.getElementById('qOptC').value.trim(), d=document.getElementById('qOptD').value.trim();
+  if(!question) return toast('請先輸入題目。');
+  if(!a || !b) return toast('選項 A、B 一定要填。');
+  const correct=Number(document.getElementById('qCorrect').value);
+  const category=document.getElementById('qCategory').value.trim()||'體育常識';
+  const explanation=document.getElementById('qExplain').value.trim();
+  const options=[a,b,c,d];
+  const editingId=document.getElementById('qEditingId').value;
+  if(editingId){
+    if(quizBankLoadedFromSupabase && supabaseClient){
+      const {error}=await supabaseClient.from('quiz_questions').update({question, options, correct_answer:correct, category, explanation}).eq('id', editingId);
+      if(error) return toast('更新失敗：'+error.message);
+    }
+    const idx=quizQuestions.findIndex(q=>String(q.id)===String(editingId));
+    if(idx>=0) quizQuestions[idx]={...quizQuestions[idx], question, options, correct, category, explanation};
+    toast('題目已更新。');
+  } else {
+    if(quizBankLoadedFromSupabase && supabaseClient){
+      const {data, error}=await supabaseClient.from('quiz_questions').insert([{question, options, correct_answer:correct, category, explanation}]).select().single();
+      if(error) return toast('新增失敗：'+error.message+'（若還沒建表，請先執行 supabase_setup_quiz.sql）');
+      quizQuestions.push({id:data.id, question, options, correct, category, explanation});
+    } else {
+      quizQuestions.push({id:'local-'+Date.now(), question, options, correct, category, explanation});
+    }
+    toast('題目已新增。');
+  }
+  document.getElementById('qEditingId').value=''; document.getElementById('qNewQuestion').value=''; document.getElementById('qOptA').value=''; document.getElementById('qOptB').value=''; document.getElementById('qOptC').value=''; document.getElementById('qOptD').value=''; document.getElementById('qExplain').value='';
+  document.getElementById('qAddBtn').textContent='＋ 新增題目'; document.getElementById('qCancelEditBtn').style.display='none';
+  quizRefreshCounts(); renderQuizBank();
+});
+document.getElementById('qCancelEditBtn')?.addEventListener('click', ()=>{ document.getElementById('qEditingId').value=''; document.getElementById('qNewQuestion').value=''; document.getElementById('qAddBtn').textContent='＋ 新增題目'; document.getElementById('qCancelEditBtn').style.display='none'; });
+/* 題庫：範例題與範本下載 */
+document.getElementById('quizSampleBtn')?.addEventListener('click', async ()=>{
+  if(!requireTeacher()) return;
+  if(!confirm('要把 5 題體育範例題寫入題庫嗎？')) return;
+  const samples=quizQuestions.filter(q=>String(q.id).startsWith('demo'));
+  // 範例題已在前端，直接寫入 Supabase（若有連接）
+  if(quizBankLoadedFromSupabase && supabaseClient){
+    const payload=samples.map(q=>({question:q.question, options:q.options, correct_answer:q.correct, category:q.category, explanation:q.explanation}));
+    const {error}=await supabaseClient.from('quiz_questions').insert(payload);
+    if(error) return toast('寫入失敗：'+error.message);
+    await loadQuizFromSupabase();
+  }
+  toast('已載入 5 題範例題。'); quizRefreshCounts(); renderQuizBank();
+});
+document.getElementById('quizTemplateBtn')?.addEventListener('click', ()=>{
+  const header=['題目','選項A','選項B','選項C','選項D','正確答案','分類','解析'];
+  const rows=[
+    ['運動前為什麼要做暖身？','提升體溫、預防受傷','讓身體更累','只是習慣','為了拖延時間','A','運動安全','暖身可以提升體溫與肌肉溫度，減少受傷。'],
+    ['以下哪一項是心肺耐力訓練？','短跑 10 秒','長時間慢跑、游泳','只做伸展','站著不動','B','體適能','心肺耐力需要持續、中等強度的有氧運動。']
+  ];
+  const csv=[header, ...rows].map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='體育測驗題庫範本.csv'; a.click(); URL.revokeObjectURL(a.href);
+});
+/* 題庫：Excel / CSV 匯入 */
+function quizParseRows(rows){
+  // rows: array of arrays, first row is header
+  const out=[];
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i]; if(!r || !r[0]) continue;
+    const q=String(r[0]).trim(); const a=String(r[1]||'').trim(); const b=String(r[2]||'').trim(); const c=String(r[3]||'').trim(); const d=String(r[4]||'').trim();
+    if(!q || !a || !b) continue;
+    let correctRaw=String(r[5]||'A').trim().toUpperCase();
+    let correct=0;
+    if(['A','B','C','D'].includes(correctRaw)) correct=['A','B','C','D'].indexOf(correctRaw);
+    else if(['1','2','3','4'].includes(correctRaw)) correct=Number(correctRaw)-1;
+    else if([a,b,c,d].includes(correctRaw)) correct=[a,b,c,d].indexOf(correctRaw);
+    out.push({question:q, options:[a,b,c,d], correct, category:String(r[6]||'體育常識').trim()||'體育常識', explanation:String(r[7]||'').trim()});
+  }
+  return out;
+}
+async function quizHandleFile(file){
+  if(!requireTeacher()) return;
+  if(!file) return;
+  const name=file.name.toLowerCase();
+  try{
+    let rows=[];
+    if(name.endsWith('.csv')){
+      const text=await file.text();
+      const lines=text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l=>l.trim());
+      rows=lines.map(line=>{
+        const cols=[]; let cur='', inQ=false;
+        for(let ch of line){ if(ch==='"'){ inQ=!inQ; } else if(ch===',' && !inQ){ cols.push(cur); cur=''; } else cur+=ch; }
+        cols.push(cur); return cols.map(c=>c.trim().replace(/^"|"$/g,''));
+      });
+    } else {
+      if(typeof XLSX==='undefined') return toast('Excel 解析工具還沒載入，請檢查網路後重新整理。');
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf, {type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      rows=XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+    }
+    const parsed=quizParseRows(rows);
+    if(!parsed.length) return toast('沒有讀到題目，請確認第一列是標題、第二列開始是題目，欄位順序是：題目 | 選項A | 選項B | 選項C | 選項D | 正確答案 | 分類 | 解析');
+    const preview=document.getElementById('quizImportPreview');
+    preview.innerHTML='<div class="quiz-bank-item"><strong>讀到 '+parsed.length+' 題，確認要匯入嗎？</strong><div style="margin:8px 0;max-height:160px;overflow:auto">'+parsed.slice(0,5).map((p,i)=>'<div style="font-size:13px;margin-bottom:6px">第 '+(i+1)+' 題：'+p.question+'（正確：'+['A','B','C','D'][p.correct]+'）</div>').join('')+(parsed.length>5?'<div style="font-size:12px;color:var(--muted)">…還有 '+(parsed.length-5)+' 題</div>':'')+'</div><div style="display:flex;gap:8px"><button class="btn btn-primary" id="quizConfirmImportBtn" type="button">確認匯入 '+parsed.length+' 題</button><button class="btn btn-secondary" id="quizCancelImportBtn" type="button">取消</button></div></div>';
+    document.getElementById('quizConfirmImportBtn').addEventListener('click', async ()=>{
+      if(quizBankLoadedFromSupabase && supabaseClient){
+        const payload=parsed.map(p=>({question:p.question, options:p.options, correct_answer:p.correct, category:p.category, explanation:p.explanation}));
+        const {error}=await supabaseClient.from('quiz_questions').insert(payload);
+        if(error) return toast('匯入失敗：'+error.message+'（若還沒建表，請先執行 supabase_setup_quiz.sql）');
+        await loadQuizFromSupabase();
+      } else {
+        parsed.forEach(p=>quizQuestions.push({id:'local-'+Date.now()+'-'+Math.random(), ...p}));
+        quizRefreshCounts(); renderQuizBank();
+      }
+      preview.innerHTML=''; toast('已匯入 '+parsed.length+' 題。'); document.getElementById('quizFileInput').value='';
+    });
+    document.getElementById('quizCancelImportBtn').addEventListener('click', ()=>{ preview.innerHTML=''; document.getElementById('quizFileInput').value=''; });
+  }catch(err){ toast('讀取失敗：'+err.message); }
+}
+document.getElementById('quizFileInput')?.addEventListener('change', e=>quizHandleFile(e.target.files[0]));
+const quizDrop=document.getElementById('quizDropZone');
+if(quizDrop){
+  quizDrop.addEventListener('click', ()=>document.getElementById('quizFileInput').click());
+  quizDrop.addEventListener('dragover', e=>{ e.preventDefault(); quizDrop.classList.add('dragover'); });
+  quizDrop.addEventListener('dragleave', ()=>quizDrop.classList.remove('dragover'));
+  quizDrop.addEventListener('drop', e=>{ e.preventDefault(); quizDrop.classList.remove('dragover'); const f=e.dataTransfer.files[0]; if(f) quizHandleFile(f); });
+}
+quizRefreshCounts(); renderQuizBank();
+
 function updateClock(){const now=new Date();document.getElementById('clockTime').textContent=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(now);document.getElementById('clockDate').textContent=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'}).format(now)}updateClock();setInterval(updateClock,1000);
 const themeToggle=document.getElementById('themeToggle');function syncThemeLabel(){const dark=document.documentElement.dataset.theme?document.documentElement.dataset.theme==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;themeToggle.setAttribute('aria-label',dark?'切換淺色模式':'切換深色模式')}syncThemeLabel();themeToggle.addEventListener('click',()=>{const current=document.documentElement.dataset.theme||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=current==='dark'?'light':'dark';syncThemeLabel()});
 updateAuthUI();
