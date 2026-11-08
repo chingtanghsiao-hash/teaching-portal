@@ -99,10 +99,10 @@ body.is-teacher .teacher-only-block{display:block}
         </section>
       </div>
       <section class="panel progress-panel" aria-labelledby="progressTitle"><div class="panel-head"><div><h2 id="progressTitle">年級教學進度</h2><div class="panel-sub">各年級課程規劃概覽</div></div><button class="btn btn-quiet btn-small" data-go="curriculum">管理教學內容　→</button></div>
-        <div class="progress-grid">
-          <article class="progress-card"><div class="progress-card-top"><span class="grade-pill">高一</span><span class="unit-count">4 個單元</span></div><h3>體適能與運動基礎</h3><p>暖身、心肺耐力與基礎肌力</p><div class="progress-track"><div class="progress-fill" style="width:64%"></div></div><div class="progress-foot"><span>教學進度</span><span>64%</span></div></article>
-          <article class="progress-card"><div class="progress-card-top"><span class="grade-pill">高二</span><span class="unit-count">5 個單元</span></div><h3>球類技能與合作</h3><p>籃球、排球與團隊合作</p><div class="progress-track"><div class="progress-fill" style="width:48%"></div></div><div class="progress-foot"><span>教學進度</span><span>48%</span></div></article>
-          <article class="progress-card"><div class="progress-card-top"><span class="grade-pill">高三</span><span class="unit-count">3 個單元</span></div><h3>自主運動與健康促進</h3><p>個人運動計畫與健康習慣</p><div class="progress-track"><div class="progress-fill" style="width:76%"></div></div><div class="progress-foot"><span>教學進度</span><span>76%</span></div></article>
+        <div class="progress-grid" id="progressGrid">
+          <article class="progress-card" data-progress-grade="1"><div class="progress-card-top"><span class="grade-pill">高一</span><span class="unit-count">4 個單元</span></div><h3>體適能與運動基礎</h3><p>暖身、心肺耐力與基礎肌力</p><div class="progress-track"><div class="progress-fill" style="width:64%"></div></div><div class="progress-foot"><span>教學進度</span><span>64%</span></div></article>
+          <article class="progress-card" data-progress-grade="2"><div class="progress-card-top"><span class="grade-pill">高二</span><span class="unit-count">5 個單元</span></div><h3>球類技能與合作</h3><p>籃球、排球與團隊合作</p><div class="progress-track"><div class="progress-fill" style="width:48%"></div></div><div class="progress-foot"><span>教學進度</span><span>48%</span></div></article>
+          <article class="progress-card" data-progress-grade="3"><div class="progress-card-top"><span class="grade-pill">高三</span><span class="unit-count">3 個單元</span></div><h3>自主運動與健康促進</h3><p>個人運動計畫與健康習慣</p><div class="progress-track"><div class="progress-fill" style="width:76%"></div></div><div class="progress-foot"><span>教學進度</span><span>76%</span></div></article>
         </div>
       </section>
     </section>
@@ -299,7 +299,25 @@ async function loadFromSupabase(){
   updateConnectionBar();
   renderAll();
 }
-function renderAll(){ renderSchedule(); renderUnits(); renderResources(); }
+function renderProgress(){
+  const grid=document.getElementById('progressGrid'); if(!grid) return;
+  [1,2,3].forEach(g=>{
+    const card=grid.querySelector('[data-progress-grade="'+g+'"]'); if(!card) return;
+    const list=curriculum[String(g)]||[];
+    const count=list.length;
+    const avg=count?Math.round(list.reduce((s,u)=>s+(Number(u.progress)||0),0)/count):0;
+    const countEl=card.querySelector('.unit-count'); if(countEl) countEl.textContent=count+' 個單元';
+    const fill=card.querySelector('.progress-fill'); if(fill) fill.style.width=avg+'%';
+    const footVal=card.querySelector('.progress-foot span:last-child'); if(footVal) footVal.textContent=avg+'%';
+    // 標題與副標：有資料時顯示第一個單元的名稱，沒有資料時保持年級總覽標題
+    const titleEl=card.querySelector('h3'); const descEl=card.querySelector('p');
+    if(count && titleEl && descEl){
+      titleEl.textContent=list[0].title;
+      descEl.textContent=list[0].description||'';
+    }
+  });
+}
+function renderAll(){ renderSchedule(); renderUnits(); renderResources(); renderProgress(); }
 
 const weekdayNames=['','星期一','星期二','星期三','星期四','星期五'];
 const colorClass={blue:'', orange:'orange', green:'green'};
@@ -416,6 +434,7 @@ function renderUnits(){
     }
     grid.appendChild(card);
   });
+  renderProgress();
 }
 document.querySelectorAll('[data-grade]').forEach(b=>b.addEventListener('click',()=>{activeGrade=b.dataset.grade;document.querySelectorAll('[data-grade]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-selected',x===b?'true':'false')});renderUnits()}));
 
