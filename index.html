@@ -85,6 +85,27 @@ body.is-teacher .teacher-only-block{display:block}
 @media(max-width:560px){.timer-controls .timer-btn{flex:1}.timer-btn.primary{min-width:0}}
 
 
+
+/* 仰臥捲腹測驗 */
+.crunch-status{display:none;max-width:680px;margin:0 auto 14px;text-align:left}
+.crunch-status.show{display:block}
+.crunch-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.crunch-stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.crunch-stat small{display:block;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px}
+.crunch-stat strong{font-size:26px;line-height:1}
+.crunch-stat.fail strong{color:#c2413a}
+.crunch-phase-big{font-size:52px;font-weight:900;text-align:center;line-height:1.1;margin:6px 0 4px}
+.crunch-phase-big.up{color:#147b57}
+.crunch-phase-big.down{color:#276fc2}
+.crunch-phase-big.done{color:#c2413a}
+.crunch-hint{text-align:center;font-size:12px;color:var(--muted);margin-bottom:12px}
+.crunch-fail-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.crunch-fail-btn{height:44px;padding:0 18px;border-radius:12px;border:1px solid #e5b4b0;background:#fdecea;color:#a33a34;font-weight:800;font-size:14px;cursor:pointer}
+.crunch-fail-btn.undo{border-color:var(--line);background:var(--surface);color:var(--text)}
+.crunch-manual{text-align:left;font-size:12px;line-height:1.8;color:var(--text)}
+.crunch-manual ol{margin:6px 0 0;padding-left:18px}
+.crunch-manual li{margin-bottom:4px}
+
 /* 線上測驗 */
 .quiz-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .quiz-tab{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:13px;cursor:pointer}
@@ -206,8 +227,8 @@ body.is-teacher .teacher-only-block{display:block}
     </section>
 
     <section class="view" id="view-timer" aria-labelledby="timerTitle">
-      <div class="page-head"><div><div class="eyebrow">課堂工具</div><h1 id="timerTitle">課堂體能計時器</h1><p>倒數計時、碼錶、間歇訓練三合一。上課投影用，大字體＋提示音。</p></div><div class="head-actions"><button class="btn btn-secondary" id="timerFullscreenBtn" type="button">⛶ 全螢幕投影</button><label class="timer-sound" style="margin:0"><input type="checkbox" id="timerSoundToggle" checked> 提示音</label></div></div>
-      <div class="timer-tabs" role="tablist" aria-label="計時器模式"><button class="timer-tab active" data-timer-mode="countdown" type="button">倒數計時</button><button class="timer-tab" data-timer-mode="stopwatch" type="button">碼錶</button><button class="timer-tab" data-timer-mode="interval" type="button">間歇訓練</button></div>
+      <div class="page-head"><div><div class="eyebrow">課堂工具</div><h1 id="timerTitle">課堂體能計時器</h1><p>倒數計時、碼錶、間歇訓練、仰臥捲腹四合一。上課投影用，大字體＋提示音。</p></div><div class="head-actions"><button class="btn btn-secondary" id="timerFullscreenBtn" type="button">⛶ 全螢幕投影</button><label class="timer-sound" style="margin:0"><input type="checkbox" id="timerSoundToggle" checked> 提示音</label></div></div>
+      <div class="timer-tabs" role="tablist" aria-label="計時器模式"><button class="timer-tab active" data-timer-mode="countdown" type="button">倒數計時</button><button class="timer-tab" data-timer-mode="stopwatch" type="button">碼錶</button><button class="timer-tab" data-timer-mode="interval" type="button">間歇訓練</button><button class="timer-tab" data-timer-mode="crunch" type="button">仰臥捲腹測驗</button></div>
       <section class="panel timer-panel" id="timerPanel" aria-live="polite">
         <div class="timer-phase" id="timerPhase">準備開始</div>
         <div class="timer-display" id="timerDisplay">01:00<small>.00</small></div>
@@ -218,6 +239,20 @@ body.is-teacher .teacher-only-block{display:block}
           <button class="timer-btn primary" id="timerStartBtn" type="button">▶ 開始</button>
           <button class="timer-btn" id="timerLapBtn" type="button">＋ 計圈 / 紀錄</button>
           <button class="timer-btn danger" id="timerResetBtn" type="button">↺ 重置</button>
+        </div>
+        <div id="crunchStatus" class="crunch-status">
+          <div class="crunch-grid">
+            <div class="crunch-stat"><small>已完成</small><strong><span id="crunchRepBig">0</span> 次</strong><div style="font-size:11px;color:var(--muted)">目標 75 次</div></div>
+            <div class="crunch-stat"><small>節拍</small><strong><span id="crunchBeepCount">0</span> 聲</strong><div style="font-size:11px;color:var(--muted)">40 bpm · 1.5 秒一聲</div></div>
+            <div class="crunch-stat fail"><small>失敗累計</small><strong><span id="crunchFailCount">0</span> / 2 次</strong><div style="font-size:11px;color:var(--muted)">滿 2 次即結束</div></div>
+          </div>
+          <div id="crunchPhaseBig" class="crunch-phase-big">預備動作</div>
+          <div class="crunch-hint" id="crunchHint">按「開始」後，每 1.5 秒「登」一聲。第一聲 = 捲起（肩胛離地、指尖觸到第二條線），第二聲 = 躺回。2 聲 = 1 次。</div>
+          <div class="crunch-fail-row">
+            <button class="crunch-fail-btn" id="crunchFailBtn" type="button">✕ 記一次失敗</button>
+            <button class="crunch-fail-btn undo" id="crunchUndoFailBtn" type="button">↩ 取消一次失敗</button>
+            <button class="timer-btn" id="crunchTestBeepBtn" type="button" style="height:44px">♪ 試播「登」一聲</button>
+          </div>
         </div>
         <div id="timerCountdownSettings" class="timer-settings">
           <h3>倒數預設 — 點一下就設定好</h3>
@@ -249,8 +284,25 @@ body.is-teacher .teacher-only-block{display:block}
           <div class="lap-list" id="timerLapList"><div class="timer-note" style="text-align:center;padding:8px">還沒有紀錄，按「計圈 / 紀錄」開始記</div></div>
           <div style="text-align:center;margin-top:10px"><button class="preset-btn" id="timerClearLapsBtn" type="button">清除紀錄</button></div>
         </div>
+        <div id="timerCrunchSettings" class="timer-settings" style="display:none">
+          <h3>仰臥捲腹測驗 — 依教育部體適能檢測手冊（40 bpm）</h3>
+          <div class="crunch-manual">
+            <strong>器材：</strong>瑜珈墊、顏色明顯且粗硬質的膠帶（貼兩條標示線，間隔 11.4 公分）、檢測專用音訊（本計時器內建 40 bpm「登」聲）、記錄板。<br>
+            <strong>預備動作：</strong>仰躺、雙手手肘完全伸直、指尖放在第一條標示線內緣、雙膝彎曲、雙腳平貼地面。協助者站前方、保持適當距離，不要壓腳。<br>
+            <strong>測驗流程：</strong>
+            <ol>
+              <li><strong>第一聲「登」：</strong>腹部收縮、肩胛骨離地，雙手手指直向前伸，直到觸到間隔 11.4 公分第二條線內緣，維持捲腹動作等下一聲。</li>
+              <li><strong>第二聲「登」：</strong>放鬆、仰臥回復預備動作。完成完整上、下動作 = <strong>1 次</strong>。</li>
+              <li>跟著節拍一直做到 <strong>75 次</strong>，或累計 <strong>2 次失敗</strong>就結束。</li>
+            </ol>
+            <strong>失敗條件（老師按「記一次失敗」）：</strong>① 雙腳均離開地面 ② 借力（用手撐地、手推腿、用腳勾等）③ 未跟上 40 拍速度 ④ 指尖未觸到第二條線內緣。<br>
+            <strong>安全注意：</strong>測驗前先口頭詢問身體狀況（心臟、脊椎、下背痛、高血壓、懷孕等不適合者不測）、先暖身、過程中不可閉氣（捲起時吐氣、躺回時吸氣）、後腦杓在檢測中應避免撞擊地面、感到身體不適立即停止。<br>
+            <strong>小提醒：</strong>手冊音檔兩聲都是一樣的「登」，這裡為了教學方便，上、下會用大字顯示「捲起 / 躺回」，音效維持同一聲。75 次完整測驗總時間約 3 分 45 秒。
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><span class="tag">40 bpm</span><span class="tag">間隔 11.4 公分</span><span class="tag">上限 75 次</span><span class="tag">失敗 2 次結束</span></div>
+        </div>
       </section>
-      <section class="panel panel-pad"><h2 style="font-size:14px;margin:0 0 8px">上課怎麼用</h2><p class="timer-note">1. 投影前先點「全螢幕投影」，全班都看得到大字體。<br>2. 體適能測驗：仰臥起坐用「倒數計時 60 秒」；800M / 1600M 用「碼錶」，每位學生跑完按一次「計圈」。<br>3. 循環訓練：用「間歇訓練 Tabata」，運動 20 秒、休息 10 秒，自動換組不用一直看錶。<br>4. 提示音需要先點一次「開始」才會啟用（瀏覽器規定），建議上課前先按一次開始再重置測試。</p></section>
+      <section class="panel panel-pad"><h2 style="font-size:14px;margin:0 0 8px">上課怎麼用</h2><p class="timer-note">1. 投影前先點「全螢幕投影」，全班都看得到大字體。<br>2. 體適能測驗：仰臥起坐用「倒數計時 60 秒」；<strong>仰臥捲腹用「仰臥捲腹測驗」</strong>，跟著「登」聲做，2 聲 = 1 次，滿 75 次或失敗 2 次自動結束；800M / 1600M 用「碼錶」，每位學生跑完按一次「計圈」。<br>3. 循環訓練：用「間歇訓練 Tabata」，運動 20 秒、休息 10 秒，自動換組不用一直看錶。<br>4. 提示音需要先點一次「開始」才會啟用（瀏覽器規定），建議上課前先按一次「開始」再重置，或點「試播『登』一聲」測試音量。</p></section>
     </section>
 
 
@@ -258,7 +310,7 @@ body.is-teacher .teacher-only-block{display:block}
       <div class="page-head"><div><div class="eyebrow">課堂評量</div><h1 id="quizTitle">體育線上測驗</h1><p>學生不用登入，輸入姓名、班級、座號就能作答。老師登入後可匯入題庫、查看成績。</p></div><div class="head-actions"><span class="tag" id="quizCountTag">題庫 0 題</span><button class="btn btn-secondary" id="quizExportResultsBtn" type="button">匯出成績 CSV</button></div></div>
       <div class="quiz-tabs" role="tablist" aria-label="測驗分頁"><button class="quiz-tab active" data-quiz-tab="student" type="button">學生測驗</button><button class="quiz-tab teacher-only" data-quiz-tab="bank" type="button">題庫管理（教師）</button><button class="quiz-tab teacher-only" data-quiz-tab="results" type="button">學生成績（教師）</button></div>
       <div id="quizStudentPanel">
-        <section class="panel panel-pad" id="quizSetupPanel"><h2 style="font-size:15px;margin:0 0 10px">開始測驗</h2><div class="quiz-setup"><div><label for="quizStudentName">姓名 *</label><input id="quizStudentName" placeholder="例如：王小明"></div><div><label for="quizStudentClass">班級 *</label><select id="quizStudentClass"><option value="">請選擇</option><option>高一甲</option><option>高一乙</option><option>高一丙</option><option>高二甲</option><option>高二乙</option><option>高二丙</option><option>高三甲</option><option>高三乙</option><option>其他</option></select></div><div><label for="quizStudentSeat">座號 *</label><input id="quizStudentSeat" type="number" min="1" max="60" placeholder="例如：12"></div><div><label for="quizCountSelect">題數</label><select id="quizCountSelect"><option value="5">5 題</option><option value="10" selected>10 題</option><option value="20">20 題</option><option value="all">全部題目</option></select></div></div><div class="quiz-setup" style="grid-template-columns:1fr 1fr"><div><label for="quizOrderSelect">出題順序</label><select id="quizOrderSelect"><option value="random">隨機出題</option><option value="seq">依題庫順序</option></select></div><div><label for="quizCategorySelect">測驗範圍</label><select id="quizCategorySelect"><option value="all">全部類別</option></select></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" id="quizStartBtn" type="button">開始作答 →</button><span class="timer-note" style="align-self:center">作答完按繳交，立刻看分數與解析。成績會存到老師後台。</span></div><p id="quizSetupHint" class="timer-note" style="margin:10px 0 0"></p></section>
+        <section class="panel panel-pad" id="quizSetupPanel"><h2 style="font-size:15px;margin:0 0 10px">開始測驗</h2><div class="quiz-setup"><div><label for="quizStudentName">姓名 *</label><input id="quizStudentName" placeholder="例如：王小明"></div><div><label for="quizStudentClass">班級 *</label><input id="quizStudentClass" placeholder="例如：高一甲 / 101 / 2年3班" autocomplete="off"></div><div><label for="quizStudentSeat">座號 *</label><input id="quizStudentSeat" type="number" min="1" max="60" placeholder="例如：12"></div><div><label for="quizCountSelect">題數</label><select id="quizCountSelect"><option value="10" selected>10 題</option><option value="20">20 題</option><option value="25">25 題</option><option value="50">50 題</option></select></div></div><div class="quiz-setup" style="grid-template-columns:1fr 1fr"><div><label for="quizOrderSelect">出題順序</label><select id="quizOrderSelect"><option value="random">隨機出題</option><option value="seq">依題庫順序</option></select></div><div><label for="quizCategorySelect">測驗範圍</label><select id="quizCategorySelect"><option value="all">全部類別</option></select></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" id="quizStartBtn" type="button">開始作答 →</button><span class="timer-note" style="align-self:center">作答完按繳交，立刻看分數與解析。成績會存到老師後台。</span></div><p id="quizSetupHint" class="timer-note" style="margin:10px 0 0"></p></section>
         <section class="panel panel-pad" id="quizDoingPanel" style="display:none"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><strong id="quizDoingTitle">第 1 題</strong><span class="tag" id="quizDoingCategory" style="margin-left:8px"></span></div><div style="font-size:12px;color:var(--muted)"><span id="quizDoingStudent"></span> ・ <span id="quizDoingAnswered"></span></div></div><div class="quiz-q-progress"><div class="quiz-q-progress-fill" id="quizProgressFill"></div></div><div class="quiz-question-card"><h3 id="quizQuestionText" style="font-size:17px;line-height:1.6;margin:0 0 14px"></h3><div id="quizOptions"></div></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-secondary" id="quizPrevBtn" type="button">← 上一題</button><button class="btn btn-secondary" id="quizNextBtn" type="button">下一題 →</button><button class="btn btn-primary" id="quizSubmitBtn" type="button" style="margin-left:auto">繳交測驗</button></div></section>
         <section class="panel panel-pad" id="quizResultPanel" style="display:none"><h2 style="font-size:15px;margin:0 0 10px">測驗結果</h2><div class="quiz-result-big" id="quizResultScore">0<small> 分</small></div><p id="quizResultMeta" style="text-align:center;color:var(--muted);font-size:13px"></p><div id="quizResultReview" style="margin-top:14px"></div><div style="display:flex;gap:10px;justify-content:center;margin-top:14px"><button class="btn btn-secondary" id="quizRetryBtn" type="button">再考一次</button><button class="btn btn-primary" id="quizBackSetupBtn" type="button">回測驗首頁</button></div></section>
       </div>
@@ -748,6 +800,14 @@ let intervalWorkMs=20000, intervalRestMs=10000, intervalRounds=8;
 let intervalCurrentRound=1, intervalIsWork=true, intervalRemainingMs=20000;
 let timerLaps=[];
 let timerAudioCtx=null;
+// 仰臥捲腹測驗 40bpm
+let crunchElapsedMs=0;
+let crunchBeepCount=0;
+let crunchRepCount=0;
+let crunchFailCount=0;
+let crunchPhase='ready'; // ready | up | down | done
+let crunchNextBeepMs=1500;
+let crunchFinishedReason='';
 function timerFormat(ms){
   const total=Math.max(0, Math.ceil(ms/10));
   const cs=String(total%100).padStart(2,'0');
@@ -777,6 +837,44 @@ function timerRender(){
   const meta=document.getElementById('timerMeta');
   const startBtn=document.getElementById('timerStartBtn');
   if(startBtn){ startBtn.textContent=timerRunning?'⏸ 暫停':'▶ 開始'; startBtn.classList.toggle('running', timerRunning); }
+  // 仰臥捲腹模式：顯示大字捲起/躺回、次數、失敗
+  const crunchStatus=document.getElementById('crunchStatus');
+  const lapBtn=document.getElementById('timerLapBtn');
+  if(timerMode==='crunch'){
+    if(crunchStatus) crunchStatus.classList.add('show');
+    if(lapBtn){ lapBtn.textContent='✕ 記一次失敗'; lapBtn.style.display=''; }
+    const f=timerFormat(crunchElapsedMs);
+    display.innerHTML=f.text+'<small>.'+f.cs+'</small>';
+    display.classList.remove('warning');
+    let phaseText='預備動作', phaseClass='', subText='仰臥捲腹測驗 ・ 40 bpm ・ 每 1.5 秒一聲', metaText='';
+    if(crunchPhase==='ready') { phaseText=timerRunning?'準備 — 下一聲捲起':'預備動作'; }
+    else if(crunchPhase==='up') { phaseText='▲ 捲起！'; phaseClass='work'; }
+    else if(crunchPhase==='down') { phaseText='▼ 躺回'; phaseClass='rest'; }
+    else if(crunchPhase==='done') { phaseText='測驗結束'; phaseClass='done'; }
+    if(phase){ phase.textContent=phaseText; phase.className='timer-phase '+phaseClass; }
+    if(sub) sub.textContent=subText;
+    if(fill) fill.style.width=Math.min(100, crunchRepCount/75*100)+'%';
+    if(meta) meta.textContent='已完成 '+crunchRepCount+' 次 / 目標 75 次 ・ 失敗 '+crunchFailCount+' / 2 次'+(crunchFinishedReason? ' ・ '+crunchFinishedReason:'')+(timerRunning?' ・ 進行中':(crunchPhase==='done'?' ・ 已結束':' ・ 還沒開始'));
+    const repBig=document.getElementById('crunchRepBig'); if(repBig) repBig.textContent=crunchRepCount;
+    const beepEl=document.getElementById('crunchBeepCount'); if(beepEl) beepEl.textContent=crunchBeepCount;
+    const failEl=document.getElementById('crunchFailCount'); if(failEl) failEl.textContent=crunchFailCount;
+    const phaseBig=document.getElementById('crunchPhaseBig'); if(phaseBig){ 
+      if(crunchPhase==='up'){ phaseBig.textContent='▲ 捲 起'; phaseBig.className='crunch-phase-big up'; }
+      else if(crunchPhase==='down'){ phaseBig.textContent='▼ 躺 回'; phaseBig.className='crunch-phase-big down'; }
+      else if(crunchPhase==='done'){ phaseBig.textContent='測驗結束'; phaseBig.className='crunch-phase-big done'; }
+      else { phaseBig.textContent='預備動作'; phaseBig.className='crunch-phase-big'; }
+    }
+    const hint=document.getElementById('crunchHint'); if(hint){
+      if(crunchPhase==='done') hint.textContent='已結束：共 '+crunchRepCount+' 次，失敗 '+crunchFailCount+' 次。請抄下成績後按「重置」換下一位。';
+      else if(crunchPhase==='up') hint.textContent='現在是捲起：肩胛離地、指尖觸到第二條線，維持到下一聲。';
+      else if(crunchPhase==='down') hint.textContent='現在是躺回：放鬆、回到預備動作，下一聲再捲起。';
+      else hint.textContent='按「開始」後，每 1.5 秒「登」一聲。第一聲 = 捲起（肩胛離地、指尖觸到第二條線），第二聲 = 躺回。2 聲 = 1 次。';
+    }
+    return;
+  } else {
+    if(crunchStatus) crunchStatus.classList.remove('show');
+    if(lapBtn && lapBtn.textContent.includes('失敗')){ lapBtn.textContent='＋ 計圈 / 紀錄'; }
+  }
   let ms=0, progress=0, phaseText='準備開始', phaseClass='', subText='', metaText='';
   if(timerMode==='countdown'){
     ms=countdownRemainingMs; progress=countdownTotalMs? (1-ms/countdownTotalMs)*100:0;
@@ -808,7 +906,41 @@ function timerRender(){
   if(fill) fill.style.width=Math.max(0,Math.min(100,progress))+'%';
   if(meta) meta.textContent=metaText;
 }
+function crunchFinish(reason){
+  crunchPhase='done'; crunchFinishedReason=reason; timerStop();
+  timerBeep(880,0.7,'sine');
+  setTimeout(()=>timerBeep(880,0.7,'sine'), 300);
+  toast(reason+' — 共 '+crunchRepCount+' 次');
+  timerRender();
+}
+function crunchAddFail(){
+  if(timerMode!=='crunch') return;
+  if(crunchPhase==='done') return;
+  crunchFailCount++;
+  timerBeep(220,0.25,'square');
+  if(crunchFailCount>=2){ crunchFinish('累計 2 次失敗，測驗結束'); }
+  else { toast('已記 1 次失敗（累計 '+crunchFailCount+' / 2 次）'); timerRender(); }
+}
+function crunchUndoFail(){
+  if(crunchFailCount>0){ crunchFailCount--; toast('已取消 1 次失敗，剩下 '+crunchFailCount+' 次'); timerRender(); }
+}
 function timerTick(){
+  if(timerMode==='crunch'){
+    crunchElapsedMs+=100;
+    crunchNextBeepMs-=100;
+    if(crunchNextBeepMs<=0){
+      crunchNextBeepMs=1500;
+      crunchBeepCount++;
+      if(crunchPhase==='ready' || crunchPhase==='down'){
+        crunchPhase='up'; timerBeep(880,0.18,'sine');
+      } else if(crunchPhase==='up'){
+        crunchPhase='down'; timerBeep(880,0.18,'sine');
+        crunchRepCount++;
+        if(crunchRepCount>=75){ crunchFinish('完成 75 次，測驗結束'); return; }
+      }
+    }
+    timerRender(); return;
+  }
   if(timerMode==='countdown'){
     countdownRemainingMs-=100;
     if(countdownRemainingMs<=0){ countdownRemainingMs=0; timerStop(); timerBeep(880,0.7,'sine'); timerBeep(880,0.7,'sine'); toast('倒數結束！'); }
@@ -830,6 +962,7 @@ function timerTick(){
 }
 function timerStart(){
   if(timerRunning) return;
+  if(timerMode==='crunch' && crunchPhase==='done'){ crunchElapsedMs=0; crunchBeepCount=0; crunchRepCount=0; crunchFailCount=0; crunchPhase='ready'; crunchNextBeepMs=1500; crunchFinishedReason=''; }
   if(timerMode==='countdown' && countdownRemainingMs<=0) countdownRemainingMs=countdownTotalMs;
   if(timerMode==='interval' && intervalRemainingMs<=0 && intervalCurrentRound>=intervalRounds){ timerReset(); }
   timerRunning=true; timerTimerId=setInterval(timerTick,100); timerRender();
@@ -843,6 +976,7 @@ function timerReset(){
   if(timerMode==='countdown') countdownRemainingMs=countdownTotalMs;
   if(timerMode==='stopwatch') stopwatchElapsedMs=0;
   if(timerMode==='interval'){ intervalCurrentRound=1; intervalIsWork=true; intervalRemainingMs=intervalWorkMs; }
+  if(timerMode==='crunch'){ crunchElapsedMs=0; crunchBeepCount=0; crunchRepCount=0; crunchFailCount=0; crunchPhase='ready'; crunchNextBeepMs=1500; crunchFinishedReason=''; }
   timerRender();
 }
 function timerSetMode(mode){
@@ -851,6 +985,7 @@ function timerSetMode(mode){
   document.getElementById('timerCountdownSettings').style.display=mode==='countdown'?'block':'none';
   document.getElementById('timerIntervalSettings').style.display=mode==='interval'?'block':'none';
   document.getElementById('timerStopwatchSettings').style.display=mode==='stopwatch'?'block':'none';
+  const cs=document.getElementById('timerCrunchSettings'); if(cs) cs.style.display=mode==='crunch'?'block':'none';
   timerReset(); timerRender();
 }
 function timerRenderLaps(){
@@ -868,6 +1003,7 @@ document.querySelectorAll('[data-timer-mode]').forEach(b=>b.addEventListener('cl
 document.getElementById('timerStartBtn')?.addEventListener('click', ()=>{ if(timerRunning) timerPause(); else timerStart(); });
 document.getElementById('timerResetBtn')?.addEventListener('click', ()=>{ timerReset(); toast('計時器已重置。'); });
 document.getElementById('timerLapBtn')?.addEventListener('click', ()=>{
+  if(timerMode==='crunch'){ crunchAddFail(); return; }
   let ms=0, label='';
   if(timerMode==='stopwatch'){ ms=stopwatchElapsedMs; label='碼錶'; }
   else if(timerMode==='countdown'){ ms=countdownTotalMs-countdownRemainingMs; label='倒數已過'; }
@@ -905,6 +1041,9 @@ document.getElementById('timerFullscreenBtn')?.addEventListener('click', ()=>{
   if(document.fullscreenElement) document.exitFullscreen();
   else if(el.requestFullscreen) el.requestFullscreen();
 });
+document.getElementById('crunchFailBtn')?.addEventListener('click', ()=>crunchAddFail());
+document.getElementById('crunchUndoFailBtn')?.addEventListener('click', ()=>crunchUndoFail());
+document.getElementById('crunchTestBeepBtn')?.addEventListener('click', ()=>{ timerBeep(880,0.18,'sine'); toast('這就是測驗的「登」聲，音量可以在裝置上調整。'); });
 timerRender(); timerRenderLaps();
 
 
@@ -1064,7 +1203,7 @@ document.getElementById('quizStartBtn')?.addEventListener('click', ()=>{
   const cls=document.getElementById('quizStudentClass').value;
   const seat=document.getElementById('quizStudentSeat').value.trim();
   if(!name) return toast('請先輸入姓名。');
-  if(!cls) return toast('請先選擇班級。');
+  if(!cls) return toast('請先輸入班級。');
   if(!seat) return toast('請先輸入座號。');
   if(!quizQuestions.length) return toast('題庫目前是空的，請老師先匯入題庫。');
   const cat=document.getElementById('quizCategorySelect').value;
