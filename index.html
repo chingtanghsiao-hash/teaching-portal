@@ -297,7 +297,7 @@ body.is-teacher .teacher-only-block{display:block}
             </ol>
             <strong>失敗條件（老師按「記一次失敗」）：</strong>① 雙腳均離開地面 ② 借力（用手撐地、手推腿、用腳勾等）③ 未跟上 40 拍速度 ④ 指尖未觸到第二條線內緣。<br>
             <strong>安全注意：</strong>測驗前先口頭詢問身體狀況（心臟、脊椎、下背痛、高血壓、懷孕等不適合者不測）、先暖身、過程中不可閉氣（捲起時吐氣、躺回時吸氣）、後腦杓在檢測中應避免撞擊地面、感到身體不適立即停止。<br>
-            <strong>小提醒：</strong>手冊音檔兩聲都是一樣的「登」，這裡為了教學方便，上、下會用大字顯示「捲起 / 躺回」，音效維持同一聲。75 次完整測驗總時間約 3 分 45 秒。
+            <strong>小提醒：</strong>手冊音檔兩聲都是一樣的「登」，這裡為了教學方便，上、下會用大字顯示「捲起 / 躺回」，音效維持同一聲。捲腹的「登」已調到最大聲（比其他計時器提示音更大）。75 次完整測驗總時間約 3 分 45 秒。
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><span class="tag">40 bpm</span><span class="tag">間隔 11.4 公分</span><span class="tag">上限 75 次</span><span class="tag">失敗 2 次結束</span></div>
         </div>
@@ -829,6 +829,29 @@ function timerBeep(freq, dur, type){
     o.start(); o.stop(timerAudioCtx.currentTime+(dur||0.15)+0.02);
   }catch(e){}
 }
+// 捲腹專用最大聲「登」：音量拉到最大 + 方波，教室後面也聽得到
+function crunchBeep(){
+  if(!document.getElementById('timerSoundToggle')?.checked) return;
+  try{
+    if(!timerAudioCtx) timerAudioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(timerAudioCtx.state==='suspended') timerAudioCtx.resume();
+    const o=timerAudioCtx.createOscillator(), g=timerAudioCtx.createGain();
+    o.type='square'; o.frequency.value=880;
+    g.gain.setValueAtTime(0.0001, timerAudioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(1.0, timerAudioCtx.currentTime+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, timerAudioCtx.currentTime+0.28);
+    o.connect(g); g.connect(timerAudioCtx.destination);
+    o.start(); o.stop(timerAudioCtx.currentTime+0.30);
+    // 再疊一層 sine 讓聲音更圓潤、不刺耳
+    const o2=timerAudioCtx.createOscillator(), g2=timerAudioCtx.createGain();
+    o2.type='sine'; o2.frequency.value=880;
+    g2.gain.setValueAtTime(0.0001, timerAudioCtx.currentTime);
+    g2.gain.exponentialRampToValueAtTime(0.8, timerAudioCtx.currentTime+0.01);
+    g2.gain.exponentialRampToValueAtTime(0.0001, timerAudioCtx.currentTime+0.28);
+    o2.connect(g2); g2.connect(timerAudioCtx.destination);
+    o2.start(); o2.stop(timerAudioCtx.currentTime+0.30);
+  }catch(e){}
+}
 function timerRender(){
   const display=document.getElementById('timerDisplay'); if(!display) return;
   const phase=document.getElementById('timerPhase');
@@ -908,8 +931,8 @@ function timerRender(){
 }
 function crunchFinish(reason){
   crunchPhase='done'; crunchFinishedReason=reason; timerStop();
-  timerBeep(880,0.7,'sine');
-  setTimeout(()=>timerBeep(880,0.7,'sine'), 300);
+  crunchBeep(); crunchBeep();
+  setTimeout(()=>{ crunchBeep(); }, 350);
   toast(reason+' — 共 '+crunchRepCount+' 次');
   timerRender();
 }
@@ -932,9 +955,9 @@ function timerTick(){
       crunchNextBeepMs=1500;
       crunchBeepCount++;
       if(crunchPhase==='ready' || crunchPhase==='down'){
-        crunchPhase='up'; timerBeep(880,0.18,'sine');
+        crunchPhase='up'; crunchBeep();
       } else if(crunchPhase==='up'){
-        crunchPhase='down'; timerBeep(880,0.18,'sine');
+        crunchPhase='down'; crunchBeep();
         crunchRepCount++;
         if(crunchRepCount>=75){ crunchFinish('完成 75 次，測驗結束'); return; }
       }
@@ -1043,7 +1066,7 @@ document.getElementById('timerFullscreenBtn')?.addEventListener('click', ()=>{
 });
 document.getElementById('crunchFailBtn')?.addEventListener('click', ()=>crunchAddFail());
 document.getElementById('crunchUndoFailBtn')?.addEventListener('click', ()=>crunchUndoFail());
-document.getElementById('crunchTestBeepBtn')?.addEventListener('click', ()=>{ timerBeep(880,0.18,'sine'); toast('這就是測驗的「登」聲，音量可以在裝置上調整。'); });
+document.getElementById('crunchTestBeepBtn')?.addEventListener('click', ()=>{ crunchBeep(); toast('這就是測驗最大聲的「登」，如果還不夠大，請把電腦 / 投影機音量也開到最大，或接外接喇叭。'); });
 timerRender(); timerRenderLaps();
 
 
