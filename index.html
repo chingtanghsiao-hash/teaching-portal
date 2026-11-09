@@ -48,7 +48,17 @@ body:not(.is-teacher) #termEditBtn{display:none}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 
 /* Resource link management and add-link dialog */
-.btn-link{background:#059669;border-color:#059669;color:#fff}.btn-link:hover{background:#047857;border-color:#047857}.topbar-right{gap:10px}.clock-card{min-width:116px;padding:5px 11px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);text-align:center;line-height:1.15}.clock-card strong{display:block;color:#059669;font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:.4px}.clock-card small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.theme-btn{font-size:20px}.moon-glyph{width:17px;height:17px;display:block;position:relative}.moon-glyph:before{content:"";position:absolute;inset:1px;border-radius:50%;background:currentColor}.moon-glyph:after{content:"";position:absolute;width:13px;height:13px;right:-2px;top:-2px;border-radius:50%;background:var(--surface)}.resource-library{padding:20px}.resource-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:17px}.resource-search{height:42px;flex:1;max-width:520px;display:flex;align-items:center;gap:9px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--muted)}.resource-search input{width:100%;border:0;outline:0;background:transparent;color:var(--text);font-size:13px}.resource-toolbar .select-control{height:42px;min-width:180px}.resource-list-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 1px 13px;border-bottom:1px solid var(--line);margin-bottom:14px}.resource-list-heading strong{font-size:13px;margin-right:10px}.resource-list-heading span{font-size:11px;color:var(--muted)}.resource-list-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.saved-resource{position:relative;min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:16px;transition:border-color .15s,transform .15s}.saved-resource:hover{border-color:#b6d5ca;transform:translateY(-1px)}.saved-resource-top{display:flex;align-items:flex-start;gap:10px}.resource-type-icon{width:38px;height:38px;flex:0 0 auto;display:grid;place-items:center;border-radius:11px;background:var(--green-bg);color:var(--green);font-size:14px;font-weight:750}.saved-resource-title{min-width:0;flex:1}.saved-resource-title h3{font-size:14px;line-height:1.35;margin:2px 0 4px;overflow-wrap:anywhere}.saved-resource-title span{font-size:10px;color:var(--muted)}.resource-category{font-size:10px;font-weight:650;color:var(--blue);background:var(--blue-2);border-radius:999px;padding:4px 8px;white-space:nowrap}.resource-description{font-size:12px;color:var(--muted);margin:13px 0 8px;min-height:19px}.resource-url{font-size:11px;color:var(--muted);background:var(--surface-2);border-radius:8px;padding:7px 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0}.saved-resource-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:13px}.resource-tags{display:flex;flex-wrap:wrap;gap:5px}.resource-tag{padding:3px 7px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:10px}.sample-label{position:absolute;top:15px;right:15px;color:var(--muted);font-size:9px}.link-modal{width:min(540px,100%);max-height:calc(100vh - 40px);overflow-y:auto}.modal-title-wrap{display:flex;align-items:center;gap:10px}.modal-title-wrap h2{font-size:18px}.link-title-icon{width:34px;height:34px;border-radius:10px;background:var(--green-bg);color:var(--green);display:grid;place-items:center;font-size:18px;font-weight:700}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field input::placeholder,.field textarea::placeholder{color:#9aa5b4}.link-modal .field input,.link-modal .field select{min-height:44px}.link-modal .modal-actions{margin-top:25px;padding-top:4px}.link-modal .btn-link{min-width:118px}.empty-note{grid-column:1/-1;background:var(--surface-2);text-align:center;padding:28px 18px}
+.btn-link{background:#059669;border-color:#059669;color:#fff}.btn-link:hover{background:#047857;border-color:#047857}.topbar-right{gap:10px}.clock-card{min-width:116px;padding:5px 11px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);text-align:center;line-height:1.15}.clock-card strong{display:block;color:#059669;font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:.4px}.clock-card small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.theme-btn{font-size:20px}.moon-glyph{width:17px;height:17px;display:block;position:relative}.moon-glyph:before{content:"";position:absolute;inset:1px;border-radius:50%;background:currentColor}.moon-glyph:after{content:"";position:absolute;width:13px;height:13px;right:-2px;top:-2px;border-radius:50%;background:var(--surface)}.resource-library{padding:20px}.resource-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:17px}.resource-search{height:42px;flex:1;max-width:520px;display:flex;align-items:center;gap:9px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--muted)}.resource-search input{width:100%;border:0;outline:0;background:transparent;color:var(--text);font-size:13px}.resource-toolbar .select-control{height:42px;min-width:180px}.resource-list-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 1px 13px;border-bottom:1px solid var(--line);margin-bottom:14px}.resource-list-heading strong{font-size:13px;margin-right:10px}.resource-list-heading span{font-size:11px;color:var(--muted)}.resource-list-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.saved-resource{position:relative;min-width:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:16px;transition:border-color .15s,transform .15s}
+.resource-sort-hint{font-size:12px;color:var(--muted);margin:10px 0 0;display:none}
+.resource-sort-hint.show{display:block}
+.resource-sort-bar{display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.resource-drag-handle{cursor:grab;font-size:12px;color:var(--muted);padding:3px 7px;border:1px dashed var(--line);border-radius:6px;user-select:none}
+.resource-drag-handle:active{cursor:grabbing}
+.resource-sort-btns{display:flex;gap:4px;margin-left:auto}
+.resource-sort-btn{height:28px;min-width:30px;padding:0 6px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:700;cursor:pointer}
+.resource-sort-btn:disabled{opacity:.35;cursor:not-allowed}
+.saved-resource.dragging{opacity:.5}
+.saved-resource.drag-over{outline:2px solid var(--blue);border-color:var(--blue)}.saved-resource:hover{border-color:#b6d5ca;transform:translateY(-1px)}.saved-resource-top{display:flex;align-items:flex-start;gap:10px}.resource-type-icon{width:38px;height:38px;flex:0 0 auto;display:grid;place-items:center;border-radius:11px;background:var(--green-bg);color:var(--green);font-size:14px;font-weight:750}.saved-resource-title{min-width:0;flex:1}.saved-resource-title h3{font-size:14px;line-height:1.35;margin:2px 0 4px;overflow-wrap:anywhere}.saved-resource-title span{font-size:10px;color:var(--muted)}.resource-category{font-size:10px;font-weight:650;color:var(--blue);background:var(--blue-2);border-radius:999px;padding:4px 8px;white-space:nowrap}.resource-description{font-size:12px;color:var(--muted);margin:13px 0 8px;min-height:19px}.resource-url{font-size:11px;color:var(--muted);background:var(--surface-2);border-radius:8px;padding:7px 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0}.saved-resource-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:13px}.resource-tags{display:flex;flex-wrap:wrap;gap:5px}.resource-tag{padding:3px 7px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:10px}.sample-label{position:absolute;top:15px;right:15px;color:var(--muted);font-size:9px}.link-modal{width:min(540px,100%);max-height:calc(100vh - 40px);overflow-y:auto}.modal-title-wrap{display:flex;align-items:center;gap:10px}.modal-title-wrap h2{font-size:18px}.link-title-icon{width:34px;height:34px;border-radius:10px;background:var(--green-bg);color:var(--green);display:grid;place-items:center;font-size:18px;font-weight:700}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field input::placeholder,.field textarea::placeholder{color:#9aa5b4}.link-modal .field input,.link-modal .field select{min-height:44px}.link-modal .modal-actions{margin-top:25px;padding-top:4px}.link-modal .btn-link{min-width:118px}.empty-note{grid-column:1/-1;background:var(--surface-2);text-align:center;padding:28px 18px}
 :root[data-theme="light"]{color-scheme:light;--bg:#f5f7fa;--surface:#fff;--surface-2:#f8fafc;--line:#e5eaf0;--text:#263445;--muted:#718096;--blue:#276fc2;--blue-2:#eaf3ff;--blue-3:#d8e9fc;--navy:#193b5d;--orange:#c86b2c;--orange-bg:#fff2e7;--green:#147b57;--green-bg:#e7f5ee;--red:#b74b45;--shadow:0 8px 28px rgba(28,52,78,.05)}
 :root[data-theme="dark"]{color-scheme:dark;--bg:#171b20;--surface:#20262d;--surface-2:#252d36;--line:#38424d;--text:#edf2f7;--muted:#a5b0bd;--blue:#79b3f0;--blue-2:#26394c;--blue-3:#385672;--navy:#dbeafe;--orange:#f0a46c;--orange-bg:#3c3026;--green:#83c79c;--green-bg:#263a30;--red:#ee8a80;--shadow:0 8px 28px rgba(0,0,0,.12)}
 @media(max-width:1100px){.clock-card{display:none}.topbar{padding:0 25px}.resource-list-grid{grid-template-columns:1fr 1fr}}
@@ -254,7 +264,7 @@ body.is-teacher .teacher-only-block{display:block}
       <div class="page-head"><div><div class="eyebrow">教學工具與網站</div><h1 id="resourcesTitle">教學資源連結</h1><p>集中收藏課堂網站、教材與常用工具，新增後可依分類與標籤搜尋。</p></div><div class="head-actions"><button class="btn btn-link" data-open-link-modal>＋ 新增連結</button></div></div>
       <section class="panel resource-library" aria-label="資源連結清單"><div class="teacher-only-block" style="margin-bottom:12px"><div class="login-hint" style="margin:0">教師模式：你可以新增、編輯、刪除資源。若資料庫是空的，可點「載入示範資料」先把示範課表與單元寫入 Supabase，之後再逐筆修改。<button class="mini-btn" id="seedDemoBtn" type="button" style="margin-left:8px">載入示範資料</button></div></div>
         <div class="resource-toolbar"><label class="resource-search"><span class="search-icon" aria-hidden="true"></span><input id="resourceSearch" type="search" placeholder="搜尋資源名稱、描述或標籤" aria-label="搜尋教學資源"></label><select class="select-control" id="resourceCategoryFilter" aria-label="依分類篩選"><option value="all">全部分類</option><option>課程教材</option><option>成績與行政</option><option>體育互動教學</option><option>教學工具</option><option>其他</option></select></div>
-        <div class="resource-list-heading"><div><strong id="resourceCountLabel">2 個連結</strong><span>示範資料可編輯替換為你的教學資源</span></div><span class="panel-sub">按「開啟連結」前往網站</span></div>
+        <div class="resource-sort-hint" id="resourceSortHint">↕ 教師可直接拖曳卡片排序，或按卡片上的 ↑ ↓ 調整順序，排好會自動儲存。搜尋或篩選分類時，排序會暫停，請先清除搜尋 / 選「全部分類」再排序。</div><div class="resource-list-heading"><div><strong id="resourceCountLabel">2 個連結</strong><span>示範資料可編輯替換為你的教學資源</span></div><span class="panel-sub">按「開啟連結」前往網站</span></div>
         <div class="resource-list-grid" id="resourceList"></div>
       </section>
     </section>
@@ -503,7 +513,7 @@ async function loadFromSupabase(){
     const [s,c,r] = await Promise.all([
       supabaseClient.from('schedule_items').select('*').order('weekday',{ascending:true}).order('start_time',{ascending:true}),
       supabaseClient.from('curriculum_units').select('*').order('grade',{ascending:true}).order('sort_order',{ascending:true}),
-      supabaseClient.from('teaching_resources').select('*').order('created_at',{ascending:false})
+      supabaseClient.from('teaching_resources').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true})
     ]);
     const firstError = s.error || c.error || r.error;
     if(firstError){
@@ -522,7 +532,7 @@ async function loadFromSupabase(){
       nextCurr[g].push({id:row.id, title:row.title, description:row.description||'', lessons:row.lessons||'新單元', status:row.status||'規劃中', progress:row.progress??0});
     });
     curriculum = nextCurr;
-    resources = (r.data||[]).map(row=>({id:row.id, name:row.name, url:row.url, category:row.category||'其他', type:row.type||'外部網站', description:row.description||'', tags: Array.isArray(row.tags)?row.tags:[]}));
+    resources = (r.data||[]).map(row=>({id:row.id, name:row.name, url:row.url, category:row.category||'其他', type:row.type||'外部網站', description:row.description||'', tags: Array.isArray(row.tags)?row.tags:[], sort_order: row.sort_order??0}));
   }catch(err){
     console.warn('Supabase load failed, using fallback:', err);
   }
@@ -798,10 +808,32 @@ async function deleteUnit(u){
 }
 
 const typeShort={'Google 試算表 / 表格':'表','Google 文件':'文','Google 簡報':'簡','Google 雲端硬碟':'雲','YouTube 影片':'影','外部網站':'網','其他工具':'工具'};
+let draggedResourceIndex=null;
+async function saveResourceOrder(){
+  if(!dbConnected || !supabaseClient) return;
+  const updates=resources.map((r,idx)=>{
+    if(!r.id || typeof r.id==='number' || String(r.id).startsWith('demo-')) return Promise.resolve();
+    return supabaseClient.from('teaching_resources').update({sort_order: idx}).eq('id', r.id);
+  });
+  const results=await Promise.all(updates);
+  const err=results.find(x=>x && x.error);
+  if(err) toast('順序儲存失敗：'+err.error.message);
+  else toast('連結順序已儲存。');
+}
+async function moveResource(fromIdx, toIdx){
+  if(!requireTeacher()) return;
+  if(toIdx<0 || toIdx>=resources.length || fromIdx===toIdx) return;
+  const [moved]=resources.splice(fromIdx,1);
+  resources.splice(toIdx,0,moved);
+  renderResources();
+  await saveResourceOrder();
+}
 function renderResources(){
   const list=document.getElementById('resourceList'); if(!list) return;
   const q=document.getElementById('resourceSearch').value.trim().toLowerCase();
   const cat=document.getElementById('resourceCategoryFilter').value;
+  const canSort = !!isTeacher && !q && cat==='all';
+  const hint=document.getElementById('resourceSortHint'); if(hint) hint.classList.toggle('show', !!isTeacher);
   list.replaceChildren();
   const rows=resources.filter(r=>(cat==='all'||r.category===cat)&&[r.name,r.description,r.category,r.type,...(r.tags||[])].join(' ').toLowerCase().includes(q));
   document.getElementById('resourceCountLabel').textContent=rows.length+' 個連結';
@@ -809,8 +841,24 @@ function renderResources(){
   if(!rows.length){
     const empty=document.createElement('div'); empty.className='empty-note'; empty.textContent=resources.length?'找不到符合條件的資源，請調整搜尋或分類。':'目前還沒有資源連結，教師登入後按「新增連結」開始整理。'; list.appendChild(empty); return;
   }
-  rows.forEach(r=>{
+  rows.forEach((r, idx)=>{
     const card=document.createElement('article'); card.className='saved-resource';
+    card.draggable=canSort;
+    card.dataset.index=canSort ? resources.indexOf(r) : idx;
+    if(canSort){
+      const sortBar=document.createElement('div'); sortBar.className='resource-sort-bar';
+      const handle=document.createElement('span'); handle.className='resource-drag-handle'; handle.textContent='↕ 拖曳';
+      const orderLabel=document.createElement('span'); orderLabel.className='panel-sub'; orderLabel.textContent='第 '+(resources.indexOf(r)+1)+' 個';
+      const sortBtns=document.createElement('span'); sortBtns.className='resource-sort-btns';
+      const realIdx=resources.indexOf(r);
+      const upBtn=document.createElement('button'); upBtn.className='resource-sort-btn'; upBtn.type='button'; upBtn.textContent='↑ 上移'; upBtn.disabled=(realIdx===0); upBtn.title='往上移一個';
+      upBtn.addEventListener('click', (e)=>{ e.stopPropagation(); moveResource(realIdx, realIdx-1); });
+      const downBtn=document.createElement('button'); downBtn.className='resource-sort-btn'; downBtn.type='button'; downBtn.textContent='↓ 下移'; downBtn.disabled=(realIdx===resources.length-1); downBtn.title='往下移一個';
+      downBtn.addEventListener('click', (e)=>{ e.stopPropagation(); moveResource(realIdx, realIdx+1); });
+      sortBtns.append(upBtn, downBtn);
+      sortBar.append(handle, orderLabel, sortBtns);
+      card.appendChild(sortBar);
+    }
     const top=document.createElement('div'); top.className='saved-resource-top';
     const icon=document.createElement('div'); icon.className='resource-type-icon'; icon.textContent=typeShort[r.type]||'連';
     const details=document.createElement('div'); details.className='saved-resource-title';
@@ -831,7 +879,15 @@ function renderResources(){
       const del=document.createElement('button'); del.className='mini-btn danger'; del.type='button'; del.textContent='刪除'; del.addEventListener('click', ()=>deleteResource(r));
       actions.append(edit, del);
     }
-    footer.append(tags,actions); card.appendChild(footer); list.appendChild(card);
+    footer.append(tags,actions); card.appendChild(footer);
+    if(canSort){
+      card.addEventListener('dragstart', (e)=>{ draggedResourceIndex=resources.indexOf(r); card.classList.add('dragging'); try{ e.dataTransfer.setData('text/plain', String(draggedResourceIndex)); e.dataTransfer.effectAllowed='move'; }catch(_){} });
+      card.addEventListener('dragend', ()=>{ draggedResourceIndex=null; document.querySelectorAll('.saved-resource').forEach(c=>c.classList.remove('drag-over','dragging')); });
+      card.addEventListener('dragover', (e)=>{ e.preventDefault(); card.classList.add('drag-over'); });
+      card.addEventListener('dragleave', ()=>{ card.classList.remove('drag-over'); });
+      card.addEventListener('drop', (e)=>{ e.preventDefault(); card.classList.remove('drag-over'); const from=draggedResourceIndex!=null?draggedResourceIndex:Number(e.dataTransfer.getData('text/plain')); const to=resources.indexOf(r); if(!isNaN(from) && from!==to) moveResource(from, to); });
+    }
+    list.appendChild(card);
   });
 }
 document.getElementById('resourceSearch').addEventListener('input',renderResources);
@@ -867,6 +923,7 @@ document.getElementById('linkForm').addEventListener('submit', async (e)=>{
   const tags=document.getElementById('resourceTags').value.split(',').map(x=>x.trim()).filter(Boolean);
   const editingId=document.getElementById('editingResourceId').value;
   const payload={name:document.getElementById('resourceName').value.trim(), url:parsed.href, category:document.getElementById('resourceCategory').value, type:document.getElementById('resourceType').value, description:document.getElementById('resourceDescription').value.trim(), tags};
+  if(!editingId) payload.sort_order=resources.length;
   let error=null;
   if(editingId){ ({error} = await supabaseClient.from('teaching_resources').update(payload).eq('id', editingId)); }
   else { ({error} = await supabaseClient.from('teaching_resources').insert(payload)); }
@@ -895,7 +952,7 @@ document.getElementById('seedDemoBtn')?.addEventListener('click', async ()=>{
     Object.entries(fallbackCurriculum).forEach(([g,list])=>{ list.forEach(u=>{ currPayload.push({grade:Number(g), title:u.title, description:u.description, lessons:u.lessons, status:u.status, progress:u.progress, sort_order:order++}); }); });
     const {error:e2} = await supabaseClient.from('curriculum_units').insert(currPayload);
     if(e2) throw e2;
-    const {error:e3} = await supabaseClient.from('teaching_resources').insert(fallbackResources.map(r=>({name:r.name, url:r.url, category:r.category, type:r.type, description:r.description, tags:r.tags})));
+    const {error:e3} = await supabaseClient.from('teaching_resources').insert(fallbackResources.map((r,idx)=>({name:r.name, url:r.url, category:r.category, type:r.type, description:r.description, tags:r.tags, sort_order:idx})));
     if(e3) throw e3;
     toast('示範資料已寫入 Supabase。');
     await loadFromSupabase();
