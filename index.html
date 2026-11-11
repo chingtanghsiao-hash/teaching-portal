@@ -414,7 +414,7 @@ body.is-teacher .teacher-only-block{display:block}
           <div class="section-grid">
             <div class="field"><label for="counYear">學年度 <span class="coun-required">*</span></label><select id="counYear"><option>112</option><option>113</option><option selected>114</option><option>115</option><option>116</option></select></div>
             <div class="field"><label for="counSemester">學期 <span class="coun-required">*</span></label><select id="counSemester"><option>上學期</option><option>下學期</option></select></div>
-            <div class="field"><label for="counClassName">班級 <span class="coun-required">*</span></label><select id="counClassName"><option>資處一甲</option><option>資處一乙</option><option>資處二甲</option><option>資處二乙</option><option>資處三甲</option><option>資處三乙</option><option value="other">其他</option></select><input id="counClassOther" placeholder="若選其他，請輸入班級" style="margin-top:8px;display:none"></div>
+            <div class="field"><label for="counClassName">班級 <span class="coun-required">*</span></label><input id="counClassName" placeholder="請自行輸入班級，例如：資處二甲" autocomplete="off"><small class="panel-sub">可自行輸入，不限資處科，不預設班級</small></div>
             <div class="field"><label for="counSeat">座號 <span class="coun-required">*</span></label><input id="counSeat" placeholder="例如：12" inputmode="numeric"></div>
             <div class="field"><label for="counName">姓名 <span class="coun-required">*</span></label><input id="counName" placeholder="請輸入姓名"></div>
             <div class="field"><label for="counStudentId">學號</label><input id="counStudentId" placeholder="例如：112001"></div>
@@ -1782,8 +1782,7 @@ function counShowPanel(name){
   if(name==='list'){ counOnAuthChange(); }
 }
 function counGetForm(){
-  const clsSel=counEl('counClassName').value;
-  const cls = clsSel==='other' ? counEl('counClassOther').value.trim() : clsSel;
+  const cls = counEl('counClassName').value.trim();
   return {
     year: counEl('counYear').value,
     semester: counEl('counSemester').value,
@@ -1817,9 +1816,7 @@ function counGetForm(){
 function counSetForm(d){
   counEl('counYear').value = d.year || '114';
   counEl('counSemester').value = d.semester || '上學期';
-  const sel = counEl('counClassName');
-  if([...sel.options].some(o=>o.value===d.class_name)){ sel.value = d.class_name; counEl('counClassOther').style.display='none'; }
-  else { sel.value='other'; counEl('counClassOther').style.display='block'; counEl('counClassOther').value = d.class_name || ''; }
+  counEl('counClassName').value = d.class_name || '';
   counEl('counSeat').value = d.seat || '';
   counEl('counName').value = d.name || '';
   counEl('counStudentId').value = d.student_id || '';
@@ -1848,7 +1845,7 @@ async function counSaveRecord(){
   if(!supabaseClient){ toast('尚未連接 Supabase，請先確認網路與設定。'); return; }
   if(!dbConnected && !isTeacher){ /* 學生新增仍可嘗試，錯誤時會提示建表 */ }
   const d = counGetForm();
-  if(!d.class_name){ toast('請填寫班級：若選「其他」，請在下方輸入班級。'); return; }
+  if(!d.class_name){ toast('請自行輸入班級，例如：資處二甲。'); return; }
   if(!d.seat || !/^\d{1,3}$/.test(d.seat)){ toast('座號請填 1 到 3 位數字。'); return; }
   if(!d.name){ toast('請填寫姓名。'); return; }
   if(!d.event_desc || !d.reflection){ toast('請填寫：事件經過、學生自述與反省。'); return; }
@@ -1926,7 +1923,7 @@ function counClearForm(){
   document.querySelectorAll('#view-counseling input[type=checkbox]').forEach(e=>{ e.checked=false; });
   const today=counLocalDateStr();
   counEl('counFillDate').value=today; counEl('counEventDate').value=today; counEl('counCounselDate').value=today;
-  counEl('counYear').value='114'; counEl('counSemester').value='上學期'; counEl('counClassName').value='資處一甲'; counEl('counClassOther').style.display='none';
+  counEl('counYear').value='114'; counEl('counSemester').value='上學期'; counEl('counClassName').value='';
   counEl('counSaveMsg').textContent='';
   counApplyMode('student');
 }
@@ -1940,7 +1937,6 @@ function counLoadExample(){
 counBuildChecks('counEventTypes', counEventOptions, 'counEventType');
 counBuildChecks('counCounselWays', counCounselOptions, 'counCounselWay');
 (function(){ const t=counLocalDateStr(); if(counEl('counFillDate')) counEl('counFillDate').value=t; if(counEl('counEventDate')) counEl('counEventDate').value=t; if(counEl('counCounselDate')) counEl('counCounselDate').value=t; })();
-counEl('counClassName')?.addEventListener('change', e=>{ counEl('counClassOther').style.display = e.target.value==='other' ? 'block' : 'none'; });
 counEl('counTabFormBtn')?.addEventListener('click', ()=>counShowPanel('form'));
 counEl('counTabListBtn')?.addEventListener('click', ()=>counShowPanel('list'));
 counEl('counModeStudentBtn')?.addEventListener('click', ()=>counSetMode('student'));
