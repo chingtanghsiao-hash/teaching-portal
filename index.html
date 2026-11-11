@@ -212,7 +212,7 @@ body.is-teacher .teacher-only-block{display:block}
     <section class="view active" id="view-home" aria-labelledby="homeTitle">
       <div class="page-head"><div><div class="eyebrow">個人教學管理</div><h1 id="homeTitle">教學工作台</h1><p>慶堂老師，歡迎回來。快速掌握課表、教學進度與常用資源。</p></div><div class="head-actions"><input class="term-input-sync" id="termInputHome" aria-label="目前學期（教師登入後可手動輸入）" placeholder="例如：115 學年度・第 1 學期" value="115 學年度・第 1 學期"><button class="btn btn-link" data-open-link-modal>＋ 新增連結</button></div></div>
       <div class="stats">
-        <article class="stat-card"><div><div class="stat-label">本週授課節數</div><div class="stat-value"><span id="weeklyLessonsStat">18</span> <span style="font-size:13px;font-weight:550">節</span></div><div class="stat-foot">跨高一至高三</div></div><div class="stat-icon">▦</div></article>
+        <article class="stat-card"><div><div class="stat-label">本週授課節數</div><div class="stat-value"><span id="weeklyLessonsStat">18</span> <span style="font-size:13px;font-weight:550">節</span></div><div class="stat-foot">跨高一上至高三下</div></div><div class="stat-icon">▦</div></article>
         <article class="stat-card"><div><div class="stat-label">教學資源連結</div><div class="stat-value"><span id="resourceCountStat">2</span> <span style="font-size:13px;font-weight:550">個</span></div><div class="stat-foot">常用工具與教學網站</div></div><div class="stat-icon orange">↗</div></article>
         <article class="stat-card"><div><div class="stat-label">進行中教學單元</div><div class="stat-value"><span id="totalUnitsStat">12</span> <span style="font-size:13px;font-weight:550">個</span></div><div class="stat-foot">本學期教學規劃</div></div><div class="stat-icon green">✓</div></article>
       </div>
@@ -227,19 +227,22 @@ body.is-teacher .teacher-only-block{display:block}
         </section>
         <section class="panel panel-pad" aria-labelledby="quickTitle"><div class="panel-head"><div><h2 id="quickTitle">快速操作</h2><div class="panel-sub">常用功能，一鍵前往</div></div></div>
           <div class="quick-list">
-            <button class="quick-action" data-open-modal><span class="quick-icon">＋</span><span><strong>新增教學單元</strong><small>建立年級課程內容</small></span><span class="arrow">›</span></button>
+            <button class="quick-action" data-open-modal><span class="quick-icon">＋</span><span><strong>新增教學單元</strong><small>建立學期課程內容</small></span><span class="arrow">›</span></button>
             <button class="quick-action" data-open-link-modal><span class="quick-icon warm">↗</span><span><strong>新增教學資源連結</strong><small>收藏常用工具或網站</small></span><span class="arrow">›</span></button>
-            <button class="quick-action" data-go="curriculum"><span class="quick-icon">▤</span><span><strong>查看年級進度</strong><small>瀏覽高一至高三規劃</small></span><span class="arrow">›</span></button>
+            <button class="quick-action" data-go="curriculum"><span class="quick-icon">▤</span><span><strong>查看年級進度</strong><small>瀏覽高一上至高三下規劃</small></span><span class="arrow">›</span></button>
             <button class="quick-action" data-go="timer"><span class="quick-icon" style="background:#eaf3ff;color:#276fc2">◷</span><span><strong>課堂體能計時器</strong><small>倒數・碼錶・間歇訓練，上課投影用</small></span><span class="arrow">›</span></button>
             <button class="quick-action" data-go="quiz"><span class="quick-icon" style="background:#eaf5ee;color:#397e5c">✎</span><span><strong>體育線上測驗</strong><small>Excel 匯入題庫・學生作答・成績統計</small></span><span class="arrow">›</span></button>
           </div>
         </section>
       </div>
-      <section class="panel progress-panel" aria-labelledby="progressTitle"><div class="panel-head"><div><h2 id="progressTitle">年級教學進度</h2><div class="panel-sub">各年級課程規劃概覽</div></div><button class="btn btn-quiet btn-small" data-go="curriculum">管理教學內容　→</button></div>
+      <section class="panel progress-panel" aria-labelledby="progressTitle"><div class="panel-head"><div><h2 id="progressTitle">年級教學進度</h2><div class="panel-sub">各年級與學期課程規劃概覽</div></div><button class="btn btn-quiet btn-small" data-go="curriculum">管理教學內容　→</button></div>
         <div class="progress-grid" id="progressGrid">
-          <article class="progress-card" data-progress-grade="1"><div class="progress-card-top"><span class="grade-pill">高一</span><span class="unit-count">4 個單元</span></div><h3>體適能與運動基礎</h3><p>暖身、心肺耐力與基礎肌力</p><div class="progress-track"><div class="progress-fill" style="width:64%"></div></div><div class="progress-foot"><span>教學進度</span><span>64%</span></div></article>
-          <article class="progress-card" data-progress-grade="2"><div class="progress-card-top"><span class="grade-pill">高二</span><span class="unit-count">5 個單元</span></div><h3>球類技能與合作</h3><p>籃球、排球與團隊合作</p><div class="progress-track"><div class="progress-fill" style="width:48%"></div></div><div class="progress-foot"><span>教學進度</span><span>48%</span></div></article>
-          <article class="progress-card" data-progress-grade="3"><div class="progress-card-top"><span class="grade-pill">高三</span><span class="unit-count">3 個單元</span></div><h3>自主運動與健康促進</h3><p>個人運動計畫與健康習慣</p><div class="progress-track"><div class="progress-fill" style="width:76%"></div></div><div class="progress-foot"><span>教學進度</span><span>76%</span></div></article>
+          <article class="progress-card" data-progress-grade="11"><div class="progress-card-top"><span class="grade-pill">高一上</span><span class="unit-count">2 個單元</span></div><h3>體適能與運動基礎</h3><p>暖身、心肺耐力與基礎肌力</p><div class="progress-track"><div class="progress-fill" style="width:64%"></div></div><div class="progress-foot"><span>教學進度</span><span>64%</span></div></article>
+          <article class="progress-card" data-progress-grade="12"><div class="progress-card-top"><span class="grade-pill">高一下</span><span class="unit-count">2 個單元</span></div><h3>肌力與球類入門</h3><p>徒手肌力、伸展與球感</p><div class="progress-track"><div class="progress-fill" style="width:56%"></div></div><div class="progress-foot"><span>教學進度</span><span>56%</span></div></article>
+          <article class="progress-card" data-progress-grade="21"><div class="progress-card-top"><span class="grade-pill">高二上</span><span class="unit-count">2 個單元</span></div><h3>球類技能與合作</h3><p>籃球、排球與團隊合作</p><div class="progress-track"><div class="progress-fill" style="width:48%"></div></div><div class="progress-foot"><span>教學進度</span><span>48%</span></div></article>
+          <article class="progress-card" data-progress-grade="22"><div class="progress-card-top"><span class="grade-pill">高二下</span><span class="unit-count">2 個單元</span></div><h3>體能循環與運動精神</h3><p>循環訓練、溝通與尊重</p><div class="progress-track"><div class="progress-fill" style="width:54%"></div></div><div class="progress-foot"><span>教學進度</span><span>54%</span></div></article>
+          <article class="progress-card" data-progress-grade="31"><div class="progress-card-top"><span class="grade-pill">高三上</span><span class="unit-count">2 個單元</span></div><h3>自主運動與健康促進</h3><p>個人運動計畫與健康習慣</p><div class="progress-track"><div class="progress-fill" style="width:76%"></div></div><div class="progress-foot"><span>教學進度</span><span>76%</span></div></article>
+          <article class="progress-card" data-progress-grade="32"><div class="progress-card-top"><span class="grade-pill">高三下</span><span class="unit-count">1 個單元</span></div><h3>個人技能複習</h3><p>整合運動技能並自我檢核</p><div class="progress-track"><div class="progress-fill" style="width:10%"></div></div><div class="progress-foot"><span>教學進度</span><span>10%</span></div></article>
         </div>
       </section>
     </section>
@@ -255,8 +258,8 @@ body.is-teacher .teacher-only-block{display:block}
       <p class="panel-sub" style="margin:13px 2px">＊示範畫面僅列出部分課程；正式版可加入節次、場地、班級及學期設定。</p>
     </section>
 
-    <section class="view" id="view-curriculum" aria-labelledby="curriculumTitle"><div class="page-head"><div><div class="eyebrow">課程規劃</div><h1 id="curriculumTitle">教學內容</h1><p>依年級整理單元、教學重點與課堂資源。</p></div><div class="head-actions"><button class="btn btn-primary" data-open-modal>＋ 新增單元</button></div></div>
-      <div class="curriculum-tabs" role="tablist" aria-label="選擇年級"><button class="tab-btn active" role="tab" aria-selected="true" data-grade="1">高一</button><button class="tab-btn" role="tab" aria-selected="false" data-grade="2">高二</button><button class="tab-btn" role="tab" aria-selected="false" data-grade="3">高三</button></div><div class="unit-sort-hint" id="curriculumSortHint">↕ 教師可直接拖曳卡片排序，或按卡片上的 ↑ ↓ 調整順序，排好會自動儲存。</div>
+    <section class="view" id="view-curriculum" aria-labelledby="curriculumTitle"><div class="page-head"><div><div class="eyebrow">課程規劃</div><h1 id="curriculumTitle">教學內容</h1><p>依年級與學期整理單元、教學重點與課堂資源。</p></div><div class="head-actions"><button class="btn btn-primary" data-open-modal>＋ 新增單元</button></div></div>
+      <div class="curriculum-tabs" role="tablist" aria-label="選擇年級與學期"><button class="tab-btn active" role="tab" aria-selected="true" data-grade="11">高一上</button><button class="tab-btn" role="tab" aria-selected="false" data-grade="12">高一下</button><button class="tab-btn" role="tab" aria-selected="false" data-grade="21">高二上</button><button class="tab-btn" role="tab" aria-selected="false" data-grade="22">高二下</button><button class="tab-btn" role="tab" aria-selected="false" data-grade="31">高三上</button><button class="tab-btn" role="tab" aria-selected="false" data-grade="32">高三下</button></div><div class="unit-sort-hint" id="curriculumSortHint">↕ 教師可直接拖曳卡片排序，或按卡片上的 ↑ ↓ 調整順序，排好會自動儲存。</div>
       <div class="unit-grid" id="unitGrid"></div>
     </section>
 
@@ -376,7 +379,7 @@ body.is-teacher .teacher-only-block{display:block}
 
 <div class="modal-backdrop" id="scheduleBackdrop" role="presentation"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="scheduleModalTitle"><div class="modal-head"><h2 id="scheduleModalTitle">新增課程</h2><button class="modal-close" id="closeScheduleModal" aria-label="關閉視窗">×</button></div><form id="scheduleForm"><input type="hidden" id="editingScheduleId"><div class="field-row"><div class="field"><label for="schWeekday">星期</label><select id="schWeekday"><option value="1">星期一</option><option value="2">星期二</option><option value="3">星期三</option><option value="4">星期四</option><option value="5">星期五</option></select></div><div class="field"><label for="schClass">班級</label><input id="schClass" required placeholder="例如：高一甲"></div></div><div class="field"><label for="schTitle">課程名稱</label><input id="schTitle" required placeholder="例如：體適能與暖身"></div><div class="field-row"><div class="field"><label for="schStart">開始時間</label><input id="schStart" type="time" value="08:10" required></div><div class="field"><label for="schEnd">結束時間</label><input id="schEnd" type="time" value="09:00" required></div></div><div class="field-row"><div class="field"><label for="schCategory">類別</label><input id="schCategory" placeholder="例如：體能訓練"></div><div class="field"><label for="schPeriod">節次備註</label><input id="schPeriod" placeholder="例如：第 2 節"></div></div><div class="field"><label for="schGrade">年級標籤</label><select id="schGrade"><option>高一</option><option>高二</option><option>高三</option></select></div><div class="modal-actions"><button type="button" class="btn btn-secondary" id="cancelSchedule">取消</button><button type="submit" class="btn btn-primary">儲存課程</button></div></form></section></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<div class="modal-backdrop" id="modalBackdrop" role="presentation"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle">新增教學單元</h2><button class="modal-close" id="closeModal" aria-label="關閉視窗">×</button></div><form id="unitForm"><input type="hidden" id="editingUnitId"><div class="field"><label for="unitName">單元名稱</label><input id="unitName" name="unitName" required placeholder="例如：心肺耐力訓練"></div><div class="field"><label for="unitGrade">適用年級</label><select id="unitGrade" name="unitGrade"><option value="1">高一</option><option value="2">高二</option><option value="3">高三</option></select></div><div class="field-row"><div class="field"><label for="unitLessons">堂數（例如：4 堂）</label><input id="unitLessons" placeholder="4 堂"></div><div class="field"><label for="unitStatus">狀態</label><select id="unitStatus"><option>規劃中</option><option>進行中</option><option>已完成</option></select></div></div><div class="field"><label for="unitProgress">教學進度（0-100）</label><input id="unitProgress" type="number" min="0" max="100" value="0"></div><div class="field"><label for="unitNote">教學重點（選填）</label><textarea id="unitNote" name="unitNote" placeholder="簡述課程目標或教學備註"></textarea></div><div class="modal-actions"><button type="button" class="btn btn-secondary" id="cancelModal">取消</button><button type="submit" class="btn btn-primary" id="unitSubmitBtn">儲存單元</button></div></form></section></div>
+<div class="modal-backdrop" id="modalBackdrop" role="presentation"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle">新增教學單元</h2><button class="modal-close" id="closeModal" aria-label="關閉視窗">×</button></div><form id="unitForm"><input type="hidden" id="editingUnitId"><div class="field"><label for="unitName">單元名稱</label><input id="unitName" name="unitName" required placeholder="例如：心肺耐力訓練"></div><div class="field"><label for="unitGrade">適用年級</label><select id="unitGrade" name="unitGrade"><option value="11">高一上</option><option value="12">高一下</option><option value="21">高二上</option><option value="22">高二下</option><option value="31">高三上</option><option value="32">高三下</option></select></div><div class="field-row"><div class="field"><label for="unitLessons">堂數（例如：4 堂）</label><input id="unitLessons" placeholder="4 堂"></div><div class="field"><label for="unitStatus">狀態</label><select id="unitStatus"><option>規劃中</option><option>進行中</option><option>已完成</option></select></div></div><div class="field"><label for="unitProgress">教學進度（0-100）</label><input id="unitProgress" type="number" min="0" max="100" value="0"></div><div class="field"><label for="unitNote">教學重點（選填）</label><textarea id="unitNote" name="unitNote" placeholder="簡述課程目標或教學備註"></textarea></div><div class="modal-actions"><button type="button" class="btn btn-secondary" id="cancelModal">取消</button><button type="submit" class="btn btn-primary" id="unitSubmitBtn">儲存單元</button></div></form></section></div>
 
 <div class="modal-backdrop" id="linkModalBackdrop" role="presentation"><section class="modal link-modal" role="dialog" aria-modal="true" aria-labelledby="linkModalTitle"><div class="modal-head"><div class="modal-title-wrap"><span class="link-title-icon" aria-hidden="true">↗</span><h2 id="linkModalTitle">新增教學資源連結</h2></div><button class="modal-close" id="closeLinkModal" aria-label="關閉視窗">×</button></div><form id="linkForm"><input type="hidden" id="editingResourceId"><div class="field"><label for="resourceName">工具或網站名稱</label><input id="resourceName" name="resourceName" required placeholder="例如：114學年度高一體育教學資源"></div><div class="field"><label for="resourceUrl">URL 網址</label><input id="resourceUrl" name="resourceUrl" type="url" required placeholder="https://docs.google.com/spreadsheets/..."></div><div class="field-row"><div class="field"><label for="resourceCategory">所屬分類</label><select id="resourceCategory" name="resourceCategory"><option>課程教材</option><option>成績與行政</option><option>體育互動教學</option><option>教學工具</option><option>其他</option></select></div><div class="field"><label for="resourceType">圖標種類</label><select id="resourceType" name="resourceType"><option>Google 試算表 / 表格</option><option>Google 文件</option><option>Google 簡報</option><option>Google 雲端硬碟</option><option>YouTube 影片</option><option>外部網站</option><option>其他工具</option></select></div></div><div class="field"><label for="resourceDescription">簡短描述（選填）</label><input id="resourceDescription" name="resourceDescription" placeholder="例如：用於登記各班體適能紀錄"></div><div class="field"><label for="resourceTags">標籤（用半角逗號分隔）</label><input id="resourceTags" name="resourceTags" placeholder="體育, 教學, 高一"></div><div class="modal-actions"><button type="button" class="btn btn-secondary" id="cancelLinkModal">取消</button><button type="submit" class="btn btn-link" id="linkSubmitBtn">儲存變更</button></div></form></section></div>
 
@@ -409,18 +412,21 @@ const fallbackSchedule = [
   {id:'demo-11', weekday:5, start_time:'10:10', end_time:'11:00', class_name:'高三甲', title:'健康促進計畫', category:'健康促進', period_label:'第 4 節', grade:'高三', color:'green'},
   {id:'demo-12', weekday:5, start_time:'14:10', end_time:'15:00', class_name:'高二丙', title:'球類綜合練習', category:'球類技能', period_label:'第 7 節', grade:'高二', color:'orange'},
 ];
+const GRADE_ORDER=['11','12','21','22','31','32'];
+const GRADE_LABELS={'11':'高一上','12':'高一下','21':'高二上','22':'高二下','31':'高三上','32':'高三下'};
+function normalizeGrade(g){ const s=String(g); if(s==='1') return '11'; if(s==='2') return '21'; if(s==='3') return '31'; return GRADE_LABELS[s]?s:'11'; }
 const fallbackCurriculum = {
-  1:[{title:'體適能與暖身',description:'建立運動安全概念，認識暖身與體適能基礎。',lessons:'4 堂',status:'進行中',progress:64},
-     {title:'心肺耐力活動',description:'透過循環活動認識運動強度與自我監測。',lessons:'3 堂',status:'規劃中',progress:25},
-     {title:'基礎肌力與柔軟度',description:'練習徒手肌力、伸展與正確動作。',lessons:'4 堂',status:'規劃中',progress:12},
+  '11':[{title:'體適能與暖身',description:'建立運動安全概念，認識暖身與體適能基礎。',lessons:'4 堂',status:'進行中',progress:64},
+     {title:'心肺耐力活動',description:'透過循環活動認識運動強度與自我監測。',lessons:'3 堂',status:'規劃中',progress:25}],
+  '12':[{title:'基礎肌力與柔軟度',description:'練習徒手肌力、伸展與正確動作。',lessons:'4 堂',status:'規劃中',progress:12},
      {title:'球類入門',description:'熟悉球感、基本傳接與活動規則。',lessons:'5 堂',status:'已完成',progress:100}],
-  2:[{title:'籃球基本動作',description:'運球、傳球、投籃與小組合作練習。',lessons:'5 堂',status:'進行中',progress:48},
-     {title:'排球低手傳球',description:'從基本手型到移動接球與團隊溝通。',lessons:'4 堂',status:'規劃中',progress:20},
-     {title:'體能循環訓練',description:'依個人能力調整訓練內容與強度。',lessons:'3 堂',status:'規劃中',progress:8},
+  '21':[{title:'籃球基本動作',description:'運球、傳球、投籃與小組合作練習。',lessons:'5 堂',status:'進行中',progress:48},
+     {title:'排球低手傳球',description:'從基本手型到移動接球與團隊溝通。',lessons:'4 堂',status:'規劃中',progress:20}],
+  '22':[{title:'體能循環訓練',description:'依個人能力調整訓練內容與強度。',lessons:'3 堂',status:'規劃中',progress:8},
      {title:'團隊合作與運動精神',description:'透過球類活動練習溝通、合作與尊重。',lessons:'3 堂',status:'已完成',progress:100}],
-  3:[{title:'自主運動計畫',description:'依個人需求訂定可執行的運動目標。',lessons:'4 堂',status:'進行中',progress:76},
-     {title:'健康促進與運動習慣',description:'理解日常活動量、恢復與健康生活。',lessons:'3 堂',status:'規劃中',progress:35},
-     {title:'個人技能複習',description:'整合運動技能並進行自我檢核。',lessons:'3 堂',status:'規劃中',progress:10}]
+  '31':[{title:'自主運動計畫',description:'依個人需求訂定可執行的運動目標。',lessons:'4 堂',status:'進行中',progress:76},
+     {title:'健康促進與運動習慣',description:'理解日常活動量、恢復與健康生活。',lessons:'3 堂',status:'規劃中',progress:35}],
+  '32':[{title:'個人技能複習',description:'整合運動技能並進行自我檢核。',lessons:'3 堂',status:'規劃中',progress:10}]
 };
 const fallbackResources = [
   {id:1,name:'高一體適能教學資源',url:'https://docs.google.com/document/',category:'課程教材',type:'Google 文件',description:'示範連結：整理體適能教學重點與課堂教材。',tags:['教學','體適能','高一']},
@@ -429,7 +435,7 @@ const fallbackResources = [
 let scheduleItems = [...fallbackSchedule];
 let curriculum = JSON.parse(JSON.stringify(fallbackCurriculum));
 let resources = [...fallbackResources];
-let activeGrade = '1';
+let activeGrade = '11';
 
 const viewNames={home:'首頁',schedule:'學期課表',curriculum:'教學內容',resources:'教學資源連結',timer:'體能計時器',quiz:'線上測驗'};
 function showView(name){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));document.querySelectorAll('.nav-link').forEach(a=>a.classList.toggle('active',a.dataset.view===name));document.getElementById('crumbTitle').textContent=viewNames[name]||'首頁';document.getElementById('sidebar').classList.remove('open');document.getElementById('scrim').classList.remove('show');document.getElementById('menuBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});}
@@ -525,9 +531,9 @@ async function loadFromSupabase(){
     }
     dbConnected = true; dbMissingTables = false;
     scheduleItems = (s.data||[]).map(row=>({id:row.id, weekday:row.weekday, start_time:row.start_time, end_time:row.end_time, class_name:row.class_name, title:row.title, category:row.category||'', period_label:row.period_label||'', grade:row.grade||'', color:row.color||'blue'}));
-    const nextCurr = {1:[],2:[],3:[]};
+    const nextCurr = {'11':[],'12':[],'21':[],'22':[],'31':[],'32':[]};
     (c.data||[]).forEach(row=>{
-      const g = String(row.grade);
+      const g = normalizeGrade(row.grade);
       if(!nextCurr[g]) nextCurr[g]=[];
       nextCurr[g].push({id:row.id, title:row.title, description:row.description||'', lessons:row.lessons||'新單元', status:row.status||'規劃中', progress:row.progress??0});
     });
@@ -541,7 +547,7 @@ async function loadFromSupabase(){
 }
 function renderProgress(){
   const grid=document.getElementById('progressGrid'); if(!grid) return;
-  [1,2,3].forEach(g=>{
+  GRADE_ORDER.forEach(g=>{
     const card=grid.querySelector('[data-progress-grade="'+g+'"]'); if(!card) return;
     const list=curriculum[String(g)]||[];
     const count=list.length;
@@ -704,7 +710,7 @@ function renderUnits(){
   grid.replaceChildren();
   const hint=document.getElementById('curriculumSortHint'); if(hint) hint.classList.toggle('show', !!isTeacher);
   const list = curriculum[activeGrade]||[];
-  const total = (curriculum[1]?.length||0)+(curriculum[2]?.length||0)+(curriculum[3]?.length||0);
+  const total = GRADE_ORDER.reduce((s,g)=>s+(curriculum[g]?.length||0),0);
   const totalEl=document.getElementById('totalUnitsStat'); if(totalEl) totalEl.textContent=total;
   if(!list.length){
     const empty=document.createElement('div'); empty.className='empty-note'; empty.style.gridColumn='1/-1'; empty.textContent='此年級還沒有單元，教師登入後可點「新增單元」建立。'; grid.appendChild(empty); return;
@@ -715,7 +721,7 @@ function renderUnits(){
     const card=document.createElement('article'); card.className='unit-card';
     card.draggable=!!isTeacher;
     card.dataset.index=i;
-    card.innerHTML='<div class="unit-card-top"><div class="unit-card-top-left"><span class="grade-pill">高'+activeGrade+'</span>'+(isTeacher?'<span class="unit-drag-handle" title="拖曳排序">↕ 拖曳</span>':'')+'</div><span class="tag '+tag+'">'+status+'</span></div><h3></h3><p></p><div class="unit-meta"><span></span><span>·</span><span>教學進度 '+(u.progress??0)+'%</span></div><div class="unit-actions"><span class="panel-sub">單元 '+String(i+1).padStart(2,'0')+'</span><span style="display:flex;gap:6px;flex-wrap:wrap"></span></div>';
+    card.innerHTML='<div class="unit-card-top"><div class="unit-card-top-left"><span class="grade-pill">'+(GRADE_LABELS[activeGrade]||activeGrade)+'</span>'+(isTeacher?'<span class="unit-drag-handle" title="拖曳排序">↕ 拖曳</span>':'')+'</div><span class="tag '+tag+'">'+status+'</span></div><h3></h3><p></p><div class="unit-meta"><span></span><span>·</span><span>教學進度 '+(u.progress??0)+'%</span></div><div class="unit-actions"><span class="panel-sub">單元 '+String(i+1).padStart(2,'0')+'</span><span style="display:flex;gap:6px;flex-wrap:wrap"></span></div>';
     card.querySelector('h3').textContent=u.title;
     card.querySelector('p').textContent=u.description||'';
     card.querySelector('.unit-meta span').textContent=u.lessons||'';
