@@ -68,26 +68,26 @@ h1{margin-bottom:5px}
   @page{size:A4 portrait;margin:5mm}
   html,body{background:#fff!important;padding:0!important;margin:0!important}
   .authbar,.control-panel,#teacherGate,.modal-backdrop,.print-hide{display:none!important}
-  h1{font-size:14pt;margin:0 0 1px;line-height:1.15}
-  .subtitle{margin-bottom:3px;font-size:9px}
-  .blackboard{width:56%;margin:3px auto 5px;padding:4px;font-size:11px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #printArea{display:flex!important;gap:8px;align-items:flex-start;justify-content:center;break-inside:avoid;page-break-inside:avoid}
-  #printRoster{display:block!important;width:96px;flex-shrink:0;border:1px solid #1e3a5f;padding:4px 4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h1{font-size:15pt;margin:0 0 2px;line-height:1.2}
+  .subtitle{margin-bottom:4px;font-size:10px}
+  .blackboard{width:54%;margin:2px auto 4px;padding:3px;font-size:11px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea{display:flex!important;gap:5px;align-items:flex-start;justify-content:center;break-inside:avoid;page-break-inside:avoid}
+  #printRoster{display:block!important;width:82px;flex-shrink:0;border:1px solid #1e3a5f;padding:4px 4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   #printRoster h3{font-size:10px;margin:0 0 4px;text-align:center;color:#1e3a5f;border-bottom:1px solid #cbd5e1;padding-bottom:3px}
-  #printRoster table{width:100%;border-collapse:collapse;font-size:9px}
-  #printRoster th,#printRoster td{border-bottom:1px solid #e2e8f0;padding:1.5px 2px;text-align:left;line-height:1.3}
+  #printRoster table{width:100%;border-collapse:collapse;font-size:10px}
+  #printRoster th,#printRoster td{border-bottom:1px solid #e2e8f0;padding:2px 2px;text-align:left;line-height:1.3}
   #printRoster th{font-size:9px;color:#64748b}
   #printRoster td:first-child{width:28px;font-weight:700;text-align:center}
-  .classroom{max-width:100%;gap:5px;overflow:visible;padding:0;justify-content:space-between;flex:1}
+  .classroom{max-width:100%;gap:4px;overflow:visible;padding:0;justify-content:space-between;flex:1}
   .col-container{gap:4px;flex:1;min-width:0}
   .col-label{font-size:10px;margin-bottom:1px}
   .seats-group{gap:4px}
-  .seat-card{width:100%;min-height:80px;padding:4px 2px;break-inside:avoid;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}
-  .seat-card.has-photo{min-height:102px}
-  .seat-photo{width:50px;height:50px;margin:3px 0 2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .seat-card{width:100%;min-height:84px;padding:3px 2px;break-inside:avoid;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}
+  .seat-card.has-photo{min-height:130px}
+  .seat-photo{width:74px;height:74px;margin:3px 0 2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .seat-no{font-size:10px}
   .student-no,.student-name{display:none!important}
-  .print-student-line{display:block!important;font-size:10px;text-align:center;word-break:break-all;line-height:1.35}
+  .print-student-line{display:block!important;font-size:11px;text-align:center;word-break:break-all;line-height:1.35}
   .fixed-badge{font-size:9px;padding:0 5px}
 }
 
@@ -99,12 +99,12 @@ h1{margin-bottom:5px}
 .cadre-cell b{display:block;color:#1e3a5f;font-size:13px;margin-bottom:2px}
 .cadre-cell span{font-size:13px;color:#334155}
 @media print{
-  #cadreSection{display:block!important;max-width:100%;margin:6px 0 0;padding:4px 6px;box-shadow:none;border:1px solid #1e3a5f;border-radius:0;break-inside:avoid;page-break-inside:avoid}
-  #cadreSection h3{font-size:10px;margin:0 0 4px;padding-left:8px}
-  #cadreGrid{grid-template-columns:repeat(6,1fr);gap:3px}
-  .cadre-cell{padding:3px 2px;border-radius:3px}
-  .cadre-cell b{font-size:9px;margin-bottom:0}
-  .cadre-cell span{font-size:9px}
+  #cadreSection{display:block!important;width:62%;max-width:62%;margin:-20px auto 0;padding:2px 5px;box-shadow:none;border:1px solid #1e3a5f;border-radius:0;break-inside:avoid;page-break-inside:avoid;text-align:left}
+  #cadreSection h3{font-size:11px;margin:0 0 3px;padding-left:8px;text-align:left}
+  #cadreGrid{grid-template-columns:repeat(4,1fr);gap:2px}
+  .cadre-cell{padding:2px 3px;border-radius:3px;line-height:1.25;white-space:nowrap;overflow:hidden}
+  .cadre-cell b{display:inline;font-size:11px;margin-bottom:0;margin-right:3px}
+  .cadre-cell span{display:inline;font-size:11px}
 }
 </style>
 </head>
