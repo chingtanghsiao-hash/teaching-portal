@@ -25,7 +25,36 @@ input:disabled,select:disabled,textarea:disabled{background:#f1f5f9;color:#64748
 .btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.btn{padding:12px 18px;border-radius:10px;border:0;cursor:pointer;font-size:15px;font-weight:700}.btn-primary{background:#1e3a5f;color:#fff}.btn-green{background:#0f766e;color:#fff}.btn-light{background:#e2e8f0}.btn-red{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
 table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e2e8f0;padding:9px;text-align:left;vertical-align:top}th{background:#f8fafc}.small{font-size:13px;color:#64748b}.notice{background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:13px}
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;align-items:center;justify-content:center;padding:16px}.modal-backdrop.open{display:flex}.modal{background:#fff;border-radius:14px;padding:20px;width:100%;max-width:420px}.modal h2{margin:0 0 10px}.field{margin-bottom:12px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-@media print{.top,.authbar,.tabs,.mode,.btnrow,.no-print{display:none!important}body{background:#fff}.wrap{max-width:100%}#tab-list{display:none!important}}
+#formalPrint{display:none}
+.formal-doc{font-family:"標楷體","Microsoft JhengHei",serif;color:#1f2937;line-height:1.65;box-sizing:border-box;width:100%;max-width:100%;border:2px solid #1e3a5f;padding:14px 14px 12px;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.formal-doc *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.formal-doc .formal-top{text-align:center;border-bottom:3px double #1e3a5f;padding-bottom:8px;margin-bottom:12px;break-inside:avoid;page-break-inside:avoid}
+.formal-doc .formal-dept{font-size:12pt;letter-spacing:6px;margin:0;color:#1e3a5f;font-weight:700}
+.formal-doc h1{font-size:24pt;letter-spacing:10px;margin:4px 0 4px;color:#111}
+.formal-doc .formal-meta{font-size:10.5pt;letter-spacing:1px;color:#334155}
+.formal-doc .formal-table{width:100%;max-width:100%;border-collapse:collapse;border-spacing:0;margin:0 0 10px;border:1.5px solid #1e3a5f;break-inside:avoid;page-break-inside:avoid}
+.formal-doc .formal-table th,.formal-doc .formal-table td{border:1px solid #94a3b8;padding:7px 10px;text-align:left;font-size:11pt;vertical-align:top}
+.formal-doc .formal-table th{background:#eef2f7;color:#1e3a5f;width:15%;font-weight:700;text-align:center;vertical-align:middle}
+.formal-doc .formal-table tr{break-inside:avoid;page-break-inside:avoid}
+.formal-doc .formal-section h2{font-size:13pt;margin:16px 0 10px;padding:7px 12px;background:#1e3a5f;color:#fff;letter-spacing:1px;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}
+.formal-doc .formal-field{break-inside:avoid;page-break-inside:avoid;margin:0 0 10px}
+.formal-doc .formal-label{font-weight:700;margin:0 0 5px;font-size:11pt;color:#1e3a5f;border-left:4px solid #1e3a5f;padding-left:8px;break-after:avoid;page-break-after:avoid}
+.formal-doc .formal-box{border:1px solid #94a3b8;min-height:64px;padding:9px 10px;font-size:11pt;white-space:pre-wrap;word-break:break-word;background:#fff;line-height:1.8}
+.formal-doc .formal-box.tall{min-height:84px}
+.formal-doc .formal-checks{font-size:11pt;line-height:2.1;border:1px solid #94a3b8;padding:8px 10px;background:#f8fafc}
+.formal-doc .formal-empty{color:#94a3b8}
+.formal-doc .formal-sign{display:flex;justify-content:space-between;gap:16px;margin-top:24px;break-inside:avoid;page-break-inside:avoid}
+.formal-doc .formal-sign>div{flex:1;border-top:1.5px solid #1e3a5f;padding-top:8px;text-align:center;font-size:11pt;color:#334155}
+.formal-doc .formal-footer{margin-top:18px;font-size:9.5pt;color:#64748b;text-align:center;border-top:1px solid #cbd5e1;padding-top:8px;break-inside:avoid;page-break-inside:avoid}
+@media print{
+  @page{size:A4;margin:10mm 11mm}
+  html,body{margin:0!important;padding:0!important;background:#fff!important}
+  .top,.authbar,.wrap,.modal-backdrop{display:none!important}
+  #formalPrint{display:block!important;margin:0;padding:0;width:100%}
+  .formal-doc{display:block!important;margin:0;width:100%;max-width:100%}
+  .formal-doc .formal-field,.formal-doc .formal-table,.formal-doc .formal-checks,.formal-doc .formal-box,.formal-doc .formal-sign,.formal-doc .formal-top{break-inside:avoid;page-break-inside:avoid}
+  .formal-doc .formal-section h2,.formal-doc .formal-label{break-after:avoid;page-break-after:avoid}
+}
 </style>
 </head>
 <body>
@@ -37,7 +66,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <div id="tab-form">
 <div class="mode"><strong>填寫身分：</strong><button id="btn-student" class="active" type="button">我是學生</button><button id="btn-teacher" type="button">我是導師</button><span class="badge" id="modeLabel">學生模式：只能填上半部</span><span class="small">學生填完儲存 → 導師登入後開歷史紀錄 → 載入編輯補填</span></div>
 <div class="card"><h2>一、基本資料</h2><div class="grid">
-<div><label>學年度 <span>*</span></label><select id="year"><option>112</option><option>113</option><option selected>114</option><option>115</option><option>116</option></select></div>
+<div><label>學年度 <span>*</span></label><select id="year"><option selected>115</option><option>116</option><option>117</option><option>118</option></select></div>
 <div><label>學期 <span>*</span></label><select id="semester"><option>上學期</option><option>下學期</option></select></div>
 <div><label>班級 <span>*</span></label><input id="className" placeholder="請輸入班級" autocomplete="off" value=""><div class="small" style="margin-top:4px">請自行輸入，不預設班級</div></div>
 <div><label>座號 <span>*</span></label><input id="seat" placeholder="例如：12" inputmode="numeric"></div>
@@ -48,7 +77,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 </div></div>
 
 <div class="card"><h2>二、事件紀錄（學生填寫）</h2>
-<div class="grid"><div><label>發生日期</label><input id="eventDate" type="date"></div><div><label>發生時間</label><input id="eventTime" type="time"></div><div><label>發生地點</label><select id="place"><option>教室</option><option>走廊</option><option>操場</option><option>實習工場 / 電腦教室</option><option>校外</option><option>其他</option></select></div><div><label>填表人</label><select id="filler"><option>學生本人</option><option>導師代填</option></select></div></div>
+<div class="grid"><div><label>發生日期</label><input id="eventDate" type="date"></div><div><label>發生時間</label><input id="eventTime" type="time"></div><div><label>發生地點</label><input id="place" placeholder="請輸入發生地點" autocomplete="off" value=""></div><div><label>填表人</label><select id="filler"><option>學生本人</option><option>導師代填</option></select></div></div>
 <h3>事件類別（可複選）</h3><div class="checks" id="eventTypes"></div>
 <h3>事件經過描述 <span style="color:#dc2626">*</span></h3><textarea id="eventDesc" placeholder="請具體寫出人、事、時、地"></textarea>
 <h3>學生自述與反省 <span style="color:#dc2626">*</span></h3><div class="hint">引導思考：1. 發生了什麼事？ 2. 為什麼會這樣做？ 3. 造成什麼影響？ 4. 下次會怎麼做？</div><textarea id="reflection" placeholder="請用自己的話寫反省"></textarea></div>
@@ -61,7 +90,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <div class="grid" style="margin-top:12px"><div><label>約定事項</label><input id="agreement" class="teacher-field" placeholder="例如：一週後再談一次"></div><div><label>追蹤日期</label><input id="followDate" type="date" class="teacher-field"></div><div><label>處理結果</label><select id="result" class="teacher-field"><option>口頭告誡</option><option>書面反省</option><option>勞動服務</option><option>通知家長</option><option>記警告</option><option>記小過</option><option>持續觀察</option><option>已改善結案</option></select></div><div><label>是否需持續追蹤</label><select id="needFollow" class="teacher-field"><option>否</option><option>是</option></select></div><div><label>家長聯繫與回應</label><input id="parentReply" class="teacher-field" placeholder="家長說法、配合事項"></div><div><label>導師簽名</label><input id="teacherSign" class="teacher-field" placeholder="請輸入導師姓名"></div></div></div>
 
 <div class="card"><h2>四、完成與保存</h2><div class="notice">資料會存到 Supabase，不同電腦都能看到。請勿輸入身分證、密碼等敏感個資。學生只能新增，無法修改已儲存的紀錄；要改請找導師。填完可按「列印 / 存成 PDF」保存紙本。</div>
-<div class="btnrow"><button class="btn btn-primary" id="saveBtn" type="button">✓ 儲存到 Supabase</button><button class="btn btn-green" type="button" onclick="window.print()">列印 / 存成 PDF</button><button class="btn btn-light" id="exampleBtn" type="button">載入範例</button><button class="btn btn-light" id="clearBtn" type="button">清空表單</button></div><div id="saveMsg" class="small" style="margin-top:10px"></div></div>
+<div class="btnrow"><button class="btn btn-primary" id="saveBtn" type="button">✓ 儲存到 Supabase</button><button class="btn btn-green" id="printBtn" type="button">列印 / 存成 PDF（正式版面）</button><button class="btn btn-light" id="exampleBtn" type="button">載入範例</button><button class="btn btn-light" id="clearBtn" type="button">清空表單</button></div><div id="saveMsg" class="small" style="margin-top:10px"></div></div>
 </div>
 
 <div id="tab-list" style="display:none"><div class="card"><h2>歷史紀錄（僅教師）</h2>
@@ -70,6 +99,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 </div></div>
 </div>
 
+<div id="formalPrint" aria-hidden="true"></div>
 <div class="modal-backdrop" id="loginBackdrop"><div class="modal"><h2>教師登入</h2><p class="small">請用在 Supabase 建立的教師信箱與密碼登入。學生不用登入。</p><div class="field"><label for="loginEmail">教師 Email</label><input id="loginEmail" type="email" placeholder="你的教師登入信箱"></div><div class="field"><label for="loginPassword">密碼</label><input id="loginPassword" type="password" placeholder="網站登入密碼"></div><p id="loginError" class="small" style="display:none;color:#b91c1c"></p><div class="modal-actions"><button class="btn btn-light" id="cancelLogin" type="button">取消</button><button class="btn btn-primary" id="loginSubmitBtn" type="button">登入</button></div></div></div>
 
 <script>
@@ -118,13 +148,13 @@ function getChecked(name){ return Array.from(document.querySelectorAll('input[na
 function setChecked(name, vals){ document.querySelectorAll('input[name="'+name+'"]').forEach(e=>{ e.checked = (vals||[]).includes(e.value); }); }
 function getForm(){
   const cls = el('className').value.trim();
-  return { year:el('year').value, semester:el('semester').value, class_name:cls, seat:el('seat').value.trim(), name:el('name').value.trim(), student_id:el('studentId').value.trim(), fill_date:el('fillDate').value||null, teacher_name:el('teacherName').value.trim(), event_date:el('eventDate').value||null, event_time:el('eventTime').value, place:el('place').value, filler:el('filler').value, event_types:getChecked('eventType'), event_desc:el('eventDesc').value.trim(), reflection:el('reflection').value.trim(), counsel_date:el('counselDate').value||null, parent_notify:el('parentNotify').value, counsel_ways:getChecked('counselWay'), counsel_content:el('counselContent').value.trim(), improve_plan:el('improvePlan').value.trim(), agreement:el('agreement').value.trim(), follow_date:el('followDate').value||null, result:el('result').value, need_follow:el('needFollow').value, parent_reply:el('parentReply').value.trim(), teacher_sign:el('teacherSign').value.trim(), updated_at:new Date().toISOString() };
+  return { year:el('year').value, semester:el('semester').value, class_name:cls, seat:el('seat').value.trim(), name:el('name').value.trim(), student_id:el('studentId').value.trim(), fill_date:el('fillDate').value||null, teacher_name:el('teacherName').value.trim(), event_date:el('eventDate').value||null, event_time:el('eventTime').value, place:el('place').value.trim(), filler:el('filler').value, event_types:getChecked('eventType'), event_desc:el('eventDesc').value.trim(), reflection:el('reflection').value.trim(), counsel_date:el('counselDate').value||null, parent_notify:el('parentNotify').value, counsel_ways:getChecked('counselWay'), counsel_content:el('counselContent').value.trim(), improve_plan:el('improvePlan').value.trim(), agreement:el('agreement').value.trim(), follow_date:el('followDate').value||null, result:el('result').value, need_follow:el('needFollow').value, parent_reply:el('parentReply').value.trim(), teacher_sign:el('teacherSign').value.trim(), updated_at:new Date().toISOString() };
 }
 function setForm(d){
-  el('year').value=d.year||'114'; el('semester').value=d.semester||'上學期';
+  el('year').value=d.year||'115'; el('semester').value=d.semester||'上學期';
   el('className').value=d.class_name||'';
   el('seat').value=d.seat||''; el('name').value=d.name||''; el('studentId').value=d.student_id||''; el('fillDate').value=d.fill_date||''; el('teacherName').value=d.teacher_name||'';
-  el('eventDate').value=d.event_date||''; el('eventTime').value=d.event_time||''; el('place').value=d.place||'教室'; el('filler').value=d.filler||'學生本人';
+  el('eventDate').value=d.event_date||''; el('eventTime').value=d.event_time||''; el('place').value=d.place||''; el('filler').value=d.filler||'學生本人';
   setChecked('eventType', d.event_types); el('eventDesc').value=d.event_desc||''; el('reflection').value=d.reflection||'';
   el('counselDate').value=d.counsel_date||''; el('parentNotify').value=d.parent_notify||'尚未通知'; setChecked('counselWay', d.counsel_ways);
   el('counselContent').value=d.counsel_content||''; el('improvePlan').value=d.improve_plan||''; el('agreement').value=d.agreement||''; el('followDate').value=d.follow_date||''; el('result').value=d.result||'口頭告誡'; el('needFollow').value=d.need_follow||'否'; el('parentReply').value=d.parent_reply||''; el('teacherSign').value=d.teacher_sign||'';
@@ -197,11 +227,11 @@ el('clearBtn').addEventListener('click', ()=>{
   editingId=null;
   document.querySelectorAll('input:not([type=checkbox]):not([type=password]), textarea').forEach(e=>{ if(e.id!=='loginEmail'&&e.id!=='loginPassword'&&e.id!=='searchBox') e.value=''; });
   document.querySelectorAll('input[type=checkbox]').forEach(e=>e.checked=false);
-  const t=localDateStr(); el('fillDate').value=t; el('eventDate').value=t; el('counselDate').value=t; el('year').value='114'; el('className').value=''; el('saveMsg').textContent=''; applyMode('student');
+  const t=localDateStr(); el('fillDate').value=t; el('eventDate').value=t; el('counselDate').value=t; el('year').value='115'; el('className').value=''; el('place').value=''; el('saveMsg').textContent=''; applyMode('student');
 });
 el('exampleBtn').addEventListener('click', ()=>{
   const t=localDateStr(); const nxt=new Date(Date.now()+7*86400000); const ns=nxt.getFullYear()+'-'+String(nxt.getMonth()+1).padStart(2,'0')+'-'+String(nxt.getDate()).padStart(2,'0');
-  setForm({year:'114',semester:'上學期',class_name:'資處二甲',seat:'12',name:'王小明',student_id:'112012',fill_date:t,teacher_name:'蕭老師',event_date:t,event_time:'10:20',place:'教室',event_types:['上課秩序','手機使用不當'],event_desc:'第二節資料處理課上課中，使用手機玩遊戲，經老師提醒仍繼續使用。',reflection:'我因為覺得課程很無聊就玩手機，被提醒還不收起來，影響了老師上課。我下次上課會把手機交到手機櫃，專心上課。',counsel_date:t,counsel_ways:['個別談話'],counsel_content:'個別談話，說明課堂規範與手機使用規定，學生表示理解並願意改善。',improve_plan:'上課手機放入手機櫃，一週內不再違規。',agreement:'一週後再談一次',follow_date:ns,result:'口頭告誡',need_follow:'是',parent_notify:'已電話通知',parent_reply:'家長表示會再提醒孩子',teacher_sign:'蕭老師'});
+  setForm({year:'115',semester:'上學期',class_name:'資處二甲',seat:'12',name:'王小明',student_id:'112012',fill_date:t,teacher_name:'蕭老師',event_date:t,event_time:'10:20',place:'教室',event_types:['上課秩序','手機使用不當'],event_desc:'第二節資料處理課上課中，使用手機玩遊戲，經老師提醒仍繼續使用。',reflection:'我因為覺得課程很無聊就玩手機，被提醒還不收起來，影響了老師上課。我下次上課會把手機交到手機櫃，專心上課。',counsel_date:t,counsel_ways:['個別談話'],counsel_content:'個別談話，說明課堂規範與手機使用規定，學生表示理解並願意改善。',improve_plan:'上課手機放入手機櫃，一週內不再違規。',agreement:'一週後再談一次',follow_date:ns,result:'口頭告誡',need_follow:'是',parent_notify:'已電話通知',parent_reply:'家長表示會再提醒孩子',teacher_sign:'蕭老師'});
   if(isTeacher){ applyMode('teacher'); } else { applyMode('student'); toast('範例已載入。導師欄位需登入後才能編輯。'); }
 });
 function openLoginModal(){ el('loginBackdrop').classList.add('open'); el('loginError').style.display='none'; setTimeout(()=>el('loginEmail').focus(),30); }
@@ -232,6 +262,40 @@ async function refreshAuth(){
 if(supabaseClient) supabaseClient.auth.onAuthStateChange(()=>refreshAuth());
 refreshAuth();
 applyMode('student');
+/* ===== 正式列印版面 ===== */
+function buildFormalPrint(){
+  const d = getForm();
+  const box = (v)=> v ? esc(v) : '<span class="formal-empty">（未填寫）</span>';
+  const checks = (opts, selected)=> opts.map(o=> ((selected||[]).includes(o) ? '☑ ' : '☐ ') + o).join('　');
+  const val = (v)=> v ? esc(v) : '—';
+  const teacherEmpty = !isTeacher && !d.counsel_content && !d.improve_plan && !d.teacher_sign;
+  const counselNote = teacherEmpty ? '<div class="formal-label" style="color:#555">（導師尚未填寫，以下由導師補填後再列印即可）</div>' : '';
+  document.getElementById('formalPrint').innerHTML =
+    '<div class="formal-doc">'
+    + '<div class="formal-top"><p class="formal-dept">資料處理科</p><h1>學生輔導紀錄表</h1><div class="formal-meta">學年度：' + esc(d.year) + '　學期：' + esc(d.semester) + '　填表日期：' + val(d.fill_date) + '</div></div>'
+    + '<table class="formal-table"><tr><th>班級</th><td>' + val(d.class_name) + '</td><th>座號</th><td>' + val(d.seat) + '</td></tr>'
+    + '<tr><th>姓名</th><td>' + val(d.name) + '</td><th>學號</th><td>' + val(d.student_id) + '</td></tr>'
+    + '<tr><th>導師姓名</th><td>' + val(d.teacher_name) + '</td><th>填表人</th><td>' + val(d.filler) + '</td></tr></table>'
+    + '<div class="formal-section"><h2>一、事件紀錄（學生填寫）</h2>'
+    + '<table class="formal-table"><tr><th>發生日期</th><td>' + val(d.event_date) + '</td><th>發生時間</th><td>' + val(d.event_time) + '</td></tr>'
+    + '<tr><th>發生地點</th><td colspan="3">' + val(d.place) + '</td></tr></table>'
+    + '<div class="formal-field"><div class="formal-label">事件類別</div><div class="formal-checks">' + checks(eventOptions, d.event_types) + '</div></div>'
+    + '<div class="formal-field"><div class="formal-label">事件經過描述</div><div class="formal-box tall">' + box(d.event_desc) + '</div></div>'
+    + '<div class="formal-field"><div class="formal-label">學生自述與反省</div><div class="formal-box tall">' + box(d.reflection) + '</div></div></div>'
+    + '<div class="formal-section"><h2>二、導師輔導（導師填寫）</h2>' + counselNote
+    + '<table class="formal-table"><tr><th>輔導日期</th><td>' + val(d.counsel_date) + '</td><th>是否通知家長</th><td>' + val(d.parent_notify) + '</td></tr>'
+    + '<tr><th>處理結果</th><td>' + val(d.result) + '</td><th>是否需持續追蹤</th><td>' + val(d.need_follow) + '</td></tr>'
+    + '<tr><th>約定事項</th><td>' + val(d.agreement) + '</td><th>追蹤日期</th><td>' + val(d.follow_date) + '</td></tr></table>'
+    + '<div class="formal-field"><div class="formal-label">輔導方式</div><div class="formal-checks">' + checks(counselOptions, d.counsel_ways) + '</div></div>'
+    + '<div class="formal-field"><div class="formal-label">導師輔導內容</div><div class="formal-box tall">' + box(d.counsel_content) + '</div></div>'
+    + '<div class="formal-field"><div class="formal-label">學生回應與改善計畫</div><div class="formal-box">' + box(d.improve_plan) + '</div></div>'
+    + '<div class="formal-field"><div class="formal-label">家長聯繫與回應</div><div class="formal-box">' + box(d.parent_reply) + '</div></div></div>'
+    + '<div class="formal-sign"><div>填表人簽名<br><br>（學生本人）</div><div>導師簽名<br><br>' + (d.teacher_sign ? esc(d.teacher_sign) : '　　　　　') + '</div><div>日期<br><br>' + val(d.fill_date) + '</div></div>'
+    + '<div class="formal-footer">本表由學生填寫事件紀錄，導師填寫輔導部分並留存。請勿於本表填寫身分證、密碼等敏感個資。</div>'
+    + '</div>';
+}
+document.getElementById('printBtn')?.addEventListener('click', ()=>{ buildFormalPrint(); setTimeout(()=>window.print(), 60); });
+window.addEventListener('beforeprint', ()=>{ try{ buildFormalPrint(); }catch(e){} });
 </script>
 </body>
 </html>
