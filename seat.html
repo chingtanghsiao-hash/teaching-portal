@@ -42,10 +42,13 @@ h1{margin-bottom:5px}
 .col-container{display:flex;flex-direction:column;align-items:center;gap:8px}
 .col-label{font-weight:700;font-size:14px;color:#555;margin-bottom:5px}
 .seats-group{display:flex;flex-direction:column;gap:8px}
-.seat-card{width:92px;min-height:64px;border:1px solid #dcdde1;background:#fff;border-radius:8px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.05);padding:6px 4px;cursor:default}
+.seat-photo{width:78px;height:78px;border-radius:50%;object-fit:cover;border:2px solid #e2e8f0;margin:6px 0 4px;background:#f1f5f9}
+.print-student-line{display:none;font-weight:700;color:#1f2937;line-height:1.4}
+.seat-card{width:112px;min-height:70px;border:1px solid #dcdde1;background:#fff;border-radius:8px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.05);padding:6px 4px;cursor:default}
 .seat-card.fixed{background:#fff3cd;border-color:#ffeba6}
 .seat-card.teacher-click{cursor:pointer}
 .seat-card.empty{background:#f8fafc;color:#94a3b8}
+.seat-card.has-photo{min-height:168px}
 .seat-no{font-size:11px;color:#888}
 .student-no{font-size:15px;font-weight:700;color:#2c3e50;line-height:1.3}
 .student-name{font-size:14px;color:#334155;line-height:1.3}
@@ -58,7 +61,34 @@ h1{margin-bottom:5px}
 .field2 label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
 .field2 input{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-@media(max-width:640px){.seat-card{width:78px}}
+@media(max-width:640px){.seat-card{width:96px}}
+
+#printRoster{display:none}
+@media print{
+  @page{size:A4 portrait;margin:8mm}
+  body{background:#fff;padding:0}
+  .authbar,.control-panel,#teacherGate,.modal-backdrop,.print-hide{display:none!important}
+  h1{font-size:17pt;margin:0 0 4px}
+  .subtitle{margin-bottom:8px;font-size:11px}
+  .blackboard{width:62%;margin:6px auto 10px;padding:7px;font-size:13px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea{display:flex!important;gap:10px;align-items:flex-start;justify-content:center}
+  #printRoster{display:block!important;width:118px;flex-shrink:0;border:1.2px solid #1e3a5f;padding:6px 6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printRoster h3{font-size:11px;margin:0 0 6px;text-align:center;color:#1e3a5f;border-bottom:1px solid #cbd5e1;padding-bottom:4px}
+  #printRoster table{width:100%;border-collapse:collapse;font-size:11px}
+  #printRoster th,#printRoster td{border-bottom:1px solid #e2e8f0;padding:3px 2px;text-align:left}
+  #printRoster th{font-size:10px;color:#64748b}
+  #printRoster td:first-child{width:32px;font-weight:700;text-align:center}
+  .classroom{max-width:100%;gap:5px;overflow:visible;padding:0;justify-content:space-between;flex:1}
+  .col-container{gap:5px}
+  .col-label{font-size:11px;margin-bottom:2px}
+  .seats-group{gap:5px}
+  .seat-card{width:70px;min-height:92px;padding:4px 2px;break-inside:avoid;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .seat-card.has-photo{min-height:122px}
+  .seat-photo{width:46px;height:46px;margin:3px 0 2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .seat-no{font-size:10px}
+  .student-no,.student-name{display:none!important}
+  .print-student-line{display:block!important;font-size:11px;text-align:center;word-break:break-all}
+}
 </style>
 </head>
 <body>
@@ -68,7 +98,7 @@ h1{margin-bottom:5px}
 <div class="authbar"><div><strong id="authStatus">訪客瀏覽</strong> <span id="authEmail"></span><br><span>學生 / 訪客只能看座位表。固定座位、匯入名單只有教師登入後才能用。</span></div><button class="btn" id="authBtn" type="button" style="padding:9px 14px">教師登入</button></div>
 
 <div class="control-panel">
-  <div style="text-align:center"><button class="btn" onclick="generateSeats()">重新隨機抽籤</button> <span id="rosterCount" style="font-size:13px;color:#64748b;margin-left:8px"></span></div>
+  <div style="text-align:center;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn" onclick="generateSeats()">重新隨機抽籤</button><button class="btn btn-light" id="printBtnTop" type="button">列印座位表</button><button class="btn btn-light" id="blankBtnTop" type="button">空白座位表</button> <span id="rosterCount" style="font-size:13px;color:#64748b;margin-left:8px"></span></div><div id="blankTip" style="display:none;text-align:center;margin-top:8px;font-size:13px;color:#92400e;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px">目前是空白座位表（不顯示座號、姓名、大頭照），可直接列印手寫。再按一次「空白座位表」回到正常座位表。</div>
 
   <div id="teacherGate" class="gate">教師專用功能已鎖定：請先按上方「教師登入」，登入後才能匯入 Excel 名單、設定固定座位。</div>
 
@@ -91,12 +121,24 @@ h1{margin-bottom:5px}
     </div>
     <div id="fixedList" class="fixed-list"></div>
     <div id="fixedMsg" style="font-size:13px;color:#64748b;margin-top:8px"></div>
+
+    <h3>3. 匯入大頭照（檔名用座號命名）</h3>
+    <div class="hint">照片檔名請用座號命名，例如：<b>12.jpg、12.png</b> 就是 12 號。也可以是 <b>12王小明.jpg、12-王小明.jpg</b>，系統會抓前面的座號。可以一次選多張照片一起匯入。照片會自動縮小、存在這台瀏覽器，下次打開還在。</div>
+    <div class="row">
+      <div class="field"><label>選擇大頭照（可多選）</label><input id="photoFiles" type="file" accept="image/*" multiple></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-light" id="clearPhotosBtn" type="button">清除全部照片</button></div>
+    </div>
+    <div id="photoStatus" class="name-preview"></div>
+    <div id="photoPreview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
   </div>
 </div>
 
 <div class="blackboard">講 台 / 黑 板</div>
-<div id="classroom" class="classroom"></div>
-<div style="text-align:center;margin:18px 0 8px"><button class="btn" onclick="generateSeats()">重新隨機抽籤</button></div>
+<div id="printArea" style="display:block">
+  <div id="printRoster" aria-hidden="true"></div>
+  <div id="classroom" class="classroom"></div>
+</div>
+<div style="text-align:center;margin:18px 0 8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap" class="print-hide"><button class="btn" onclick="generateSeats()">重新隨機抽籤</button><button class="btn btn-light" id="printBtnBottom" type="button">列印座位表</button><button class="btn btn-light" id="blankBtnBottom" type="button">空白座位表</button></div>
 <p style="font-size:13px;color:#64748b">黃色座位 = 固定座位。教師登入後，點座位可以直接設定該座位的固定學生。</p>
 
 <div class="modal-backdrop" id="loginBackdrop"><div class="modal"><h2>教師登入</h2><p style="font-size:13px;color:#64748b">請用在 Supabase 建立的教師信箱與密碼登入，和學生輔導紀錄同一組帳號。學生不用登入。</p><div class="field2"><label>教師 Email</label><input id="loginEmail" type="email" placeholder="你的教師登入信箱"></div><div class="field2"><label>密碼</label><input id="loginPassword" type="password" placeholder="網站登入密碼"></div><p id="loginError" style="display:none;font-size:13px;color:#b91c1c"></p><div class="modal-actions"><button class="btn btn-light" id="cancelLogin" type="button">取消</button><button class="btn" id="loginSubmitBtn" type="button">登入</button></div></div></div>
@@ -119,6 +161,49 @@ const el = (id)=>document.getElementById(id);
 
 function saveRoster(){ localStorage.setItem('seating_roster_v1', JSON.stringify(roster)); }
 function saveFixed(){ localStorage.setItem('seating_fixed_v1', JSON.stringify(fixedSeats)); }
+let photos = {};
+try{ photos = JSON.parse(localStorage.getItem('seating_photos_v1')||'{}') || {}; }catch(e){ photos={}; }
+function savePhotos(){ try{ localStorage.setItem('seating_photos_v1', JSON.stringify(photos)); }catch(e){ alert('照片存不下了，請先清除舊照片或用小一點的照片。'); } }
+function renderPhotoStatus(){
+  const n = Object.keys(photos).length;
+  const st = document.getElementById('photoStatus');
+  if(st) st.textContent = n ? '已匯入大頭照：'+n+' 張（座號：'+Object.keys(photos).map(Number).sort((a,b)=>a-b).join('、')+'）' : '尚未匯入大頭照。';
+  const pv = document.getElementById('photoPreview');
+  if(!pv) return;
+  if(n===0){ pv.innerHTML=''; return; }
+  pv.innerHTML = Object.keys(photos).map(Number).sort((a,b)=>a-b).map(sno=>{
+    const name = lookupName(sno);
+    return '<div style="text-align:center;width:84px"><img src="'+photos[sno]+'" style="width:78px;height:78px;border-radius:50%;object-fit:cover;border:2px solid #e2e8f0"><div style="font-size:12px">'+sno+' 號'+(name?' '+esc(name):'')+'</div><button type="button" onclick="removePhoto('+sno+')" style="font-size:11px;border:0;background:none;color:#b91c1c;cursor:pointer">刪除</button></div>';
+  }).join('');
+}
+function removePhoto(sno){ if(!isTeacher) return; delete photos[sno]; savePhotos(); renderPhotoStatus(); generateSeats(); }
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const img = new Image(); const url = URL.createObjectURL(file);
+    img.onload = ()=>{
+      try{
+        const max = 120; let w = img.width, h = img.height;
+        if(w>h && w>max){ h = Math.round(h*max/w); w = max; }
+        else if(h>=w && h>max){ w = Math.round(w*max/h); h = max; }
+        const c = document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url); resolve(c.toDataURL('image/jpeg', 0.75));
+      }catch(e){ URL.revokeObjectURL(url); reject(e); }
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); reject(new Error('讀不到圖片')); };
+    img.src = url;
+  });
+}
+function seatNoFromFilename(name){ const m = String(name).trim().match(/^(\d+)/); return m ? Number(m[1]) : null; }
+function renderPrintRoster(){
+  const box = document.getElementById('printRoster');
+  if(!box) return;
+  if(isBlank || roster.length===0){ box.innerHTML=''; box.style.display='none'; return; }
+  const sorted = [...roster].sort((a,b)=>Number(a.seat)-Number(b.seat));
+  box.innerHTML = '<h3>座號・姓名對照</h3><table><tr><th>座號</th><th>姓名</th></tr>' + sorted.map(r=>'<tr><td>'+esc(r.seat)+'</td><td>'+esc(r.name)+'</td></tr>').join('') + '</table>';
+  box.style.display='';
+}
+
 function lookupName(seatNo){
   const n = Number(seatNo);
   if(!n) return '';
@@ -248,6 +333,41 @@ el('clearRoster').addEventListener('click', ()=>{
   el('rosterStatus').textContent='已清除名單。'; el('excelFile').value='';
 });
 
+// ---- 大頭照匯入（檔名用座號命名） ----
+document.getElementById('photoFiles').addEventListener('change', async (e)=>{
+  const files = [...(e.target.files||[])];
+  if(files.length===0) return;
+  if(!isTeacher){ alert('請先教師登入。'); e.target.value=''; return; }
+  let ok = 0, fail = [];
+  for(const f of files){
+    const sno = seatNoFromFilename(f.name);
+    if(!sno){ fail.push(f.name); continue; }
+    try{ photos[sno] = await compressImage(f); ok++; }catch(err){ fail.push(f.name); }
+  }
+  savePhotos(); renderPhotoStatus(); generateSeats(); renderPrintRoster();
+  document.getElementById('photoStatus').textContent = '已匯入 '+ok+' 張大頭照'+(fail.length?'，'+fail.length+' 張檔名抓不到座號：'+fail.join('、'):'')+'。';
+  e.target.value='';
+});
+document.getElementById('clearPhotosBtn').addEventListener('click', ()=>{
+  if(!isTeacher) return;
+  if(!confirm('確定清除全部大頭照？')) return;
+  photos={}; savePhotos(); renderPhotoStatus(); generateSeats(); renderPrintRoster();
+});
+
+// ---- 空白座位表 / 列印 ----
+let isBlank = false;
+function toggleBlank(){
+  isBlank = !isBlank;
+  const tip = document.getElementById('blankTip');
+  if(tip) tip.style.display = isBlank ? 'block' : 'none';
+  document.querySelectorAll('#blankBtnTop,#blankBtnBottom').forEach(b=>{ b.textContent = isBlank ? '回到正常座位表' : '空白座位表'; b.style.background = isBlank ? '#f59e0b' : ''; b.style.color = isBlank ? '#fff' : ''; });
+  generateSeats(); renderPrintRoster();
+}
+document.getElementById('blankBtnTop').addEventListener('click', toggleBlank);
+document.getElementById('blankBtnBottom').addEventListener('click', toggleBlank);
+document.getElementById('printBtnTop').addEventListener('click', ()=>window.print());
+document.getElementById('printBtnBottom').addEventListener('click', ()=>window.print());
+
 // ---- 座位產生 ----
 function generateSeats(){
   let validStudents = [];
@@ -274,6 +394,24 @@ function generateSeats(){
   }
   const container = document.getElementById('classroom');
   container.innerHTML='';
+  if(isBlank){
+    let bn=1;
+    colSizes.forEach((size, cIndex)=>{
+      const colDiv=document.createElement('div'); colDiv.className='col-container';
+      const labelDiv=document.createElement('div'); labelDiv.className='col-label'; labelDiv.innerText='第 '+(cIndex+1)+' 排'; colDiv.appendChild(labelDiv);
+      const groupDiv=document.createElement('div'); groupDiv.className='seats-group';
+      for(let i=0;i<size;i++){
+        const seatId=bn++;
+        const card=document.createElement('div'); card.className='seat-card';
+        card.style.minHeight='118px';
+        card.innerHTML='<div class="seat-no">座'+seatId+'</div><div style="height:44px"></div><div style="width:80%;border-bottom:1px solid #94a3b8;margin:4px auto 2px"></div><div style="font-size:11px;color:#94a3b8">姓名</div>';
+        groupDiv.appendChild(card);
+      }
+      colDiv.appendChild(groupDiv); container.appendChild(colDiv);
+    });
+    renderFixedList(); renderPrintRoster();
+    return;
+  }
   let currentSeatNo=1;
   colSizes.forEach((size, cIndex)=>{
     const colDiv=document.createElement('div'); colDiv.className='col-container';
@@ -287,10 +425,14 @@ function generateSeats(){
       const isEmpty = studentId===null || studentId===undefined;
       card.className='seat-card '+(isFixed?'fixed ':'')+(isEmpty?'empty ':'')+(isTeacher?'teacher-click ':'');
       const name = (!isEmpty && roster.length>0) ? lookupName(studentId) : '';
+      const photo = (!isEmpty && photos[studentId]) ? photos[studentId] : '';
+      if(photo) card.classList.add('has-photo');
       card.innerHTML='<div class="seat-no">座'+seatId+'</div>'
         + (isEmpty ? '<div class="student-no" style="color:#94a3b8;font-size:13px">空位</div>'
-          : '<div class="student-no">'+esc(studentId)+' 號</div>'
+          : (photo?'<img class="seat-photo" src="'+photo+'" alt="'+esc(studentId)+'號大頭照">':'')
+            + '<div class="student-no">'+esc(studentId)+' 號</div>'
             + (name?'<div class="student-name">'+esc(name)+'</div>':'')
+            + '<div class="print-student-line">'+esc(studentId)+'號'+(name?' '+esc(name):'')+'</div>'
             + (isFixed?'<div class="fixed-badge">固定</div>':''));
       if(isTeacher){
         card.title='點一下：把座'+seatId+' 設為固定座位';
@@ -303,6 +445,7 @@ function generateSeats(){
     container.appendChild(colDiv);
   });
   renderFixedList();
+  renderPrintRoster();
 }
 
 // ---- 教師登入（和輔導紀錄同一組 Supabase 帳號） ----
@@ -343,6 +486,8 @@ if(supabaseClient) supabaseClient.auth.onAuthStateChange(()=>refreshAuth());
 refreshAuth();
 renderRoster();
 renderFixedList();
+renderPhotoStatus();
+renderPrintRoster();
 window.onload=()=>{ generateSeats(); };
 </script>
 </body>
