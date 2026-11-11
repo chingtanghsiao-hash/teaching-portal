@@ -65,29 +65,46 @@ h1{margin-bottom:5px}
 
 #printRoster{display:none}
 @media print{
-  @page{size:A4 portrait;margin:8mm}
-  body{background:#fff;padding:0}
+  @page{size:A4 portrait;margin:5mm}
+  html,body{background:#fff!important;padding:0!important;margin:0!important}
   .authbar,.control-panel,#teacherGate,.modal-backdrop,.print-hide{display:none!important}
-  h1{font-size:17pt;margin:0 0 4px}
-  .subtitle{margin-bottom:8px;font-size:11px}
-  .blackboard{width:62%;margin:6px auto 10px;padding:7px;font-size:13px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #printArea{display:flex!important;gap:10px;align-items:flex-start;justify-content:center}
-  #printRoster{display:block!important;width:118px;flex-shrink:0;border:1.2px solid #1e3a5f;padding:6px 6px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #printRoster h3{font-size:11px;margin:0 0 6px;text-align:center;color:#1e3a5f;border-bottom:1px solid #cbd5e1;padding-bottom:4px}
-  #printRoster table{width:100%;border-collapse:collapse;font-size:11px}
-  #printRoster th,#printRoster td{border-bottom:1px solid #e2e8f0;padding:3px 2px;text-align:left}
-  #printRoster th{font-size:10px;color:#64748b}
-  #printRoster td:first-child{width:32px;font-weight:700;text-align:center}
+  h1{font-size:14pt;margin:0 0 1px;line-height:1.15}
+  .subtitle{margin-bottom:3px;font-size:9px}
+  .blackboard{width:56%;margin:3px auto 5px;padding:4px;font-size:11px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea{display:flex!important;gap:8px;align-items:flex-start;justify-content:center;break-inside:avoid;page-break-inside:avoid}
+  #printRoster{display:block!important;width:96px;flex-shrink:0;border:1px solid #1e3a5f;padding:4px 4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printRoster h3{font-size:10px;margin:0 0 4px;text-align:center;color:#1e3a5f;border-bottom:1px solid #cbd5e1;padding-bottom:3px}
+  #printRoster table{width:100%;border-collapse:collapse;font-size:9px}
+  #printRoster th,#printRoster td{border-bottom:1px solid #e2e8f0;padding:1.5px 2px;text-align:left;line-height:1.3}
+  #printRoster th{font-size:9px;color:#64748b}
+  #printRoster td:first-child{width:28px;font-weight:700;text-align:center}
   .classroom{max-width:100%;gap:5px;overflow:visible;padding:0;justify-content:space-between;flex:1}
-  .col-container{gap:5px}
-  .col-label{font-size:11px;margin-bottom:2px}
-  .seats-group{gap:5px}
-  .seat-card{width:70px;min-height:92px;padding:4px 2px;break-inside:avoid;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .seat-card.has-photo{min-height:122px}
-  .seat-photo{width:46px;height:46px;margin:3px 0 2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .col-container{gap:4px;flex:1;min-width:0}
+  .col-label{font-size:10px;margin-bottom:1px}
+  .seats-group{gap:4px}
+  .seat-card{width:100%;min-height:80px;padding:4px 2px;break-inside:avoid;page-break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}
+  .seat-card.has-photo{min-height:102px}
+  .seat-photo{width:50px;height:50px;margin:3px 0 2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .seat-no{font-size:10px}
   .student-no,.student-name{display:none!important}
-  .print-student-line{display:block!important;font-size:11px;text-align:center;word-break:break-all}
+  .print-student-line{display:block!important;font-size:10px;text-align:center;word-break:break-all;line-height:1.35}
+  .fixed-badge{font-size:9px;padding:0 5px}
+}
+
+/* 班級幹部表格：下方空白處 */
+#cadreSection{display:none;margin:16px auto 0;max-width:1000px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.06);padding:12px 16px;text-align:left}
+#cadreSection h3{margin:0 0 10px;font-size:15px;color:#1e3a5f;border-left:5px solid #1e3a5f;padding-left:10px}
+#cadreGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cadre-cell{border:1px solid #cbd5e1;border-radius:8px;padding:8px 6px;text-align:center;background:#f8fafc;line-height:1.4}
+.cadre-cell b{display:block;color:#1e3a5f;font-size:13px;margin-bottom:2px}
+.cadre-cell span{font-size:13px;color:#334155}
+@media print{
+  #cadreSection{display:block!important;max-width:100%;margin:6px 0 0;padding:4px 6px;box-shadow:none;border:1px solid #1e3a5f;border-radius:0;break-inside:avoid;page-break-inside:avoid}
+  #cadreSection h3{font-size:10px;margin:0 0 4px;padding-left:8px}
+  #cadreGrid{grid-template-columns:repeat(6,1fr);gap:3px}
+  .cadre-cell{padding:3px 2px;border-radius:3px}
+  .cadre-cell b{font-size:9px;margin-bottom:0}
+  .cadre-cell span{font-size:9px}
 }
 </style>
 </head>
@@ -104,7 +121,7 @@ h1{margin-bottom:5px}
 
   <div id="teacherPanel" class="teacher-panel" style="display:none">
     <h3>1. 匯入 Excel 名單</h3>
-    <div class="hint">Excel 第一列請放標題：<b>座號、姓名</b>（例如：12、王小明）。支援 .xlsx / .xls / .csv。匯入後全班座位會自動顯示姓名，之後只要打座號就會自動帶出姓名。匯入的名單會存在這台瀏覽器，下次打開還在。</div>
+    <div class="hint">Excel 第一列請放標題：<b>座號、姓名、職稱</b>（例如：12、王小明、班長。職稱可空，有職稱的會自動顯示在下方幹部表格）。支援 .xlsx / .xls / .csv。匯入後全班座位會自動顯示姓名，之後只要打座號就會自動帶出姓名。匯入的名單會存在這台瀏覽器，下次打開還在。</div>
     <div class="row">
       <div class="field"><label>選擇 Excel / CSV 檔案</label><input id="excelFile" type="file" accept=".xlsx,.xls,.csv"></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-light" id="downloadTemplate" type="button">下載範本</button><button class="btn btn-red" id="clearRoster" type="button">清除名單</button></div>
@@ -138,8 +155,9 @@ h1{margin-bottom:5px}
   <div id="printRoster" aria-hidden="true"></div>
   <div id="classroom" class="classroom"></div>
 </div>
+<div id="cadreSection"><h3>班級幹部</h3><div id="cadreGrid"></div></div>
 <div style="text-align:center;margin:18px 0 8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap" class="print-hide"><button class="btn" onclick="generateSeats()">重新隨機抽籤</button><button class="btn btn-light" id="printBtnBottom" type="button">列印座位表</button><button class="btn btn-light" id="blankBtnBottom" type="button">空白座位表</button></div>
-<p style="font-size:13px;color:#64748b">黃色座位 = 固定座位。教師登入後，點座位可以直接設定該座位的固定學生。</p>
+<p class="print-hide" style="font-size:13px;color:#64748b">黃色座位 = 固定座位。教師登入後，點座位可以直接設定該座位的固定學生。</p>
 
 <div class="modal-backdrop" id="loginBackdrop"><div class="modal"><h2>教師登入</h2><p style="font-size:13px;color:#64748b">請用在 Supabase 建立的教師信箱與密碼登入，和學生輔導紀錄同一組帳號。學生不用登入。</p><div class="field2"><label>教師 Email</label><input id="loginEmail" type="email" placeholder="你的教師登入信箱"></div><div class="field2"><label>密碼</label><input id="loginPassword" type="password" placeholder="網站登入密碼"></div><p id="loginError" style="display:none;font-size:13px;color:#b91c1c"></p><div class="modal-actions"><button class="btn btn-light" id="cancelLogin" type="button">取消</button><button class="btn" id="loginSubmitBtn" type="button">登入</button></div></div></div>
 
@@ -195,6 +213,17 @@ function compressImage(file){
   });
 }
 function seatNoFromFilename(name){ const m = String(name).trim().match(/^(\d+)/); return m ? Number(m[1]) : null; }
+function renderCadre(){
+  const sec = document.getElementById('cadreSection');
+  const grid = document.getElementById('cadreGrid');
+  if(!sec || !grid) return;
+  const cadres = (roster||[]).filter(r=>r.title && String(r.title).trim());
+  if(isBlank || cadres.length===0){ sec.style.display='none'; grid.innerHTML=''; return; }
+  // 依座號排序，職稱照 Excel 順序
+  cadres.sort((a,b)=>Number(a.seat)-Number(b.seat));
+  grid.innerHTML = cadres.map(c=>'<div class="cadre-cell"><b>'+esc(c.title)+'</b><span>'+esc(c.seat)+'號 '+esc(c.name)+'</span></div>').join('');
+  sec.style.display='block';
+}
 function renderPrintRoster(){
   const box = document.getElementById('printRoster');
   if(!box) return;
@@ -272,7 +301,8 @@ function renderRoster(){
   const box = el('rosterPreview');
   if(roster.length===0){ box.innerHTML=''; return; }
   const sorted = [...roster].sort((a,b)=>Number(a.seat)-Number(b.seat));
-  box.innerHTML = '<table class="roster-table"><tr><th>座號</th><th>姓名</th></tr>' + sorted.map(r=>'<tr><td>'+esc(r.seat)+' 號</td><td>'+esc(r.name)+'</td></tr>').join('') + '</table>';
+  const hasTitle = sorted.some(r=>r.title);
+  box.innerHTML = '<table class="roster-table"><tr><th>座號</th><th>姓名</th>'+(hasTitle?'<th>職稱</th>':'')+'</tr>' + sorted.map(r=>'<tr><td>'+esc(r.seat)+' 號</td><td>'+esc(r.name)+'</td>'+(hasTitle?'<td>'+esc(r.title||'')+'</td>':'')+'</tr>').join('') + '</table>';
 }
 el('excelFile').addEventListener('change', (e)=>{
   const file = e.target.files[0];
@@ -285,8 +315,19 @@ el('excelFile').addEventListener('change', (e)=>{
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
       const parsed = parseRosterRows(rows);
+      // 若第一個工作表沒有職稱，再掃其他工作表（幹部表）補職稱
+      if(wb.SheetNames.length>1){
+        const titleMap = new Map();
+        for(let si=1; si<wb.SheetNames.length; si++){
+          const ws2 = wb.Sheets[wb.SheetNames[si]];
+          const rows2 = XLSX.utils.sheet_to_json(ws2, {header:1, defval:''});
+          const p2 = parseRosterRows(rows2);
+          p2.forEach(r=>{ if(r.title) titleMap.set(r.seat, r.title); });
+        }
+        parsed.forEach(r=>{ if(!r.title && titleMap.has(r.seat)) r.title = titleMap.get(r.seat); });
+      }
       if(parsed.length===0){ alert('匯入失敗：找不到座號 / 姓名。請確認第一列是「座號、姓名」。'); return; }
-      roster = parsed; saveRoster(); renderRoster(); renderFixedList(); generateSeats();
+      roster = parsed; saveRoster(); renderRoster(); renderFixedList(); generateSeats(); renderPrintRoster(); renderCadre();
       el('rosterStatus').textContent = '✓ 已匯入 '+parsed.length+' 人，座位表已自動帶入姓名。';
       el('rosterStatus').className='name-preview';
       onFixedStudentInput();
@@ -306,13 +347,22 @@ function parseRosterRows(rows){
     if(si!==-1){ headerIdx=i; seatIdx=si; nameIdx = si===0?1:0; break; }
   }
   const hasHeader = (rows[headerIdx]||[]).some(c=>/座號|姓名|名字/i.test(String(c)));
+  // 找職稱 / 幹部欄：職稱、幹部、職務、幹部職稱、班級幹部
+  const headerRow = (rows[headerIdx]||[]).map(c=>String(c).trim());
+  let titleIdx = headerRow.findIndex(c=>/幹部|職稱|職務|擔任|Title/i.test(c));
   const start = hasHeader ? headerIdx+1 : headerIdx;
   const out = [];
   for(let i=start;i<rows.length;i++){
     const r = rows[i]||[];
     const seat = Number(String(r[seatIdx]??'').trim());
-    const name = String(r[nameIdx]??'').trim();
-    if(seat && name) out.push({seat, name});
+    let name = String(r[nameIdx]??'').trim();
+    let title = titleIdx!==-1 ? String(r[titleIdx]??'').trim() : '';
+    // 姓名裡有括號職稱，例如：王小明 (班長) / 王小明（副班長）也抓出來
+    if(!title && name){
+      const m = name.match(/[\(（]([^)）]+)[\)）]\s*$/);
+      if(m){ title = m[1].trim(); name = name.slice(0, m.index).trim(); }
+    }
+    if(seat && name) out.push({seat, name, title});
   }
   // 去重：同一座號取最後一筆
   const map = new Map();
@@ -320,7 +370,7 @@ function parseRosterRows(rows){
   return [...map.values()].sort((a,b)=>a.seat-b.seat);
 }
 el('downloadTemplate').addEventListener('click', ()=>{
-  const csv = '座號,姓名\n1,王小明\n2,陳大文\n3,林小美\n';
+  const csv = '座號,姓名,職稱\n1,王小明,班長\n2,陳大文,\n3,林小美,學藝股長\n';
   const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = '座位名單範本.csv'; a.click();
@@ -329,7 +379,7 @@ el('downloadTemplate').addEventListener('click', ()=>{
 el('clearRoster').addEventListener('click', ()=>{
   if(!isTeacher) return;
   if(!confirm('確定清除已匯入的名單？')) return;
-  roster=[]; saveRoster(); renderRoster(); renderFixedList(); generateSeats();
+  roster=[]; saveRoster(); renderRoster(); renderFixedList(); generateSeats(); renderPrintRoster(); renderCadre();
   el('rosterStatus').textContent='已清除名單。'; el('excelFile').value='';
 });
 
@@ -344,7 +394,7 @@ document.getElementById('photoFiles').addEventListener('change', async (e)=>{
     if(!sno){ fail.push(f.name); continue; }
     try{ photos[sno] = await compressImage(f); ok++; }catch(err){ fail.push(f.name); }
   }
-  savePhotos(); renderPhotoStatus(); generateSeats(); renderPrintRoster();
+  savePhotos(); renderPhotoStatus(); generateSeats(); renderPrintRoster(); renderCadre();
   document.getElementById('photoStatus').textContent = '已匯入 '+ok+' 張大頭照'+(fail.length?'，'+fail.length+' 張檔名抓不到座號：'+fail.join('、'):'')+'。';
   e.target.value='';
 });
@@ -361,7 +411,7 @@ function toggleBlank(){
   const tip = document.getElementById('blankTip');
   if(tip) tip.style.display = isBlank ? 'block' : 'none';
   document.querySelectorAll('#blankBtnTop,#blankBtnBottom').forEach(b=>{ b.textContent = isBlank ? '回到正常座位表' : '空白座位表'; b.style.background = isBlank ? '#f59e0b' : ''; b.style.color = isBlank ? '#fff' : ''; });
-  generateSeats(); renderPrintRoster();
+  generateSeats(); renderPrintRoster(); renderCadre();
 }
 document.getElementById('blankBtnTop').addEventListener('click', toggleBlank);
 document.getElementById('blankBtnBottom').addEventListener('click', toggleBlank);
@@ -403,13 +453,13 @@ function generateSeats(){
       for(let i=0;i<size;i++){
         const seatId=bn++;
         const card=document.createElement('div'); card.className='seat-card';
-        card.style.minHeight='118px';
+        card.style.minHeight='88px';
         card.innerHTML='<div class="seat-no">座'+seatId+'</div><div style="height:44px"></div><div style="width:80%;border-bottom:1px solid #94a3b8;margin:4px auto 2px"></div><div style="font-size:11px;color:#94a3b8">姓名</div>';
         groupDiv.appendChild(card);
       }
       colDiv.appendChild(groupDiv); container.appendChild(colDiv);
     });
-    renderFixedList(); renderPrintRoster();
+    renderFixedList(); renderPrintRoster(); renderCadre();
     return;
   }
   let currentSeatNo=1;
@@ -446,6 +496,7 @@ function generateSeats(){
   });
   renderFixedList();
   renderPrintRoster();
+  renderCadre();
 }
 
 // ---- 教師登入（和輔導紀錄同一組 Supabase 帳號） ----
@@ -488,6 +539,7 @@ renderRoster();
 renderFixedList();
 renderPhotoStatus();
 renderPrintRoster();
+renderCadre();
 window.onload=()=>{ generateSeats(); };
 </script>
 </body>
