@@ -180,7 +180,38 @@ body.is-teacher .teacher-only-block{display:block}
 .quiz-field textarea{min-height:64px;resize:vertical}
 @media(max-width:640px){.quiz-setup{grid-template-columns:1fr 1fr}.quiz-result-big{font-size:48px}}
 
-</style>
+
+  /* 學生輔導紀錄 */
+  .coun-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .coun-tab{height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:13px;cursor:pointer;color:var(--muted)}
+  .coun-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .coun-mode{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px 14px;margin-bottom:14px}
+  .coun-mode button{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:13px}
+  .coun-mode button.active{background:#0f766e;color:#fff;border-color:#0f766e}
+  .coun-badge{background:#dcfce7;color:#166534;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700}
+  .coun-badge.lock{background:#fef2f2;color:#b91c1c}
+  .coun-checks{display:flex;flex-wrap:wrap;gap:8px}
+  .coun-checks label{font-weight:400;background:var(--surface-2);border:1px solid var(--line);padding:7px 11px;border-radius:999px;display:flex;gap:6px;align-items:center;cursor:pointer;font-size:13px}
+  .coun-checks input{width:auto;accent-color:var(--blue)}
+  .coun-checks label:has(input:disabled){opacity:.55;cursor:not-allowed}
+  .coun-hint{font-size:12px;color:var(--muted);background:var(--surface-2);border-radius:8px;padding:10px 12px;margin:8px 0;line-height:1.6}
+  .coun-notice{background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.6}
+  .coun-table{width:100%;border-collapse:collapse;font-size:13px}
+  .coun-table th,.coun-table td{border:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
+  .coun-table th{background:var(--surface-2)}
+  .coun-section-title{font-size:15px;margin:0 0 12px;padding-left:10px;border-left:5px solid var(--navy);font-weight:750}
+  .coun-sub{font-size:14px;margin:18px 0 8px;color:var(--navy);font-weight:700}
+  .coun-required{color:#dc2626}
+  @media(max-width:640px){.coun-mode{flex-direction:column;align-items:stretch}}
+  @media print{
+    .sidebar,.topbar,.coun-tabs,.coun-mode,.no-print{display:none!important}
+    .main{margin-left:0!important}
+    .view{display:none!important}
+    .view.active{display:block!important}
+    #view-counseling .panel{box-shadow:none;border:1px solid #ccc}
+    body{background:#fff}
+  }
+  </style>
 </head>
 <body>
 <div class="app">
@@ -194,6 +225,7 @@ body.is-teacher .teacher-only-block{display:block}
     <a class="nav-link" href="#resources" data-view="resources"><span class="nav-ico">↗</span>教學資源連結</a>
     <a class="nav-link" href="#timer" data-view="timer"><span class="nav-ico">◷</span>體能計時器</a>
     <a class="nav-link" href="#quiz" data-view="quiz"><span class="nav-ico">✎</span>線上測驗</a>
+      <a class="nav-link" href="#counseling" data-view="counseling"><span class="nav-ico">✏</span>學生輔導紀錄</a>
   </nav>
   <div class="sidebar-bottom">
     <div class="term-card"><div class="term-card-top"><small>目前學期</small><button class="term-edit-btn" id="termEditBtn" type="button">✎ 編輯</button></div><strong id="termDisplayText">115 學年度・第 1 學期</strong><div id="termEditBox" style="display:none"><input class="term-input" id="termInput" placeholder="例如：115 學年度・第 1 學期" autocomplete="off"><div class="term-edit-row"><button class="mini-btn" id="termSaveBtn" type="button">儲存</button><button class="mini-btn" id="termCancelBtn" type="button">取消</button></div><div style="font-size:11px;color:var(--muted);margin-top:6px">教師登入後可直接打字，例如：116 學年度・第 1 學期</div></div></div>
@@ -232,6 +264,7 @@ body.is-teacher .teacher-only-block{display:block}
             <button class="quick-action" data-go="curriculum"><span class="quick-icon">▤</span><span><strong>查看年級進度</strong><small>瀏覽高一上至高三下規劃</small></span><span class="arrow">›</span></button>
             <button class="quick-action" data-go="timer"><span class="quick-icon" style="background:#eaf3ff;color:#276fc2">◷</span><span><strong>課堂體能計時器</strong><small>倒數・碼錶・間歇訓練，上課投影用</small></span><span class="arrow">›</span></button>
             <button class="quick-action" data-go="quiz"><span class="quick-icon" style="background:#eaf5ee;color:#397e5c">✎</span><span><strong>體育線上測驗</strong><small>Excel 匯入題庫・學生作答・成績統計</small></span><span class="arrow">›</span></button>
+             <button class="quick-action" data-go="counseling"><span class="quick-icon" style="background:#fef3c7;color:#92400e">✏</span><span><strong>學生輔導紀錄</strong><small>資處科事件紀錄・導師輔導補填</small></span><span class="arrow">›</span></button>
           </div>
         </section>
       </div>
@@ -371,7 +404,58 @@ body.is-teacher .teacher-only-block{display:block}
       <section class="panel panel-pad"><h2 style="font-size:14px;margin:0 0 8px">老師操作流程</h2><p class="timer-note">1. 先在 Supabase 執行 <strong>supabase_setup_quiz.sql</strong> 建立 quiz_questions / quiz_results 兩張表（只需一次）。<br>2. 登入後到「題庫管理」用 Excel 一次匯入，或手動一題一題新增。<br>3. 學生在「學生測驗」輸入姓名、班級、座號 → 開始作答 → 繳交，成績自動存到「學生成績」。<br>4. 訪客看不到題庫管理與成績，只有老師登入才看得到。</p></section>
     </section>
 
-  </main>
+  
+    <section class="view" id="view-counseling" aria-labelledby="counselingTitle">
+      <div class="page-head"><div><div class="eyebrow">輔導管理・資處科</div><h1 id="counselingTitle">學生輔導紀錄表</h1><p>學生填上半部、儲存後，導師在另一台電腦登入就能補填下半部。歷史紀錄只有教師登入才看得到。</p></div><div class="head-actions no-print"><button class="btn btn-secondary" id="counPrintBtn" type="button">列印 / 存成 PDF</button></div></div>
+      <div class="coun-tabs no-print" role="tablist" aria-label="輔導表切換"><button class="coun-tab active" id="counTabFormBtn" type="button">填寫表單</button><button class="coun-tab" id="counTabListBtn" type="button">歷史紀錄（導師）</button></div>
+      <div class="coun-mode no-print"><strong>填寫身分：</strong><button id="counModeStudentBtn" class="active" type="button">我是學生</button><button id="counModeTeacherBtn" type="button">我是導師</button><span class="coun-badge" id="counModeLabel">學生模式：只能填上半部</span><span class="panel-sub">學生填完儲存 → 導師登入後開歷史紀錄 → 載入編輯補填</span></div>
+      <div id="counFormPanel">
+        <section class="panel panel-pad" style="margin-bottom:14px"><h2 class="coun-section-title">一、基本資料</h2>
+          <div class="section-grid">
+            <div class="field"><label for="counYear">學年度 <span class="coun-required">*</span></label><select id="counYear"><option>112</option><option>113</option><option selected>114</option><option>115</option><option>116</option></select></div>
+            <div class="field"><label for="counSemester">學期 <span class="coun-required">*</span></label><select id="counSemester"><option>上學期</option><option>下學期</option></select></div>
+            <div class="field"><label for="counClassName">班級 <span class="coun-required">*</span></label><select id="counClassName"><option>資處一甲</option><option>資處一乙</option><option>資處二甲</option><option>資處二乙</option><option>資處三甲</option><option>資處三乙</option><option value="other">其他</option></select><input id="counClassOther" placeholder="若選其他，請輸入班級" style="margin-top:8px;display:none"></div>
+            <div class="field"><label for="counSeat">座號 <span class="coun-required">*</span></label><input id="counSeat" placeholder="例如：12" inputmode="numeric"></div>
+            <div class="field"><label for="counName">姓名 <span class="coun-required">*</span></label><input id="counName" placeholder="請輸入姓名"></div>
+            <div class="field"><label for="counStudentId">學號</label><input id="counStudentId" placeholder="例如：112001"></div>
+            <div class="field"><label for="counFillDate">填表日期</label><input id="counFillDate" type="date"></div>
+            <div class="field"><label for="counTeacherName">導師姓名</label><input id="counTeacherName" placeholder="例如：蕭老師"></div>
+          </div>
+        </section>
+        <section class="panel panel-pad" style="margin-bottom:14px"><h2 class="coun-section-title">二、事件紀錄（學生填寫）</h2>
+          <div class="section-grid">
+            <div class="field"><label for="counEventDate">發生日期</label><input id="counEventDate" type="date"></div>
+            <div class="field"><label for="counEventTime">發生時間</label><input id="counEventTime" type="time"></div>
+            <div class="field"><label for="counPlace">發生地點</label><select id="counPlace"><option>教室</option><option>走廊</option><option>操場</option><option>實習工場 / 電腦教室</option><option>校外</option><option>其他</option></select></div>
+            <div class="field"><label for="counFiller">填表人</label><select id="counFiller"><option>學生本人</option><option>導師代填</option></select></div>
+          </div>
+          <h3 class="coun-sub">事件類別（可複選）</h3><div class="coun-checks" id="counEventTypes"></div>
+          <h3 class="coun-sub">事件經過描述 <span class="coun-required">*</span></h3><div class="field"><textarea id="counEventDesc" placeholder="請具體寫出人、事、時、地"></textarea></div>
+          <h3 class="coun-sub">學生自述與反省 <span class="coun-required">*</span></h3><div class="coun-hint">引導思考：1. 發生了什麼事？ 2. 為什麼會這樣做？ 3. 造成什麼影響？ 4. 下次會怎麼做？</div><div class="field"><textarea id="counReflection" placeholder="請用自己的話寫反省"></textarea></div>
+        </section>
+        <section class="panel panel-pad" style="margin-bottom:14px"><h2 class="coun-section-title">三、導師輔導（導師填寫） <span class="coun-badge lock" id="counTeacherLock">學生模式：已鎖定</span></h2>
+          <div class="section-grid">
+            <div class="field"><label for="counCounselDate">輔導日期</label><input id="counCounselDate" type="date" class="coun-teacher-field"></div>
+            <div class="field"><label for="counParentNotify">是否通知家長</label><select id="counParentNotify" class="coun-teacher-field"><option>尚未通知</option><option>已電話通知</option><option>已家長到校面談</option><option>不需通知</option></select></div>
+          </div>
+          <h3 class="coun-sub">輔導方式（可複選）</h3><div class="coun-checks" id="counCounselWays"></div>
+          <h3 class="coun-sub">導師輔導內容</h3><div class="field"><textarea id="counCounselContent" class="coun-teacher-field" placeholder="談話重點、學生反應、價值觀引導"></textarea></div>
+          <h3 class="coun-sub">學生回應與改善計畫</h3><div class="field"><textarea id="counImprovePlan" class="coun-teacher-field" placeholder="學生承諾的具體改善做法"></textarea></div>
+          <div class="section-grid" style="margin-top:12px">
+            <div class="field"><label for="counAgreement">約定事項</label><input id="counAgreement" class="coun-teacher-field" placeholder="例如：一週後再談一次"></div>
+            <div class="field"><label for="counFollowDate">追蹤日期</label><input id="counFollowDate" type="date" class="coun-teacher-field"></div>
+            <div class="field"><label for="counResult">處理結果</label><select id="counResult" class="coun-teacher-field"><option>口頭告誡</option><option>書面反省</option><option>勞動服務</option><option>通知家長</option><option>記警告</option><option>記小過</option><option>持續觀察</option><option>已改善結案</option></select></div>
+            <div class="field"><label for="counNeedFollow">是否需持續追蹤</label><select id="counNeedFollow" class="coun-teacher-field"><option>否</option><option>是</option></select></div>
+            <div class="field"><label for="counParentReply">家長聯繫與回應</label><input id="counParentReply" class="coun-teacher-field" placeholder="家長說法、配合事項"></div>
+            <div class="field"><label for="counTeacherSign">導師簽名</label><input id="counTeacherSign" class="coun-teacher-field" placeholder="請輸入導師姓名"></div>
+          </div>
+        </section>
+        <section class="panel panel-pad" style="margin-bottom:14px"><h2 class="coun-section-title">四、完成與保存</h2><div class="coun-notice">資料會存到 Supabase，不同電腦都能看到。請勿輸入身分證、密碼等敏感個資。學生只能新增，無法修改已儲存的紀錄；要改請找導師。填完可按「列印 / 存成 PDF」保存紙本。</div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px" class="no-print"><button class="btn btn-primary" id="counSaveBtn" type="button">✓ 儲存到 Supabase</button><button class="btn btn-secondary" id="counExampleBtn" type="button">載入範例</button><button class="btn btn-secondary" id="counClearBtn" type="button">清空表單</button></div><div id="counSaveMsg" class="panel-sub" style="margin-top:10px"></div></section>
+      </div>
+      <div id="counListPanel" style="display:none"><section class="panel panel-pad"><h2 class="coun-section-title">歷史紀錄（僅教師）</h2><div id="counGate"><p class="panel-sub">歷史紀錄只有教師登入才看得到，避免學生看到全班紀錄。請先用右上角「教師登入」登入。</p><button class="btn btn-primary" id="counGateLoginBtn" type="button">去教師登入</button></div><div id="counListArea" style="display:none"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><input id="counSearchBox" placeholder="搜尋：姓名、班級、座號" style="height:36px;border:1px solid var(--line);border-radius:9px;padding:0 10px;flex:1;min-width:160px"><button class="btn btn-secondary" id="counRefreshBtn" type="button">重新整理</button></div><div id="counCountLabel" class="panel-sub" style="margin-bottom:10px"></div><div id="counListBox" style="overflow-x:auto"></div><p class="panel-sub">點「載入編輯」可載回表單，導師補填後再按儲存即可更新。</p></div></section></div>
+      <section class="panel panel-pad" style="margin-top:14px"><h2 style="font-size:14px;margin:0 0 8px">使用方式</h2><p class="panel-sub" style="line-height:1.8">1. 學生：選「我是學生」，填一、二部分，檢查後按「儲存到 Supabase」。<br>2. 導師：右上角「教師登入」，切到「歷史紀錄」，點「載入編輯」，切到「我是導師」補填三的部分，再按儲存。<br>3. 第一次使用前，導師要先到 Supabase → SQL Editor 執行 <strong>supabase_setup_counseling.sql</strong> 建立輔導表（只需一次）。</p></section>
+    </section>
+</main>
 </div>
 </div>
 
@@ -437,7 +521,7 @@ let curriculum = JSON.parse(JSON.stringify(fallbackCurriculum));
 let resources = [...fallbackResources];
 let activeGrade = '11';
 
-const viewNames={home:'首頁',schedule:'學期課表',curriculum:'教學內容',resources:'教學資源連結',timer:'體能計時器',quiz:'線上測驗'};
+const viewNames={home:'首頁',schedule:'學期課表',curriculum:'教學內容',resources:'教學資源連結',timer:'體能計時器',quiz:'線上測驗',counseling:'學生輔導紀錄'};
 function showView(name){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));document.querySelectorAll('.nav-link').forEach(a=>a.classList.toggle('active',a.dataset.view===name));document.getElementById('crumbTitle').textContent=viewNames[name]||'首頁';document.getElementById('sidebar').classList.remove('open');document.getElementById('scrim').classList.remove('show');document.getElementById('menuBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});}
 document.querySelectorAll('[data-view]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showView(a.dataset.view)}));
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.go)));
@@ -510,6 +594,7 @@ async function refreshAuth(){
   updateAuthUI();
   renderUnits(); renderResources(); renderSchedule();
   if(typeof quizRefreshCounts==='function'){ quizRefreshCounts(); renderQuizBank(); renderQuizResults(); loadQuizFromSupabase(); }
+  if(typeof counOnAuthChange==='function'){ counOnAuthChange(); }
 }
 if(supabaseClient) supabaseClient.auth.onAuthStateChange(()=>refreshAuth());
 
@@ -1653,6 +1738,221 @@ const themeToggle=document.getElementById('themeToggle');function syncThemeLabel
 updateAuthUI();
 refreshAuth();
 loadFromSupabase();
+
+
+/* ===== 學生輔導紀錄（整合版，修正原獨立版漏洞） ===== */
+/* 修正：1) 刪除舊版寫死在網頁的導師密碼，改用本站 Supabase Auth + TEACHER_UID；2) 學生點「我是導師」不再直接解鎖，必須登入；3) 學生只能新增、不能改已存紀錄，學生送出時導師欄位強制歸零，避免用開發者工具偽造；4) 歷史紀錄只有教師能讀，學生就算猜到連結也讀不到（靠 RLS）；5) 日期改用本地日期，避免 toISOString UTC 差一天；6) 列表渲染 escape，避免姓名/描述 XSS；7) 座號、其他班級驗證。 */
+let counMode = 'student';
+let counEditingId = null;
+let counRecords = [];
+function counLocalDateStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function counEl(id){ return document.getElementById(id); }
+function counEscape(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+const counEventOptions = ['遲到早退','服儀不整','上課秩序','作業未交','手機使用不當','同儕衝突','言語不當','損壞公物','抽菸 / 違禁品','其他'];
+const counCounselOptions = ['個別談話','團體輔導','電話聯繫家長','家長到校面談','轉介輔導室','轉介教官室'];
+function counBuildChecks(id, opts, name){ const el=counEl(id); if(!el) return; el.innerHTML = opts.map(o=>'<label><input type="checkbox" name="'+name+'" value="'+o+'"> '+o+'</label>').join(''); }
+function counGetChecked(name){ return Array.from(document.querySelectorAll('input[name="'+name+'"]:checked')).map(e=>e.value); }
+function counSetChecked(name, vals){ document.querySelectorAll('input[name="'+name+'"]').forEach(e=>{ e.checked = (vals||[]).includes(e.value); }); }
+function counApplyMode(m){
+  counMode = m;
+  const sb=counEl('counModeStudentBtn'), tb=counEl('counModeTeacherBtn');
+  if(sb) sb.classList.toggle('active', m==='student');
+  if(tb) tb.classList.toggle('active', m==='teacher');
+  const label=counEl('counModeLabel'); if(label){ label.textContent = m==='student' ? '學生模式：只能填上半部' : '導師模式：可填寫全部'; label.className = m==='student' ? 'coun-badge lock' : 'coun-badge'; }
+  const lock=counEl('counTeacherLock'); if(lock){ lock.textContent = m==='student' ? '學生模式：已鎖定' : '導師模式：可填寫'; lock.className = m==='student' ? 'coun-badge lock' : 'coun-badge'; }
+  document.querySelectorAll('.coun-teacher-field').forEach(el=>{ el.disabled = m==='student'; });
+  document.querySelectorAll('#counCounselWays input').forEach(el=>{ el.disabled = m==='student'; });
+}
+function counSetMode(m){
+  if(m==='teacher' && !isTeacher){ requireTeacher(); return; }
+  counApplyMode(m);
+}
+function counOnAuthChange(){
+  if(!isTeacher){ counApplyMode('student'); }
+  const gate=counEl('counGate'), area=counEl('counListArea');
+  if(gate && area){ const show = !!isTeacher; gate.style.display = show ? 'none' : 'block'; area.style.display = show ? 'block' : 'none'; if(show) counLoadRecords(); }
+}
+function counShowPanel(name){
+  const formBtn=counEl('counTabFormBtn'), listBtn=counEl('counTabListBtn');
+  if(formBtn) formBtn.classList.toggle('active', name==='form');
+  if(listBtn) listBtn.classList.toggle('active', name==='list');
+  const fp=counEl('counFormPanel'), lp=counEl('counListPanel');
+  if(fp) fp.style.display = name==='form' ? 'block' : 'none';
+  if(lp) lp.style.display = name==='list' ? 'block' : 'none';
+  if(name==='list'){ counOnAuthChange(); }
+}
+function counGetForm(){
+  const clsSel=counEl('counClassName').value;
+  const cls = clsSel==='other' ? counEl('counClassOther').value.trim() : clsSel;
+  return {
+    year: counEl('counYear').value,
+    semester: counEl('counSemester').value,
+    class_name: cls,
+    seat: counEl('counSeat').value.trim(),
+    name: counEl('counName').value.trim(),
+    student_id: counEl('counStudentId').value.trim(),
+    fill_date: counEl('counFillDate').value || null,
+    teacher_name: counEl('counTeacherName').value.trim(),
+    event_date: counEl('counEventDate').value || null,
+    event_time: counEl('counEventTime').value || '',
+    place: counEl('counPlace').value,
+    filler: counEl('counFiller').value,
+    event_types: counGetChecked('counEventType'),
+    event_desc: counEl('counEventDesc').value.trim(),
+    reflection: counEl('counReflection').value.trim(),
+    counsel_date: counEl('counCounselDate').value || null,
+    parent_notify: counEl('counParentNotify').value,
+    counsel_ways: counGetChecked('counCounselWay'),
+    counsel_content: counEl('counCounselContent').value.trim(),
+    improve_plan: counEl('counImprovePlan').value.trim(),
+    agreement: counEl('counAgreement').value.trim(),
+    follow_date: counEl('counFollowDate').value || null,
+    result: counEl('counResult').value,
+    need_follow: counEl('counNeedFollow').value,
+    parent_reply: counEl('counParentReply').value.trim(),
+    teacher_sign: counEl('counTeacherSign').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+}
+function counSetForm(d){
+  counEl('counYear').value = d.year || '114';
+  counEl('counSemester').value = d.semester || '上學期';
+  const sel = counEl('counClassName');
+  if([...sel.options].some(o=>o.value===d.class_name)){ sel.value = d.class_name; counEl('counClassOther').style.display='none'; }
+  else { sel.value='other'; counEl('counClassOther').style.display='block'; counEl('counClassOther').value = d.class_name || ''; }
+  counEl('counSeat').value = d.seat || '';
+  counEl('counName').value = d.name || '';
+  counEl('counStudentId').value = d.student_id || '';
+  counEl('counFillDate').value = d.fill_date || '';
+  counEl('counTeacherName').value = d.teacher_name || '';
+  counEl('counEventDate').value = d.event_date || '';
+  counEl('counEventTime').value = d.event_time || '';
+  counEl('counPlace').value = d.place || '教室';
+  counEl('counFiller').value = d.filler || '學生本人';
+  counSetChecked('counEventType', d.event_types);
+  counEl('counEventDesc').value = d.event_desc || '';
+  counEl('counReflection').value = d.reflection || '';
+  counEl('counCounselDate').value = d.counsel_date || '';
+  counEl('counParentNotify').value = d.parent_notify || '尚未通知';
+  counSetChecked('counCounselWay', d.counsel_ways);
+  counEl('counCounselContent').value = d.counsel_content || '';
+  counEl('counImprovePlan').value = d.improve_plan || '';
+  counEl('counAgreement').value = d.agreement || '';
+  counEl('counFollowDate').value = d.follow_date || '';
+  counEl('counResult').value = d.result || '口頭告誡';
+  counEl('counNeedFollow').value = d.need_follow || '否';
+  counEl('counParentReply').value = d.parent_reply || '';
+  counEl('counTeacherSign').value = d.teacher_sign || '';
+}
+async function counSaveRecord(){
+  if(!supabaseClient){ toast('尚未連接 Supabase，請先確認網路與設定。'); return; }
+  if(!dbConnected && !isTeacher){ /* 學生新增仍可嘗試，錯誤時會提示建表 */ }
+  const d = counGetForm();
+  if(!d.class_name){ toast('請填寫班級：若選「其他」，請在下方輸入班級。'); return; }
+  if(!d.seat || !/^\d{1,3}$/.test(d.seat)){ toast('座號請填 1 到 3 位數字。'); return; }
+  if(!d.name){ toast('請填寫姓名。'); return; }
+  if(!d.event_desc || !d.reflection){ toast('請填寫：事件經過、學生自述與反省。'); return; }
+  if(counEditingId && !isTeacher){ toast('學生只能新增，不能修改已儲存的紀錄，請找導師協助。'); return; }
+  let payload = d;
+  if(!isTeacher){
+    payload = Object.assign({}, d, { counsel_date:null, parent_notify:'尚未通知', counsel_ways:[], counsel_content:'', improve_plan:'', agreement:'', follow_date:null, result:'口頭告誡', need_follow:'否', parent_reply:'', teacher_sign:'' });
+  }
+  let res;
+  if(counEditingId){ res = await supabaseClient.from('counseling_records').update(payload).eq('id', counEditingId); }
+  else { res = await supabaseClient.from('counseling_records').insert([payload]); }
+  if(res.error){
+    const msg = String(res.error.message||'') + String(res.error.code||'');
+    if(msg.includes('does not exist') || msg.includes('PGRST205') || msg.includes('42P01') || msg.includes('relation')){
+      toast('尚未建立輔導紀錄表，請導師到 Supabase 執行 supabase_setup_counseling.sql 再儲存。');
+    } else if(msg.includes('row-level') || msg.includes('42501') || msg.includes('permission')){
+      toast('儲存失敗：權限不足，請確認已執行新的輔導表 RLS 設定。');
+    } else {
+      toast('儲存失敗：' + res.error.message);
+    }
+    return;
+  }
+  counEl('counSaveMsg').textContent = '已儲存到 Supabase！導師在另一台電腦登入後開歷史紀錄就能看到。';
+  toast(counEditingId ? '輔導紀錄已更新。' : '已儲存到 Supabase。');
+  counEditingId = null;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+async function counLoadRecords(){
+  if(!requireTeacher()) return;
+  if(!supabaseClient) return;
+  const box=counEl('counListBox'); if(box) box.innerHTML = '<p class="panel-sub">讀取中…</p>';
+  const { data, error } = await supabaseClient.from('counseling_records').select('*').order('created_at', {ascending:false});
+  if(error){
+    const msg = String(error.message||'') + String(error.code||'');
+    if(msg.includes('does not exist') || msg.includes('PGRST205') || msg.includes('42P01') || msg.includes('relation')){
+      if(box) box.innerHTML = '<p class="panel-sub">尚未建立輔導紀錄表，請到 Supabase → SQL Editor 執行 supabase_setup_counseling.sql（只需一次），再按重新整理。</p>';
+      toast('尚未建立輔導紀錄表，請執行 supabase_setup_counseling.sql。');
+    } else {
+      if(box) box.innerHTML = '<p class="panel-sub">讀取失敗：' + counEscape(error.message) + '</p>';
+    }
+    return;
+  }
+  counRecords = data || [];
+  counRenderList();
+}
+function counRenderList(){
+  const q = (counEl('counSearchBox')?.value || '').trim();
+  let arr = counRecords;
+  if(q) arr = arr.filter(x=> ((x.name||'') + (x.class_name||'') + String(x.seat||'') + (Array.isArray(x.event_types)?x.event_types.join(','):'')).includes(q));
+  const countEl=counEl('counCountLabel'); if(countEl) countEl.textContent = '共 ' + arr.length + ' 筆' + (q ? '（已篩選）' : '');
+  const box=counEl('counListBox'); if(!box) return;
+  if(!arr.length){ box.innerHTML = '<p class="panel-sub">目前沒有紀錄。</p>'; return; }
+  box.innerHTML = '<table class="coun-table"><tr><th>日期 / 班級座號</th><th>姓名 / 事件</th><th>導師處理</th><th>操作</th></tr>' + arr.map(x=>'<tr><td>'+counEscape(x.fill_date||'')+'<br>'+counEscape(x.class_name||'')+' '+counEscape(x.seat||'')+'號</td><td><strong>'+counEscape(x.name||'')+'</strong><br>'+counEscape((Array.isArray(x.event_types)?x.event_types:[]).join('、'))+'<br><span class="panel-sub">'+counEscape((x.event_desc||'').slice(0,40))+'</span></td><td>'+counEscape(x.result||'尚未處理')+'<br>'+(x.need_follow==='是'?'需追蹤 ':'')+counEscape(x.parent_notify||'')+'</td><td><button class="btn btn-secondary" style="height:32px;font-size:12px" onclick="counEditRecord(\''+x.id+'\')">載入編輯</button> <button class="btn btn-secondary" style="height:32px;font-size:12px" onclick="counDeleteRecord(\''+x.id+'\')">刪除</button></td></tr>').join('') + '</table>';
+}
+function counEditRecord(id){
+  if(!requireTeacher()) return;
+  const rec = counRecords.find(x=>x.id===id); if(!rec) return;
+  counEditingId = id; counSetForm(rec);
+  counShowPanel('form'); counApplyMode('teacher');
+  toast('已載入，請補填導師輔導部分，填完再按儲存。');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+async function counDeleteRecord(id){
+  if(!requireTeacher()) return;
+  if(!confirm('確定刪除這筆輔導紀錄嗎？')) return;
+  const { error } = await supabaseClient.from('counseling_records').delete().eq('id', id);
+  if(error){ toast('刪除失敗：' + error.message); return; }
+  toast('已刪除。');
+  counLoadRecords();
+}
+function counClearForm(){
+  if(!confirm('確定清空目前表單？')) return;
+  counEditingId=null;
+  document.querySelectorAll('#view-counseling input:not([type=checkbox]):not([type=password]), #view-counseling textarea').forEach(e=>{ e.value=''; });
+  document.querySelectorAll('#view-counseling input[type=checkbox]').forEach(e=>{ e.checked=false; });
+  const today=counLocalDateStr();
+  counEl('counFillDate').value=today; counEl('counEventDate').value=today; counEl('counCounselDate').value=today;
+  counEl('counYear').value='114'; counEl('counSemester').value='上學期'; counEl('counClassName').value='資處一甲'; counEl('counClassOther').style.display='none';
+  counEl('counSaveMsg').textContent='';
+  counApplyMode('student');
+}
+function counLoadExample(){
+  const today=counLocalDateStr();
+  const next=new Date(Date.now()+7*86400000); const nextStr=next.getFullYear()+'-'+String(next.getMonth()+1).padStart(2,'0')+'-'+String(next.getDate()).padStart(2,'0');
+  counSetForm({year:'114',semester:'上學期',class_name:'資處二甲',seat:'12',name:'王小明',student_id:'112012',fill_date:today,teacher_name:'蕭老師',event_date:today,event_time:'10:20',place:'教室',event_types:['上課秩序','手機使用不當'],event_desc:'第二節資料處理課上課中，使用手機玩遊戲，經老師提醒仍繼續使用。',reflection:'我因為覺得課程很無聊就玩手機，被提醒還不收起來，影響了老師上課。我下次上課會把手機交到手機櫃，專心上課。',counsel_date:today,counsel_ways:['個別談話'],counsel_content:'個別談話，說明課堂規範與手機使用規定，學生表示理解並願意改善。',improve_plan:'上課手機放入手機櫃，一週內不再違規。',agreement:'一週後再談一次',follow_date:nextStr,result:'口頭告誡',need_follow:'是',parent_notify:'已電話通知',parent_reply:'家長表示會再提醒孩子',teacher_sign:'蕭老師'});
+  if(isTeacher){ counApplyMode('teacher'); } else { counApplyMode('student'); toast('範例已載入。導師欄位需登入後才能編輯，學生送出時會自動清空導師欄位。'); }
+}
+/* 初始化 */
+counBuildChecks('counEventTypes', counEventOptions, 'counEventType');
+counBuildChecks('counCounselWays', counCounselOptions, 'counCounselWay');
+(function(){ const t=counLocalDateStr(); if(counEl('counFillDate')) counEl('counFillDate').value=t; if(counEl('counEventDate')) counEl('counEventDate').value=t; if(counEl('counCounselDate')) counEl('counCounselDate').value=t; })();
+counEl('counClassName')?.addEventListener('change', e=>{ counEl('counClassOther').style.display = e.target.value==='other' ? 'block' : 'none'; });
+counEl('counTabFormBtn')?.addEventListener('click', ()=>counShowPanel('form'));
+counEl('counTabListBtn')?.addEventListener('click', ()=>counShowPanel('list'));
+counEl('counModeStudentBtn')?.addEventListener('click', ()=>counSetMode('student'));
+counEl('counModeTeacherBtn')?.addEventListener('click', ()=>counSetMode('teacher'));
+counEl('counSaveBtn')?.addEventListener('click', counSaveRecord);
+counEl('counExampleBtn')?.addEventListener('click', counLoadExample);
+counEl('counClearBtn')?.addEventListener('click', counClearForm);
+counEl('counPrintBtn')?.addEventListener('click', ()=>window.print());
+counEl('counGateLoginBtn')?.addEventListener('click', ()=>{ openLoginModal(); });
+counEl('counRefreshBtn')?.addEventListener('click', counLoadRecords);
+counEl('counSearchBox')?.addEventListener('input', counRenderList);
+counApplyMode('student');
 
 </script>
 </body>
