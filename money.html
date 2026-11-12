@@ -41,9 +41,9 @@
 
   <main class="max-w-7xl mx-auto px-4 py-6">
     <div id="cloud-banner" class="mb-4 p-3 rounded-xl border text-sm flex flex-wrap gap-2 items-center justify-between bg-amber-50 border-amber-200 text-amber-900">
-      <span><b>☁️ 雲端同步：</b><span id="cloud-banner-text">正在檢查登入…</span><span id="cloud-updated-at" class="text-xs text-slate-500 ml-2"></span></span>
+      <span><b>☁️ 雲端同步：</b><span id="cloud-banner-text">正在檢查登入…</span><span id="cloud-updated-at" class="text-xs text-slate-500 ml-2"></span><span class="text-xs text-slate-500">（登入請按右上角按鈕）</span></span>
       <span class="flex gap-2">
-        <button id="banner-login-btn" onclick="openAuthModal()" class="px-3 py-1.5 bg-indigo-900 text-white rounded-lg text-xs font-bold">登入 / 註冊</button>
+
         <button id="banner-sync-btn" onclick="manualSyncFromCloud()" class="hidden px-3 py-1.5 bg-white border border-emerald-600 text-emerald-700 rounded-lg text-xs font-bold">從雲端重新載入</button>
         <button id="banner-push-btn" onclick="manualPushToCloud()" class="hidden px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold">立即同步到雲端</button>
       </span>
@@ -531,10 +531,8 @@
       const emailEl = document.getElementById('auth-email');
       const loginBtn = document.getElementById('auth-btn');
       const logoutBtn = document.getElementById('logout-btn');
-      const bannerLogin = document.getElementById('banner-login-btn');
       const bannerSync = document.getElementById('banner-sync-btn');
       const bannerPush = document.getElementById('banner-push-btn');
-      if(bannerLogin) bannerLogin.classList.toggle('hidden', !!isLoggedIn);
       if(bannerSync) bannerSync.classList.toggle('hidden', !isLoggedIn);
       if(bannerPush) bannerPush.classList.toggle('hidden', !isLoggedIn);
       const el2 = document.getElementById('auth-email');
