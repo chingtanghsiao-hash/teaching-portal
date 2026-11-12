@@ -6,6 +6,7 @@
   <title>BOSS XIAO私校教師全方位資產與退休理財試算平台</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
@@ -21,6 +22,12 @@
         <i class="fa-solid fa-graduation-cap text-2xl text-amber-400"></i>
         <h1 class="text-xl font-bold tracking-wide">BOSS XIAO私校教師全方位資產與退休理財試算平台</h1>
       </div>
+      <div class="flex items-center gap-2 text-sm mt-2 sm:mt-0">
+        <span id="sync-status" class="px-2 py-1 rounded bg-white/10 text-xs">未登入・資料只在這台電腦</span>
+        <span id="auth-email" class="hidden text-xs text-amber-200 max-w-[160px] truncate"></span>
+        <button id="auth-btn" onclick="openAuthModal()" class="px-3 py-1.5 bg-amber-400 text-indigo-900 rounded-lg font-bold hover:bg-amber-300 transition">登入 / 註冊</button>
+        <button id="logout-btn" onclick="handleLogout()" class="hidden px-3 py-1.5 bg-white/20 rounded-lg font-medium hover:bg-white/30 transition">登出</button>
+      </div>
       <nav class="flex space-x-1 sm:space-x-2 mt-2 sm:mt-0 text-sm">
         <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-3 py-2 rounded-lg bg-indigo-800 font-medium hover:bg-indigo-700 transition">總覽</button>
         <button onclick="switchTab('accounting')" id="nav-accounting" class="px-3 py-2 rounded-lg hover:bg-indigo-700 font-medium transition">日常記帳</button>
@@ -33,6 +40,10 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-4 py-6">
+    <div id="cloud-banner" class="mb-4 p-3 rounded-xl border text-sm flex flex-wrap gap-2 items-center justify-between bg-amber-50 border-amber-200 text-amber-900">
+      <span><b>☁️ 雲端同步：</b><span id="cloud-banner-text">未登入，資料只存在這台電腦。登入後會自動存到雲端，換電腦登入也能看到。</span></span>
+      <button onclick="openAuthModal()" class="px-3 py-1.5 bg-indigo-900 text-white rounded-lg text-xs font-bold">登入 / 註冊</button>
+    </div>
 
     <!-- 1. 總覽 Tab -->
     <section id="tab-dashboard" class="space-y-6">
@@ -453,6 +464,29 @@
 
   </main>
 
+  <!-- 登入 / 註冊 Modal -->
+  <div id="auth-backdrop" onclick="if(event.target===this) closeAuthModal()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex justify-center items-center z-[60] p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 space-y-4">
+      <h3 class="text-lg font-bold text-slate-800">登入理財平台</h3>
+      <p class="text-sm text-slate-500">登入後資料會存到雲端，換電腦登入也能看到。第一次使用請先註冊一組 Email + 密碼（和教學入口是同一個 Supabase 專案，可用同一組帳號）。</p>
+      <div>
+        <label class="block text-slate-600 font-medium mb-1 text-sm">Email</label>
+        <input id="auth-email-input" type="email" placeholder="你的 Email" class="w-full border rounded-lg p-2 outline-none">
+      </div>
+      <div>
+        <label class="block text-slate-600 font-medium mb-1 text-sm">密碼</label>
+        <input id="auth-password-input" type="password" placeholder="至少 6 碼" class="w-full border rounded-lg p-2 outline-none">
+      </div>
+      <p id="auth-error" class="hidden text-sm text-rose-600"></p>
+      <div class="flex gap-2">
+        <button onclick="closeAuthModal()" class="flex-1 px-4 py-2 border rounded-lg text-slate-600">取消</button>
+        <button onclick="handleRegister()" class="flex-1 px-4 py-2 bg-white border border-indigo-600 text-indigo-700 rounded-lg font-bold">註冊</button>
+        <button onclick="handleLogin()" class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold">登入</button>
+      </div>
+      <p class="text-xs text-slate-400">註冊後若要開通 Email 驗證，請到 Supabase → Authentication → 關掉 Confirm email，或到信箱收驗證信。</p>
+    </div>
+  </div>
+
   <!-- 通用 Modal 彈窗 (編輯與新增) -->
   <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex justify-center items-center z-50 p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4 relative">
@@ -468,6 +502,124 @@
   </div>
 
   <script>
+    // ===== Supabase 雲端同步（和教學入口同一個專案）=====
+    const SUPABASE_URL = "https://ethxjdihoqysmugygdta.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vun13ZjidhA7UhxcjJm4GQ_ePFqVqUt";
+    const supabaseClient = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY) : null;
+    let currentUser = null;
+    let cloudLoaded = false;
+    let cloudSaveTimer = null;
+    let isSavingCloud = false;
+
+    function setSyncStatus(text, isLoggedIn){
+      const el = document.getElementById('sync-status');
+      const banner = document.getElementById('cloud-banner-text');
+      const emailEl = document.getElementById('auth-email');
+      const loginBtn = document.getElementById('auth-btn');
+      const logoutBtn = document.getElementById('logout-btn');
+      const bannerBox = document.getElementById('cloud-banner');
+      if(el) el.textContent = text;
+      if(banner) banner.textContent = text;
+      if(emailEl){
+        if(isLoggedIn && currentUser){ emailEl.textContent = currentUser.email || ''; emailEl.classList.remove('hidden'); }
+        else emailEl.classList.add('hidden');
+      }
+      if(loginBtn) loginBtn.classList.toggle('hidden', !!isLoggedIn);
+      if(logoutBtn) logoutBtn.classList.toggle('hidden', !isLoggedIn);
+      if(bannerBox){
+        bannerBox.className = isLoggedIn
+          ? 'mb-4 p-3 rounded-xl border text-sm flex flex-wrap gap-2 items-center justify-between bg-emerald-50 border-emerald-200 text-emerald-900'
+          : 'mb-4 p-3 rounded-xl border text-sm flex flex-wrap gap-2 items-center justify-between bg-amber-50 border-amber-200 text-amber-900';
+      }
+    }
+    function openAuthModal(){ document.getElementById('auth-backdrop').classList.remove('hidden'); }
+    function closeAuthModal(){ document.getElementById('auth-backdrop').classList.add('hidden'); document.getElementById('auth-error').classList.add('hidden'); }
+    function showAuthError(msg){ const e=document.getElementById('auth-error'); e.textContent=msg; e.classList.remove('hidden'); }
+    async function handleLogin(){
+      if(!supabaseClient) return showAuthError('雲端服務未載入，請檢查網路後重新整理。');
+      const email=document.getElementById('auth-email-input').value.trim();
+      const password=document.getElementById('auth-password-input').value;
+      if(!email||!password) return showAuthError('請輸入 Email 和密碼。');
+      const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+      if(error) return showAuthError('登入失敗：'+error.message);
+      currentUser=data.user; closeAuthModal(); await loadFromCloud(); setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
+    }
+    async function handleRegister(){
+      if(!supabaseClient) return showAuthError('雲端服務未載入，請檢查網路後重新整理。');
+      const email=document.getElementById('auth-email-input').value.trim();
+      const password=document.getElementById('auth-password-input').value;
+      if(!email||password.length<6) return showAuthError('註冊需要 Email + 至少 6 碼密碼。');
+      const {data,error}=await supabaseClient.auth.signUp({email,password});
+      if(error) return showAuthError('註冊失敗：'+error.message);
+      if(data.user && !data.session) return showAuthError('註冊成功，請到信箱收驗證信，驗證後再登入。若不想驗證，請到 Supabase 關掉 Confirm email。');
+      currentUser=data.user; closeAuthModal(); await loadFromCloud(); setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
+    }
+    async function handleLogout(){
+      if(!supabaseClient) return;
+      await supabaseClient.auth.signOut();
+      currentUser=null; cloudLoaded=false;
+      setSyncStatus('已登出・資料只在這台電腦', false);
+    }
+    function getAllData(){
+      return {
+        transactions, stocks, loans, savings,
+        pension: {
+          salary: document.getElementById('pen-salary')?.value || '',
+          years: document.getElementById('pen-years')?.value || '',
+          rate: document.getElementById('pen-rate')?.value || ''
+        },
+        updatedAt: new Date().toISOString()
+      };
+    }
+    function applyData(d){
+      if(!d) return;
+      if(Array.isArray(d.transactions)) transactions=d.transactions;
+      if(Array.isArray(d.stocks)) stocks=d.stocks;
+      if(Array.isArray(d.loans)) loans=d.loans;
+      if(Array.isArray(d.savings)) savings=d.savings;
+      if(d.pension){
+        if(document.getElementById('pen-salary') && d.pension.salary!=='') document.getElementById('pen-salary').value=d.pension.salary;
+        if(document.getElementById('pen-years') && d.pension.years!=='') document.getElementById('pen-years').value=d.pension.years;
+        if(document.getElementById('pen-rate') && d.pension.rate!=='') document.getElementById('pen-rate').value=d.pension.rate;
+      }
+    }
+    async function loadFromCloud(){
+      if(!supabaseClient || !currentUser) return;
+      setSyncStatus('同步中…', true);
+      const {data,error}=await supabaseClient.from('finance_data').select('data').eq('user_id', currentUser.id).maybeSingle();
+      if(error){ console.error(error); setSyncStatus('雲端讀取失敗，顯示本機資料：'+error.message, true); return; }
+      if(data && data.data){
+        applyData(data.data);
+        cloudLoaded=true;
+        renderDashboard(); renderTxTable(); renderStocks(); renderLoans(); renderSavings(); calcPension();
+        setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
+      }else{
+        // 雲端是空的，把本機資料上傳（第一次登入不遺失）
+        cloudLoaded=true;
+        await saveToCloud(true);
+        setSyncStatus('已登入・本機資料已上傳到雲端：'+currentUser.email, true);
+      }
+    }
+    function saveToCloud(immediate){
+      if(!supabaseClient || !currentUser) return Promise.resolve();
+      if(!immediate){
+        clearTimeout(cloudSaveTimer);
+        return new Promise(res=>{ cloudSaveTimer=setTimeout(()=>{ saveToCloud(true).then(res); }, 800); });
+      }
+      if(isSavingCloud) return Promise.resolve();
+      isSavingCloud=true;
+      setSyncStatus('同步中…', true);
+      const payload={ user_id: currentUser.id, data: getAllData(), updated_at: new Date().toISOString() };
+      return supabaseClient.from('finance_data').upsert(payload, {onConflict:'user_id'}).then(({error})=>{
+        isSavingCloud=false;
+        if(error){ console.error(error); setSyncStatus('雲端儲存失敗：'+error.message, true); }
+        else setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
+      });
+    }
+    function savePensionLocal(){
+      try{ localStorage.setItem('teacher_pension', JSON.stringify(getAllData().pension)); }catch(e){}
+    }
+
     let transactions = [
                 { date: '2026-10-02', type: '支', category: '孝親費', amount: 6000, account: '現金', member: '自己', note: '媽媽生日禮金' },
       { date: '2026-10-01', type: '支', category: '教育', amount: 4000, account: '銀行', member: '鎮緯', note: '鎮緯零用錢' },
@@ -497,11 +649,26 @@
     let chartInstancePie = null;
     let chartInstanceCat = null;
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       if (localStorage.getItem('teacher_tx')) transactions = JSON.parse(localStorage.getItem('teacher_tx'));
       if (localStorage.getItem('teacher_stocks')) stocks = JSON.parse(localStorage.getItem('teacher_stocks'));
       if (localStorage.getItem('teacher_loans')) loans = JSON.parse(localStorage.getItem('teacher_loans'));
       if (localStorage.getItem('teacher_savings')) savings = JSON.parse(localStorage.getItem('teacher_savings'));
+      try{ const p=JSON.parse(localStorage.getItem('teacher_pension')||'null'); if(p){ if(document.getElementById('pen-salary')) document.getElementById('pen-salary').value=p.salary; if(document.getElementById('pen-years')) document.getElementById('pen-years').value=p.years; if(document.getElementById('pen-rate')) document.getElementById('pen-rate').value=p.rate; } }catch(e){}
+      // 若已登入，從雲端載入（雲端會覆蓋本機）；若未登入，顯示本機資料
+      if(supabaseClient){
+        const {data}=await supabaseClient.auth.getSession();
+        if(data && data.session && data.session.user){
+          currentUser=data.session.user;
+          await loadFromCloud();
+        } else {
+          setSyncStatus('未登入・資料只在這台電腦', false);
+        }
+        supabaseClient.auth.onAuthStateChange(async (_event, session)=>{
+          if(session && session.user && !currentUser){ currentUser=session.user; await loadFromCloud(); }
+          if(!session){ currentUser=null; setSyncStatus('未登入・資料只在這台電腦', false); }
+        });
+      }
 
       document.getElementById('tx-date').valueAsDate = new Date();
 
@@ -511,12 +678,16 @@
       renderLoans();
       renderSavings();
       calcPension();
+      ['pen-salary','pen-years','pen-rate'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('change', ()=>{ savePensionLocal(); saveToCloud(false); }); });
     });
 
     function saveAllToStorage() {
+      localStorage.setItem('teacher_tx', JSON.stringify(transactions));
       localStorage.setItem('teacher_stocks', JSON.stringify(stocks));
       localStorage.setItem('teacher_loans', JSON.stringify(loans));
       localStorage.setItem('teacher_savings', JSON.stringify(savings));
+      savePensionLocal();
+      saveToCloud(false);
     }
 
     function switchTab(tabName) {
@@ -611,6 +782,7 @@
 
       transactions.unshift(newTx);
       localStorage.setItem('teacher_tx', JSON.stringify(transactions));
+      saveToCloud(false);
       document.getElementById('addTxForm').reset();
       document.getElementById('tx-date').valueAsDate = new Date();
 
@@ -622,6 +794,7 @@
       if (confirm('確定要刪除此筆記帳嗎？')) {
         transactions.splice(index, 1);
         localStorage.setItem('teacher_tx', JSON.stringify(transactions));
+        saveToCloud(false);
         renderTxTable();
         renderDashboard();
       }
