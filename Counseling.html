@@ -83,7 +83,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <h3>學生自述與反省 <span style="color:#dc2626">*</span></h3><div class="hint">引導思考：1. 發生了什麼事？ 2. 為什麼會這樣做？ 3. 造成什麼影響？ 4. 下次會怎麼做？</div><textarea id="reflection" placeholder="請用自己的話寫反省"></textarea></div>
 
 <div class="card"><h2>三、導師輔導（導師填寫） <span class="badge lock" id="teacherLock">學生模式：已鎖定</span></h2>
-<div class="grid"><div><label>輔導日期</label><input id="counselDate" type="date" class="teacher-field"></div><div><label>是否通知家長</label><select id="parentNotify" class="teacher-field"><option>尚未通知</option><option>已電話通知</option><option>已家長到校面談</option><option>不需通知</option></select></div></div>
+<div class="grid"><div><label>輔導日期</label><input id="counselDate" type="date" class="teacher-field"></div><div><label>是否通知家長</label><select id="parentNotify" class="teacher-field"><option>尚未通知</option><option>已電話通知</option><option>已LINE連繫家長</option><option>已家長到校面談</option><option>不需通知</option></select></div></div>
 <h3>輔導方式（可複選）</h3><div class="checks" id="counselWays"></div>
 <h3>導師輔導內容</h3><textarea id="counselContent" class="teacher-field" placeholder="談話重點、學生反應、價值觀引導"></textarea>
 <h3>學生回應與改善計畫</h3><textarea id="improvePlan" class="teacher-field" placeholder="學生承諾的具體改善做法"></textarea>
@@ -113,7 +113,7 @@ function localDateStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d
 function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function toast(msg){ alert(msg); }
 const eventOptions = ['遲到早退','服儀不整','上課秩序','作業未交','手機使用不當','同儕衝突','言語不當','損壞公物','抽菸 / 違禁品','其他'];
-const counselOptions = ['個別談話','團體輔導','電話聯繫家長','家長到校面談','轉介輔導室','轉介教官室'];
+const counselOptions = ['個別談話','團體輔導','電話聯繫家長','LINE聯繫家長','家長到校面談','轉介輔導室','轉介教官室'];
 function buildChecks(id, opts, name){ el(id).innerHTML = opts.map(o=>'<label><input type="checkbox" name="'+name+'" value="'+o+'"> '+o+'</label>').join(''); }
 buildChecks('eventTypes', eventOptions, 'eventType');
 buildChecks('counselWays', counselOptions, 'counselWay');
