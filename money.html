@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOSS XIAO私校教師全方位資產與退休理財試算平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+    body { font-family: 'Noto Sans TC', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+  <!-- 頂部導覽列 -->
+  <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <i class="fa-solid fa-graduation-cap text-2xl text-amber-400"></i>
+        <h1 class="text-xl font-bold tracking-wide">BOSS XIAO私校教師全方位資產與退休理財試算平台</h1>
+      </div>
+      <nav class="flex space-x-1 sm:space-x-2 mt-2 sm:mt-0 text-sm">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-3 py-2 rounded-lg bg-indigo-800 font-medium hover:bg-indigo-700 transition">總覽</button>
+        <button onclick="switchTab('accounting')" id="nav-accounting" class="px-3 py-2 rounded-lg hover:bg-indigo-700 font-medium transition">日常記帳</button>
+        <button onclick="switchTab('pension')" id="nav-pension" class="px-3 py-2 rounded-lg hover:bg-indigo-700 font-medium transition">公保/退撫試算</button>
+        <button onclick="switchTab('stocks')" id="nav-stocks" class="px-3 py-2 rounded-lg hover:bg-indigo-700 font-medium transition">股票庫存</button>
+        <button onclick="switchTab('loans')" id="nav-loans" class="px-3 py-2 rounded-lg hover:bg-indigo-700 font-medium transition">貸款管理</button>
+        <button onclick="switchTab('savings')" id="nav-savings" class="px-3 py-2 rounded-lg hover:bg-indigo-700 font-medium transition">銀行存款</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+
+    <!-- 1. 總覽 Tab -->
+    <section id="tab-dashboard" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">目前淨資產</div>
+          <div class="text-2xl font-black text-indigo-600" id="dash-net-worth">$0</div>
+          <div class="text-xs text-slate-500 mt-1">包含股票、存款減去貸款金額</div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">預估退休月領總額 (公保+新制月退)</div>
+          <div class="text-2xl font-black text-emerald-600" id="dash-retired-monthly">$0</div>
+          <div class="text-xs text-slate-500 mt-1">公保養老年金 + 私校退撫新制定期給付</div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">股票當前總市值</div>
+          <div class="text-2xl font-black text-blue-600" id="dash-stock-val">$0</div>
+          <div class="text-xs text-slate-500 mt-1">預估年領股息: <span id="dash-stock-div" class="font-bold">$0</span></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">貸款總負債</div>
+          <div class="text-2xl font-black text-rose-600" id="dash-loan-val">$0</div>
+          <div class="text-xs text-slate-500 mt-1">每月需負擔本息: <span id="dash-loan-pay" class="font-bold">$0</span></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2">
+          <h3 class="text-lg font-bold text-slate-700 mb-4"><i class="fa-solid fa-chart-line text-indigo-500 mr-2"></i>資產結構與退休預測</h3>
+          <div class="h-64">
+            <canvas id="assetChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <h3 class="text-lg font-bold text-slate-700 mb-4"><i class="fa-solid fa-chart-pie text-amber-500 mr-2"></i>目前資產配置比重</h3>
+          <div class="h-64">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl text-amber-900 text-sm">
+        <h4 class="font-bold text-amber-950 mb-1"><i class="fa-solid fa-lightbulb mr-1"></i> 私校退撫基金官方給付說明：</h4>
+        <p>1. 舊制：第1年1個基數，第2年起每滿6個月1個基數、未滿6個月亦計1個基數，滿15年加發2個基數；金額＝（本薪＋930）×基數。</p>
+        <p>2. 新制儲金依據報酬率與法定提撥率複利滾存，並可按官方標準換算定期給付。</p>
+      </div>
+    </section>
+
+    <!-- 2. 日常記帳 Tab -->
+    <section id="tab-accounting" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center">
+          <div>
+            <div class="text-xs font-bold text-slate-400 uppercase">本月累計支出</div>
+            <div class="text-2xl font-black text-rose-600 mt-1" id="acc-month-expense">$0</div>
+          </div>
+          <div class="p-3 bg-rose-50 text-rose-500 rounded-full"><i class="fa-solid fa-arrow-up-right-dots text-xl"></i></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center">
+          <div>
+            <div class="text-xs font-bold text-slate-400 uppercase">本月累計收入</div>
+            <div class="text-2xl font-black text-emerald-600 mt-1" id="acc-month-income">$0</div>
+          </div>
+          <div class="p-3 bg-emerald-50 text-emerald-500 rounded-full"><i class="fa-solid fa-hand-holding-dollar text-xl"></i></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center">
+          <div>
+            <div class="text-xs font-bold text-slate-400 uppercase">總記錄筆數</div>
+            <div class="text-2xl font-black text-indigo-600 mt-1" id="acc-total-count">0 筆</div>
+          </div>
+          <div class="p-3 bg-indigo-50 text-indigo-500 rounded-full"><i class="fa-solid fa-list-check text-xl"></i></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-1">
+          <h3 class="text-lg font-bold text-slate-700 mb-4"><i class="fa-solid fa-pen-to-square text-indigo-500 mr-2"></i>快速新增記帳</h3>
+          <form id="addTxForm" onsubmit="handleAddTx(event)" class="space-y-3 text-sm">
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">日期</label>
+              <input type="date" id="tx-date" required class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-600 font-medium mb-1">收支區分</label>
+                <select id="tx-type" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+                  <option value="支">支出</option>
+                  <option value="收">收入</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-600 font-medium mb-1">金額</label>
+                <input type="number" id="tx-amount" min="1" required class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="NT$">
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">類別</label>
+              <input type="text" id="tx-category" list="category-list" required class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="選擇或填寫類別">
+              <datalist id="category-list">
+                <option value="飲食"><option value="保險"><option value="加油"><option value="教育"><option value="買菜">
+                <option value="日常用品"><option value="汽車"><option value="醫療保健"><option value="娛樂"><option value="薪資">
+              </datalist>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-600 font-medium mb-1">帳戶</label>
+                <select id="tx-account" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+                  <option value="現金">現金</option>
+                  <option value="銀行">銀行</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-600 font-medium mb-1">成員</label>
+                <input type="text" id="tx-member" value="自己" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">備註 / 說明</label>
+              <input type="text" id="tx-note" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="選填...">
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg transition">新增記錄</button>
+          </form>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 lg:col-span-2 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-slate-700 mb-2"><i class="fa-solid fa-chart-pie text-rose-500 mr-2"></i>支出類別分析</h3>
+            <p class="text-xs text-slate-500 mb-4">基於《天天記帳》數據累積統計</p>
+          </div>
+          <div class="h-64">
+            <canvas id="txCatChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+          <h3 class="text-lg font-bold text-slate-700"><i class="fa-solid fa-table-list text-indigo-500 mr-2"></i>收支歷史明細</h3>
+          <div class="flex flex-wrap gap-2 text-sm w-full md:w-auto">
+            <select id="filter-type" onchange="renderTxTable()" class="border border-slate-300 rounded-lg p-2 outline-none">
+              <option value="全部">全部收支</option>
+              <option value="支">僅看支出</option>
+              <option value="收">僅看收入</option>
+            </select>
+            <input type="text" id="filter-keyword" oninput="renderTxTable()" placeholder="搜尋類別、備註或成員..." class="border border-slate-300 rounded-lg p-2 outline-none">
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+              <tr>
+                <th class="p-3">日期</th>
+                <th class="p-3">類型</th>
+                <th class="p-3">類別</th>
+                <th class="p-3">金額</th>
+                <th class="p-3">帳戶</th>
+                <th class="p-3">成員</th>
+                <th class="p-3">備註</th>
+                <th class="p-3 text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tx-tbody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 公保/退撫試算 Tab (舊制支援年月計算) -->
+    <section id="tab-pension" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 1. 公保養老年金給付試算 -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <div class="flex items-center space-x-2 border-b border-slate-100 pb-3 mb-4">
+            <i class="fa-solid fa-shield-halved text-xl text-blue-600"></i>
+            <h3 class="text-lg font-bold text-slate-800">公保養老年金給付試算</h3>
+          </div>
+          <div class="space-y-4 text-sm">
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">退保前 10 年平均保險俸額 (元)</label>
+              <input type="number" id="pen-salary" value="52630" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+              <p class="text-xs text-slate-400 mt-1">依公保法規定採最後10年平均俸額</p>
+            </div>
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">公保投保總年資 (年)</label>
+              <input type="number" id="pen-years" value="25" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">公保年金給付率</label>
+              <select id="pen-rate" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+                <option value="0.013" selected>上限給付率 1.3% (私校常用)</option>
+                <option value="0.0075">基本給付率 0.75%</option>
+              </select>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl space-y-2 border border-slate-200">
+              <div class="flex justify-between">
+                <span class="text-slate-600">計算公式:</span>
+                <span class="font-mono text-xs text-slate-500">平均俸額 × 年資 × 給付率</span>
+              </div>
+              <div class="flex justify-between text-base border-t border-slate-200 pt-2">
+                <span class="font-bold text-slate-700">預估公保月退金:</span>
+                <span id="res-gov-monthly" class="font-black text-indigo-600 text-lg">$17,100</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 私校退撫舊制試算 (支援年與月) -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <div class="flex items-center space-x-2 border-b border-slate-100 pb-3 mb-4">
+            <i class="fa-solid fa-landmark text-xl text-amber-600"></i>
+            <h3 class="text-lg font-bold text-slate-800">私校退撫舊制試算 (98/12/31前)</h3>
+          </div>
+          <div class="space-y-4 text-sm">
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">舊制採計年資 (年與月)</label>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <input type="number" id="priv-old-years" value="5" min="0" max="30" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="年">
+                  <span class="text-xs text-slate-400 mt-0.5 block">年</span>
+                </div>
+                <div>
+                  <input type="number" id="priv-old-months" value="0" min="0" max="11" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="月">
+                  <span class="text-xs text-slate-400 mt-0.5 block">月</span>
+                </div>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">98/12/31以前之私校專任年資；公式：（本薪＋930）×基數，月數以6個月為1個基數、未滿6個月亦計1個</p>
+            </div>
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">本職最高薪額 (本薪)</label>
+              <input type="number" id="priv-max-salary" value="52630" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-amber-500 outline-none">
+            </div>
+            <div class="p-4 bg-amber-50 rounded-xl space-y-2 border border-amber-200">
+              <div class="flex justify-between">
+                <span class="text-amber-800">舊制計算給付基數:</span>
+                <span id="res-priv-old-bases" class="font-bold text-amber-900">9 個基數</span>
+              </div>
+              <div class="flex justify-between text-base border-t border-amber-200 pt-2">
+                <span class="font-bold text-amber-900">舊制一次退休金估計:</span>
+                <span id="res-priv-old-total" class="font-black text-amber-700 text-lg">$482,040</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. 私校退撫新制自主投資試算 (新制 Step 1-6) -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+          <div class="flex items-center space-x-2 border-b border-slate-100 pb-3 mb-4">
+            <i class="fa-solid fa-piggy-bank text-xl text-emerald-600"></i>
+            <h3 class="text-lg font-bold text-slate-800">私校退撫新制自主投資 (99.1.1後)</h3>
+          </div>
+          <div class="space-y-4 text-sm">
+            
+            <!-- 新制 Step 1 -->
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">新制 Step 1. 新制部份金額 (元)</label>
+              <input type="number" id="priv-new-balance" value="0" min="0" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 outline-none">
+              <p class="text-xs text-slate-400 mt-1">請輸入目前退撫儲金帳戶實際餘額，不是薪額推估值。若還不知道餘額，可用下方參考工具帶入。</p>
+            </div>
+            <!-- 預估累積小幫手 -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+              <p class="font-bold text-slate-700">參考工具：預估累積試算 <span class="font-normal text-xs text-slate-400">(不占步驟，還不知道餘額時用，僅供參考)</span></p>
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-slate-600 text-xs mb-1">本薪 (提撥基數 = 本薪 × 2)</label>
+                  <input type="number" id="priv-fund-salary" value="52630" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 outline-none">
+                </div>
+                <div>
+                  <label class="block text-slate-600 text-xs mb-1">預計儲金年資 (年)</label>
+                  <input type="number" id="priv-new-years" value="25" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 outline-none">
+                </div>
+                <div>
+                  <label class="block text-slate-600 text-xs mb-1">預計年收益率 (%)</label>
+                  <input type="number" step="0.1" id="priv-return-rate" value="4.0" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 outline-none">
+                </div>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 text-xs">法定提撥率 12% ・ 提撥基數 = 本薪 × 2 ・ 月提撥 = 本薪 × 2 × 12% = 本薪 × 24% ・ 複利滾存</span>
+                <span class="text-slate-600">預估累積：<span id="res-priv-est-total" class="font-bold text-slate-800">$0</span></span>
+              </div>
+              <div class="text-xs text-slate-600 bg-white border border-slate-200 rounded-lg p-2 space-y-0.5">
+                <div>提撥基數 (儲金薪額)：<span id="res-priv-base-salary" class="font-bold">$0</span> = 本薪 × 2</div>
+                <div>月提撥總額：<span id="res-priv-monthly-contrib" class="font-bold">$0</span> = 基數 × 12%（個人 <span id="res-priv-personal-contrib" class="font-bold">$0</span> + 學校 <span id="res-priv-school-contrib" class="font-bold">$0</span> + 主管機關 <span id="res-priv-gov-contrib" class="font-bold">$0</span>）</div>
+                <div class="text-slate-400">對照：本薪 55,690 → 基數 111,380 → 月提撥 13,366（個人 4,678 + 學校 4,344 + 主管機關 4,344）</div>
+              </div>
+              <button onclick="fillEstimatedBalance()" class="w-full py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-xs font-medium transition">把預估累積帶入新制 Step 1</button>
+            </div>
+            <!-- 新制 Step 2 -->
+            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 space-y-1">
+              <div class="flex justify-between">
+                <span class="text-emerald-800">新制 Step 2. 一次給付金額 (舊制 + 新制)：</span>
+                <span id="res-priv-lump-sum" class="font-black text-emerald-700">$482,040</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-emerald-800">新制儲金一次給付 (新制 Step 1)：</span>
+                <span id="res-priv-new-total" class="font-black text-emerald-700">$0</span>
+              </div>
+              <p class="text-xs text-slate-500">一次給付 = 舊制一次金 + 新制帳戶餘額</p>
+            </div>
+            <!-- 新制 Step 3 -->
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">新制 Step 3. 請選擇組合</label>
+              <div class="grid grid-cols-2 gap-2">
+                <select id="priv-portfolio" onchange="updatePortfolioRate();calcPension()" class="w-full border border-slate-300 rounded-lg p-2 outline-none">
+                  <option value="conservative" selected>法定儲金-保守型</option>
+                  <option value="steady">自選-穩健型</option>
+                  <option value="aggressive">自選-積極型</option>
+                  <option value="lifecycle">自選-人生週期型</option>
+                </select>
+                <div>
+                  <label class="block text-slate-600 text-xs mb-1">近五年年化報酬率 (%)，可自行修正</label>
+                  <input type="number" step="0.1" id="priv-portfolio-rate" value="2.0" onchange="calcPension()" class="w-full border border-slate-300 rounded-lg p-2 outline-none">
+                </div>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">下拉只是帶入參考值，請以退撫儲金官網最新公告的近五年年化報酬率為準，自行修正。</p>
+            </div>
+            <!-- 新制 Step 4 -->
+            <div>
+              <label class="block text-slate-600 font-medium mb-1">新制 Step 4. 退休後隔幾年開始領</label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="priv-defer-years" value="1" min="0" onchange="calcPension()" class="w-28 border border-slate-300 rounded-lg p-2 outline-none">
+                <span>年開始領</span>
+                <span class="text-xs text-slate-400">開始領時本金：<span id="res-priv-pv-start" class="font-bold text-slate-700">$0</span> (一次給付 × (1+報酬率)^延後年數)</span>
+              </div>
+            </div>
+            <!-- 新制 Step 5 -->
+            <div class="border border-slate-200 rounded-xl p-3 space-y-1">
+              <label class="block text-slate-600 font-medium">新制 Step 5. 請輸入每年想領回金額</label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="priv-annual-want" value="0" min="0" onchange="calcPension()" class="w-40 border border-slate-300 rounded-lg p-2 outline-none">
+                <span>元 (新臺幣)</span>
+              </div>
+              <p class="text-slate-700">固定金額可請領年數：<span id="res-priv-fixed-amount-years" class="font-black text-emerald-700">0 年</span> <span class="text-xs text-slate-400">(試算結果)</span></p>
+              <p class="text-xs text-slate-400">年金現值公式：年數 = -ln(1 - 本金×r / 每年領取額) / ln(1+r)；若每年領取額 ≤ 本金×r，代表只領利息本金不減少。</p>
+            </div>
+            <!-- 新制 Step 6 -->
+            <div class="border border-slate-200 rounded-xl p-3 space-y-1">
+              <label class="block text-slate-600 font-medium">新制 Step 6. 請輸入分幾年領回全部退休金</label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="priv-fixed-years" value="0" min="0" onchange="calcPension()" class="w-28 border border-slate-300 rounded-lg p-2 outline-none">
+                <span>年</span>
+              </div>
+              <p class="text-slate-700">固定年數每年請領金額：<span id="res-priv-fixed-years-annual" class="font-black text-emerald-700">$0</span> <span class="text-xs text-slate-400">(試算結果)</span></p>
+              <p class="text-slate-700">換算每月：<span id="res-priv-monthly" class="font-black text-emerald-600 text-lg">$0 /月</span></p>
+              <p class="text-xs text-slate-400">年金給付公式：每年領取額 = 本金 × r × (1+r)^n / ((1+r)^n - 1)；r = 0 時為本金 / n。儀表板的月退金會用這個新制 Step 6 每月金額。</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="calcPension()" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition">開始試算</button>
+              <button onclick="resetNewSystem()" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-medium transition">重新計算</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 股票庫存 Tab -->
+    <section id="tab-stocks" class="space-y-6 hidden">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-slate-700"><i class="fa-solid fa-chart-line text-blue-500 mr-2"></i>股票持股與股息管理</h3>
+          <button onclick="openStockModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition"><i class="fa-solid fa-plus mr-1"></i> 新增持股</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+              <tr>
+                <th class="p-3">股票名稱/代號</th>
+                <th class="p-3">持有股數</th>
+                <th class="p-3">平均成本</th>
+                <th class="p-3">目前現價</th>
+                <th class="p-3">當前市值</th>
+                <th class="p-3">未實現損益</th>
+                <th class="p-3">預估年現金股息</th>
+                <th class="p-3 text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="stock-tbody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 貸款管理 Tab -->
+    <section id="tab-loans" class="space-y-6 hidden">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-slate-700"><i class="fa-solid fa-house-circle-exclamation text-rose-500 mr-2"></i>貸款攤還總覽</h3>
+          <button onclick="openLoanModal()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-medium transition"><i class="fa-solid fa-plus mr-1"></i> 新增貸款</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+              <tr>
+                <th class="p-3">貸款項目</th>
+                <th class="p-3">貸款餘額</th>
+                <th class="p-3">年利率 (%)</th>
+                <th class="p-3">剩餘年數</th>
+                <th class="p-3">每月應繳本息</th>
+                <th class="p-3 text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="loan-tbody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. 銀行存款 Tab -->
+    <section id="tab-savings" class="space-y-6 hidden">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-slate-700"><i class="fa-solid fa-building-columns text-emerald-500 mr-2"></i>銀行存款與緊急預備金</h3>
+          <button onclick="openSavingsModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition"><i class="fa-solid fa-plus mr-1"></i> 新增帳戶</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="savings-cards"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 通用 Modal 彈窗 (編輯與新增) -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex justify-center items-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4 relative">
+      <h3 id="modal-title" class="text-lg font-bold text-slate-800 border-b pb-2">編輯項目</h3>
+      <form id="modal-form" onsubmit="handleModalSubmit(event)" class="space-y-3 text-sm">
+        <div id="modal-fields" class="space-y-3"></div>
+        <div class="flex justify-end space-x-2 pt-3 border-t">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-50 font-medium">取消</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let transactions = [
+                { date: '2026-10-02', type: '支', category: '孝親費', amount: 6000, account: '現金', member: '自己', note: '媽媽生日禮金' },
+      { date: '2026-10-01', type: '支', category: '教育', amount: 4000, account: '銀行', member: '鎮緯', note: '鎮緯零用錢' },
+      { date: '2026-10-01', type: '支', category: '教育', amount: 4000, account: '銀行', member: '允綺', note: '允綺零用錢' },
+
+    ];
+
+    let stocks = [
+      { code: '2330 台積電', shares: 1000, cost: 580, price: 950, dividendPerShare: 16 },
+      { code: '0056 高股息', shares: 15000, cost: 32, price: 38, dividendPerShare: 3.5 },
+      { code: '2412 中華電', shares: 5000, cost: 110, price: 122, dividendPerShare: 4.8 }
+    ];
+
+    let loans = [
+      { name: '房屋貸款', balance: 3500000, rate: 2.15, years: 15 }
+    ];
+
+    let savings = [
+      { bank: '台灣銀行 (薪轉戶)', type: '活存', balance: 450000 },
+      { bank: '郵局存款', type: '定存', balance: 800000 }
+    ];
+
+    let currentModalTarget = '';
+    let currentEditIndex = -1;
+
+    let chartInstanceAsset = null;
+    let chartInstancePie = null;
+    let chartInstanceCat = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('teacher_tx')) transactions = JSON.parse(localStorage.getItem('teacher_tx'));
+      if (localStorage.getItem('teacher_stocks')) stocks = JSON.parse(localStorage.getItem('teacher_stocks'));
+      if (localStorage.getItem('teacher_loans')) loans = JSON.parse(localStorage.getItem('teacher_loans'));
+      if (localStorage.getItem('teacher_savings')) savings = JSON.parse(localStorage.getItem('teacher_savings'));
+
+      document.getElementById('tx-date').valueAsDate = new Date();
+
+      renderDashboard();
+      renderTxTable();
+      renderStocks();
+      renderLoans();
+      renderSavings();
+      calcPension();
+    });
+
+    function saveAllToStorage() {
+      localStorage.setItem('teacher_stocks', JSON.stringify(stocks));
+      localStorage.setItem('teacher_loans', JSON.stringify(loans));
+      localStorage.setItem('teacher_savings', JSON.stringify(savings));
+    }
+
+    function switchTab(tabName) {
+      const tabs = ['dashboard', 'accounting', 'pension', 'stocks', 'loans', 'savings'];
+      tabs.forEach(t => {
+        const section = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`nav-${t}`);
+        if (t === tabName) {
+          section.classList.remove('hidden');
+          btn.classList.add('bg-indigo-800');
+        } else {
+          section.classList.add('hidden');
+          btn.classList.remove('bg-indigo-800');
+        }
+      });
+
+      if (tabName === 'dashboard') renderDashboard();
+      if (tabName === 'accounting') renderTxCategoryChart();
+    }
+
+    function renderDashboard() {
+      let totalStockMarket = stocks.reduce((a, b) => a + (b.shares * b.price), 0);
+      let totalAnnualDividend = stocks.reduce((a, b) => a + (b.shares * b.dividendPerShare), 0);
+      
+      let totalLoan = loans.reduce((a, b) => a + b.balance, 0);
+      let totalMonthlyLoanPay = loans.reduce((a, b) => {
+        let r = b.rate / 100 / 12;
+        let n = b.years * 12;
+        let p = (b.balance * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        return a + (isNaN(p) ? 0 : p);
+      }, 0);
+
+      let totalSavings = savings.reduce((a, b) => a + b.balance, 0);
+      let netWorth = totalStockMarket + totalSavings - totalLoan;
+
+      let govMonthly = parseFloat(document.getElementById('res-gov-monthly')?.innerText.replace(/[^0-9]/g, '') || 17100);
+      let privNewMonthly = parseFloat(document.getElementById('res-priv-monthly')?.innerText.replace(/[^0-9]/g, '') || 24921);
+      let retiredMonthlyTotal = govMonthly + privNewMonthly;
+
+      let oldPensionTotal = parseFloat(document.getElementById('res-priv-old-total')?.innerText.replace(/[^0-9]/g, '') || 526300);
+      let newPensionTotal = parseFloat(document.getElementById('res-priv-new-total')?.innerText.replace(/[^0-9]/g, '') || 5981120);
+
+      document.getElementById('dash-net-worth').innerText = '$' + netWorth.toLocaleString();
+      document.getElementById('dash-retired-monthly').innerText = '$' + retiredMonthlyTotal.toLocaleString();
+      document.getElementById('dash-stock-val').innerText = '$' + totalStockMarket.toLocaleString();
+      document.getElementById('dash-stock-div').innerText = '$' + totalAnnualDividend.toLocaleString();
+      document.getElementById('dash-loan-val').innerText = '$' + totalLoan.toLocaleString();
+      document.getElementById('dash-loan-pay').innerText = '$' + Math.round(totalMonthlyLoanPay).toLocaleString();
+
+      const ctxAsset = document.getElementById('assetChart').getContext('2d');
+      if (chartInstanceAsset) chartInstanceAsset.destroy();
+      chartInstanceAsset = new Chart(ctxAsset, {
+        type: 'bar',
+        data: {
+          labels: ['股票現值', '銀行存款', '貸款負債', '私校舊制一次金', '新制儲金一次給付'],
+          datasets: [{
+            label: '金額 (NTD)',
+            data: [totalStockMarket, totalSavings, totalLoan, oldPensionTotal, newPensionTotal],
+            backgroundColor: ['#3b82f6', '#10b981', '#f43f5e', '#f59e0b', '#6366f1']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      const ctxPie = document.getElementById('pieChart').getContext('2d');
+      if (chartInstancePie) chartInstancePie.destroy();
+      chartInstancePie = new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+          labels: ['股票', '存款'],
+          datasets: [{
+            data: [totalStockMarket, totalSavings],
+            backgroundColor: ['#3b82f6', '#10b981']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    // --- 記帳 ---
+    function handleAddTx(e) {
+      e.preventDefault();
+      const newTx = {
+        date: document.getElementById('tx-date').value,
+        type: document.getElementById('tx-type').value,
+        category: document.getElementById('tx-category').value.trim(),
+        amount: parseFloat(document.getElementById('tx-amount').value),
+        account: document.getElementById('tx-account').value,
+        member: document.getElementById('tx-member').value.trim() || '自己',
+        note: document.getElementById('tx-note').value.trim()
+      };
+
+      transactions.unshift(newTx);
+      localStorage.setItem('teacher_tx', JSON.stringify(transactions));
+      document.getElementById('addTxForm').reset();
+      document.getElementById('tx-date').valueAsDate = new Date();
+
+      renderTxTable();
+      renderDashboard();
+    }
+
+    function deleteTx(index) {
+      if (confirm('確定要刪除此筆記帳嗎？')) {
+        transactions.splice(index, 1);
+        localStorage.setItem('teacher_tx', JSON.stringify(transactions));
+        renderTxTable();
+        renderDashboard();
+      }
+    }
+
+    function renderTxTable() {
+      const tbody = document.getElementById('tx-tbody');
+      const filterType = document.getElementById('filter-type').value;
+      const filterKw = document.getElementById('filter-keyword').value.toLowerCase();
+
+      let filtered = transactions.filter(item => {
+        let matchType = (filterType === '全部') || (item.type === filterType);
+        let matchKw = !filterKw || 
+          (item.category && item.category.toLowerCase().includes(filterKw)) ||
+          (item.note && item.note.toLowerCase().includes(filterKw)) ||
+          (item.member && item.member.toLowerCase().includes(filterKw));
+        return matchType && matchKw;
+      });
+
+      let monthExp = 0, monthInc = 0;
+      filtered.forEach(t => {
+        if (t.type === '支') monthExp += t.amount;
+        if (t.type === '收') monthInc += t.amount;
+      });
+
+      document.getElementById('acc-month-expense').innerText = '$' + monthExp.toLocaleString();
+      document.getElementById('acc-month-income').innerText = '$' + monthInc.toLocaleString();
+      document.getElementById('acc-total-count').innerText = filtered.length + ' 筆';
+
+      tbody.innerHTML = filtered.map((t, idx) => `
+        <tr class="hover:bg-slate-50">
+          <td class="p-3 font-mono text-slate-600">${t.date}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${t.type === '支' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">${t.type === '支' ? '支出' : '收入'}</span></td>
+          <td class="p-3 font-medium text-slate-800">${t.category}</td>
+          <td class="p-3 font-bold ${t.type === '支' ? 'text-rose-600' : 'text-emerald-600'}">$${t.amount.toLocaleString()}</td>
+          <td class="p-3 text-slate-500">${t.account}</td>
+          <td class="p-3 text-slate-500">${t.member}</td>
+          <td class="p-3 text-slate-500">${t.note || '-'}</td>
+          <td class="p-3 text-center"><button onclick="deleteTx(${idx})" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash-can"></i></button></td>
+        </tr>
+      `).join('');
+
+      renderTxCategoryChart();
+    }
+
+    function renderTxCategoryChart() {
+      const ctx = document.getElementById('txCatChart').getContext('2d');
+      let expCatMap = {};
+
+      transactions.filter(t => t.type === '支').forEach(t => {
+        expCatMap[t.category] = (expCatMap[t.category] || 0) + t.amount;
+      });
+
+      const labels = Object.keys(expCatMap);
+      const data = Object.values(expCatMap);
+
+      if (chartInstanceCat) chartInstanceCat.destroy();
+      chartInstanceCat = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    // --- 計算公保、舊制（支援年月）與新制 ---
+    function calcPension() {
+      let avgSal = parseFloat(document.getElementById('pen-salary').value) || 0;
+      let yrs = parseFloat(document.getElementById('pen-years').value) || 0;
+      let penRate = parseFloat(document.getElementById('pen-rate').value) || 0.013;
+      
+      // 1. 公保養老年金給付
+      let govMonthly = avgSal * yrs * penRate;
+      document.getElementById('res-gov-monthly').innerText = '$' + Math.round(govMonthly).toLocaleString();
+
+      // 2. 私校退撫舊制一次金 (98/12/31前) — 依官方試算說明修正
+      // 公式：(本薪 + 930) × 基數
+      // 基數：第1年 1個；第2年起每滿6個月 1個、未滿6個月亦計1個；滿15年加發2個；上限61個
+      // 對照：8個月=1、2年7個月=5、16年5個月=34；王老師例 (59,520+930)×34=2,055,300
+      let oldYrs = Math.max(0, Math.floor(parseFloat(document.getElementById('priv-old-years').value) || 0));
+      let oldMos = Math.max(0, Math.floor(parseFloat(document.getElementById('priv-old-months').value) || 0));
+      let totalOldMonths = oldYrs * 12 + oldMos;
+      let maxSal = parseFloat(document.getElementById('priv-max-salary').value) || 0;
+      let oldBases = 0;
+      if (totalOldMonths === 0) {
+        oldBases = 0;
+      } else if (totalOldMonths <= 12) {
+        oldBases = 1;
+      } else {
+        let remain = totalOldMonths - 12;
+        oldBases = 1 + Math.floor(remain / 6) + (remain % 6 > 0 ? 1 : 0);
+        if (totalOldMonths >= 15 * 12) oldBases += 2;
+      }
+      oldBases = Math.min(oldBases, 61);
+      let oldTotal = (maxSal + 930) * oldBases;
+      document.getElementById('res-priv-old-bases').innerText = oldBases + ' 個基數';
+      document.getElementById('res-priv-old-total').innerText = '$' + Math.round(oldTotal).toLocaleString();
+
+      // 3. 私校退撫新制自主投資 (99.1.1後) — 新制 Step 1-6
+      // 新制 Step 1 是實際帳戶餘額，不再用薪額×年資×固定5%推估定期給付。
+      // 預估累積小幫手：僅供還不知道餘額時參考，月提撥 = 本薪×2×12%，公式為月提撥複利終值 (期末提撥)。
+      let fundSal = parseFloat(document.getElementById('priv-fund-salary').value) || 0; // 這格現在填「本薪」，不是儲金薪額
+      let newYrs = parseFloat(document.getElementById('priv-new-years').value) || 0;
+      let annualRateEst = (parseFloat(document.getElementById('priv-return-rate').value) || 0) / 100;
+      // 修正：提撥基數 = 本薪 × 2，月提撥 = 基數 × 12% = 本薪 × 24% (本薪 55,690 → 基數 111,380 → 月提撥 13,366)
+      let baseSalary = fundSal * 2;
+      let monthlyContribution = baseSalary * 0.12;
+      let personalContrib = monthlyContribution * 0.35;
+      let schoolContrib = monthlyContribution * 0.325;
+      let govContrib = monthlyContribution * 0.325;
+      let baseEl = document.getElementById('res-priv-base-salary');
+      if (baseEl) baseEl.innerText = '$' + Math.round(baseSalary).toLocaleString();
+      let mcEl = document.getElementById('res-priv-monthly-contrib');
+      if (mcEl) mcEl.innerText = '$' + Math.round(monthlyContribution).toLocaleString();
+      let pcEl = document.getElementById('res-priv-personal-contrib');
+      if (pcEl) pcEl.innerText = '$' + Math.round(personalContrib).toLocaleString();
+      let scEl = document.getElementById('res-priv-school-contrib');
+      if (scEl) scEl.innerText = '$' + Math.round(schoolContrib).toLocaleString();
+      let gvEl = document.getElementById('res-priv-gov-contrib');
+      if (gvEl) gvEl.innerText = '$' + Math.round(govContrib).toLocaleString();
+      let totalMonthsEst = Math.max(0, Math.round(newYrs * 12));
+      let monthlyRateEst = annualRateEst / 12;
+      let estTotal = 0;
+      if (totalMonthsEst > 0 && monthlyContribution > 0) {
+        if (monthlyRateEst === 0) estTotal = monthlyContribution * totalMonthsEst;
+        else estTotal = monthlyContribution * (Math.pow(1 + monthlyRateEst, totalMonthsEst) - 1) / monthlyRateEst;
+      }
+      let estEl = document.getElementById('res-priv-est-total');
+      if (estEl) estEl.innerText = '$' + Math.round(estTotal).toLocaleString();
+
+      // 新制 Step 1 + Step 2
+      let newBalance = parseFloat(document.getElementById('priv-new-balance').value) || 0;
+      let lumpSum = oldTotal + newBalance;
+      document.getElementById('res-priv-new-total').innerText = '$' + Math.round(newBalance).toLocaleString();
+      let lumpEl = document.getElementById('res-priv-lump-sum');
+      if (lumpEl) lumpEl.innerText = '$' + Math.round(lumpSum).toLocaleString();
+
+      // 新制 Step 3 + Step 4：組合報酬率 + 延後開始領，算出開始領時本金
+      let portfolioRate = (parseFloat(document.getElementById('priv-portfolio-rate').value) || 0) / 100;
+      let deferYrs = Math.max(0, Math.floor(parseFloat(document.getElementById('priv-defer-years').value) || 0));
+      let pvStart = lumpSum * Math.pow(1 + portfolioRate, deferYrs);
+      let pvEl = document.getElementById('res-priv-pv-start');
+      if (pvEl) pvEl.innerText = '$' + Math.round(pvStart).toLocaleString();
+
+      // 新制 Step 5：固定每年想領金額 -> 可領幾年 (年金現值反推)
+      let wantAnnual = parseFloat(document.getElementById('priv-annual-want').value) || 0;
+      let yearsCanEl = document.getElementById('res-priv-fixed-amount-years');
+      if (yearsCanEl) {
+        if (wantAnnual <= 0 || pvStart <= 0) {
+          yearsCanEl.innerText = '0 年';
+        } else if (portfolioRate === 0) {
+          yearsCanEl.innerText = (pvStart / wantAnnual).toFixed(1) + ' 年';
+        } else if (wantAnnual <= pvStart * portfolioRate) {
+          yearsCanEl.innerText = '30 年以上 (只領利息，本金不減少)';
+        } else {
+          let n = -Math.log(1 - pvStart * portfolioRate / wantAnnual) / Math.log(1 + portfolioRate);
+          yearsCanEl.innerText = n.toFixed(1) + ' 年';
+        }
+      }
+
+      // 新制 Step 6：固定分幾年領完 -> 每年可領金額 (年金給付公式)
+      let fixedYrs = Math.max(0, Math.floor(parseFloat(document.getElementById('priv-fixed-years').value) || 0));
+      let annualForFixed = 0;
+      if (fixedYrs > 0 && pvStart > 0) {
+        if (portfolioRate === 0) annualForFixed = pvStart / fixedYrs;
+        else {
+          let powN = Math.pow(1 + portfolioRate, fixedYrs);
+          annualForFixed = pvStart * portfolioRate * powN / (powN - 1);
+        }
+      }
+      let annualFixedEl = document.getElementById('res-priv-fixed-years-annual');
+      if (annualFixedEl) annualFixedEl.innerText = '$' + Math.round(annualForFixed).toLocaleString();
+      let monthlyPeriodic = annualForFixed / 12;
+      document.getElementById('res-priv-monthly').innerText = '$' + Math.round(monthlyPeriodic).toLocaleString() + ' /月';
+
+      renderDashboard();
+    }
+
+    // 新制 Step 3：選組合帶入參考報酬率 (請以官網最新公告為準，可再手動修正)
+    function updatePortfolioRate() {
+      let sel = document.getElementById('priv-portfolio');
+      let rateEl = document.getElementById('priv-portfolio-rate');
+      if (!sel || !rateEl) return;
+      let preset = { conservative: 2.0, steady: 3.5, aggressive: 5.0, lifecycle: 3.0 };
+      if (preset[sel.value] !== undefined) rateEl.value = preset[sel.value];
+    }
+    // 把預估累積帶入新制 Step 1
+    function fillEstimatedBalance() {
+      let estTxt = document.getElementById('res-priv-est-total')?.innerText.replace(/[^0-9]/g, '') || '0';
+      document.getElementById('priv-new-balance').value = parseFloat(estTxt) || 0;
+      calcPension();
+    }
+    // 重新計算：新制 Step 1-6 回到預設
+    function resetNewSystem() {
+      document.getElementById('priv-new-balance').value = 0;
+      document.getElementById('priv-portfolio').value = 'conservative';
+      document.getElementById('priv-portfolio-rate').value = 2.0;
+      document.getElementById('priv-defer-years').value = 1;
+      document.getElementById('priv-annual-want').value = 0;
+      document.getElementById('priv-fixed-years').value = 0;
+      calcPension();
+    }
+
+    // --- 4. 股票 CRUD ---
+    function renderStocks() {
+      const tbody = document.getElementById('stock-tbody');
+      tbody.innerHTML = stocks.map((s, idx) => {
+        let market = s.shares * s.price;
+        let gain = (s.price - s.cost) * s.shares;
+        let div = s.shares * s.dividendPerShare;
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold text-slate-800">${s.code}</td>
+            <td class="p-3">${s.shares.toLocaleString()} 股</td>
+            <td class="p-3">$${s.cost}</td>
+            <td class="p-3 font-bold text-blue-600">$${s.price}</td>
+            <td class="p-3 font-bold text-slate-800">$${market.toLocaleString()}</td>
+            <td class="p-3 font-bold ${gain >= 0 ? 'text-rose-600' : 'text-emerald-600'}">${gain >= 0 ? '+' : ''}$${gain.toLocaleString()}</td>
+            <td class="p-3 font-bold text-emerald-600">$${div.toLocaleString()}</td>
+            <td class="p-3 text-center space-x-2">
+              <button onclick="openStockModal(${idx})" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button onclick="deleteStock(${idx})" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openStockModal(index = -1) {
+      currentModalTarget = 'stock';
+      currentEditIndex = index;
+      const title = document.getElementById('modal-title');
+      const fields = document.getElementById('modal-fields');
+      const data = index >= 0 ? stocks[index] : { code: '', shares: 1000, cost: 100, price: 100, dividendPerShare: 5 };
+
+      title.innerText = index >= 0 ? '編輯股票持股' : '新增股票持股';
+      fields.innerHTML = `
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">股票代號/名稱</label>
+          <input type="text" id="m-stock-code" value="${data.code}" required class="w-full border rounded-lg p-2 outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-600 font-medium mb-1">持有股數</label>
+            <input type="number" id="m-stock-shares" value="${data.shares}" min="1" required class="w-full border rounded-lg p-2 outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-600 font-medium mb-1">平均成本</label>
+            <input type="number" step="0.01" id="m-stock-cost" value="${data.cost}" required class="w-full border rounded-lg p-2 outline-none">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-600 font-medium mb-1">目前現價</label>
+            <input type="number" step="0.01" id="m-stock-price" value="${data.price}" required class="w-full border rounded-lg p-2 outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-600 font-medium mb-1">預估每股股息</label>
+            <input type="number" step="0.01" id="m-stock-div" value="${data.dividendPerShare}" required class="w-full border rounded-lg p-2 outline-none">
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+    }
+
+    function deleteStock(index) {
+      if (confirm('確定要刪除這筆股票持股嗎？')) {
+        stocks.splice(index, 1);
+        saveAllToStorage();
+        renderStocks();
+        renderDashboard();
+      }
+    }
+
+    // --- 5. 貸款 CRUD ---
+    function renderLoans() {
+      const tbody = document.getElementById('loan-tbody');
+      tbody.innerHTML = loans.map((l, idx) => {
+        let r = l.rate / 100 / 12;
+        let n = l.years * 12;
+        let p = (l.balance * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-bold text-slate-800">${l.name}</td>
+            <td class="p-3 font-bold text-rose-600">$${l.balance.toLocaleString()}</td>
+            <td class="p-3">${l.rate}%</td>
+            <td class="p-3">${l.years} 年</td>
+            <td class="p-3 font-bold text-slate-800">$${Math.round(p).toLocaleString()} 元/月</td>
+            <td class="p-3 text-center space-x-2">
+              <button onclick="openLoanModal(${idx})" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button onclick="deleteLoan(${idx})" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openLoanModal(index = -1) {
+      currentModalTarget = 'loan';
+      currentEditIndex = index;
+      const title = document.getElementById('modal-title');
+      const fields = document.getElementById('modal-fields');
+      const data = index >= 0 ? loans[index] : { name: '', balance: 1000000, rate: 2.15, years: 20 };
+
+      title.innerText = index >= 0 ? '編輯貸款項目' : '新增貸款項目';
+      fields.innerHTML = `
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">貸款項目名稱</label>
+          <input type="text" id="m-loan-name" value="${data.name}" required class="w-full border rounded-lg p-2 outline-none">
+        </div>
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">貸款剩餘金額</label>
+          <input type="number" id="m-loan-balance" value="${data.balance}" min="0" required class="w-full border rounded-lg p-2 outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-600 font-medium mb-1">年利率 (%)</label>
+            <input type="number" step="0.01" id="m-loan-rate" value="${data.rate}" required class="w-full border rounded-lg p-2 outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-600 font-medium mb-1">剩餘年數</label>
+            <input type="number" id="m-loan-years" value="${data.years}" min="1" required class="w-full border rounded-lg p-2 outline-none">
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+    }
+
+    function deleteLoan(index) {
+      if (confirm('確定要刪除這筆貸款資料嗎？')) {
+        loans.splice(index, 1);
+        saveAllToStorage();
+        renderLoans();
+        renderDashboard();
+      }
+    }
+
+    // --- 6. 銀行存款 CRUD ---
+    function renderSavings() {
+      const container = document.getElementById('savings-cards');
+      container.innerHTML = savings.map((s, idx) => `
+        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex justify-between items-center">
+          <div>
+            <div class="text-xs font-bold text-slate-400 uppercase">${s.type}</div>
+            <div class="text-base font-bold text-slate-800 mt-0.5">${s.bank}</div>
+          </div>
+          <div class="flex items-center space-x-3">
+            <div class="text-xl font-black text-emerald-600">$${s.balance.toLocaleString()}</div>
+            <button onclick="openSavingsModal(${idx})" class="text-slate-400 hover:text-blue-600"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="deleteSavings(${idx})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openSavingsModal(index = -1) {
+      currentModalTarget = 'savings';
+      currentEditIndex = index;
+      const title = document.getElementById('modal-title');
+      const fields = document.getElementById('modal-fields');
+      const data = index >= 0 ? savings[index] : { bank: '', type: '活存', balance: 100000 };
+
+      title.innerText = index >= 0 ? '編輯銀行存款' : '新增銀行存款';
+      fields.innerHTML = `
+        <div>
+          <label class="block text-slate-600 font-medium mb-1">銀行及帳戶名稱</label>
+          <input type="text" id="m-save-bank" value="${data.bank}" required class="w-full border rounded-lg p-2 outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-slate-600 font-medium mb-1">存款類型</label>
+            <select id="m-save-type" class="w-full border rounded-lg p-2 outline-none">
+              <option value="活存" ${data.type === '活存' ? 'selected' : ''}>活存</option>
+              <option value="定存" ${data.type === '定存' ? 'selected' : ''}>定存</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 font-medium mb-1">存款金額</label>
+            <input type="number" id="m-save-balance" value="${data.balance}" min="0" required class="w-full border rounded-lg p-2 outline-none">
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+    }
+
+    function deleteSavings(index) {
+      if (confirm('確定要刪除這筆存款帳戶嗎？')) {
+        savings.splice(index, 1);
+        saveAllToStorage();
+        renderSavings();
+        renderDashboard();
+      }
+    }
+
+    function handleModalSubmit(e) {
+      e.preventDefault();
+      if (currentModalTarget === 'stock') {
+        const item = {
+          code: document.getElementById('m-stock-code').value.trim(),
+          shares: parseFloat(document.getElementById('m-stock-shares').value),
+          cost: parseFloat(document.getElementById('m-stock-cost').value),
+          price: parseFloat(document.getElementById('m-stock-price').value),
+          dividendPerShare: parseFloat(document.getElementById('m-stock-div').value)
+        };
+        if (currentEditIndex >= 0) stocks[currentEditIndex] = item;
+        else stocks.push(item);
+        renderStocks();
+      } else if (currentModalTarget === 'loan') {
+        const item = {
+          name: document.getElementById('m-loan-name').value.trim(),
+          balance: parseFloat(document.getElementById('m-loan-balance').value),
+          rate: parseFloat(document.getElementById('m-loan-rate').value),
+          years: parseFloat(document.getElementById('m-loan-years').value)
+        };
+        if (currentEditIndex >= 0) loans[currentEditIndex] = item;
+        else loans.push(item);
+        renderLoans();
+      } else if (currentModalTarget === 'savings') {
+        const item = {
+          bank: document.getElementById('m-save-bank').value.trim(),
+          type: document.getElementById('m-save-type').value,
+          balance: parseFloat(document.getElementById('m-save-balance').value)
+        };
+        if (currentEditIndex >= 0) savings[currentEditIndex] = item;
+        else savings.push(item);
+        renderSavings();
+      }
+
+      saveAllToStorage();
+      renderDashboard();
+      closeModal();
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
