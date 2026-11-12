@@ -41,8 +41,15 @@
 
   <main class="max-w-7xl mx-auto px-4 py-6">
     <div id="cloud-banner" class="mb-4 p-3 rounded-xl border text-sm flex flex-wrap gap-2 items-center justify-between bg-amber-50 border-amber-200 text-amber-900">
-      <span><b>☁️ 雲端同步：</b><span id="cloud-banner-text">未登入，資料只存在這台電腦。登入後會自動存到雲端，換電腦登入也能看到。</span></span>
-      <button onclick="openAuthModal()" class="px-3 py-1.5 bg-indigo-900 text-white rounded-lg text-xs font-bold">登入 / 註冊</button>
+      <span><b>☁️ 雲端同步：</b><span id="cloud-banner-text">正在檢查登入…</span><span id="cloud-updated-at" class="text-xs text-slate-500 ml-2"></span></span>
+      <span class="flex gap-2">
+        <button id="banner-login-btn" onclick="openAuthModal()" class="px-3 py-1.5 bg-indigo-900 text-white rounded-lg text-xs font-bold">登入 / 註冊</button>
+        <button id="banner-sync-btn" onclick="manualSyncFromCloud()" class="hidden px-3 py-1.5 bg-white border border-emerald-600 text-emerald-700 rounded-lg text-xs font-bold">從雲端重新載入</button>
+        <button id="banner-push-btn" onclick="manualPushToCloud()" class="hidden px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold">立即同步到雲端</button>
+      </span>
+    </div>
+    <div class="mb-4 p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs leading-relaxed">
+      <b>一次性登入說明：</b>請在所有電腦都用同一個網址打開（例如你的 GitHub Pages 網址，不要一台用本機檔案、一台用網頁），並用同一個瀏覽器。登入狀態存在瀏覽器裡，同一台電腦、同一瀏覽器、同一網址只需登入一次，會自動保持登入；換電腦、換瀏覽器、清除瀏覽資料才需要再登一次。資料改完會自動同步，另一台電腦按「從雲端重新載入」或重新整理就會看到。
     </div>
 
     <!-- 1. 總覽 Tab -->
@@ -505,18 +512,32 @@
     // ===== Supabase 雲端同步（和教學入口同一個專案）=====
     const SUPABASE_URL = "https://ethxjdihoqysmugygdta.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vun13ZjidhA7UhxcjJm4GQ_ePFqVqUt";
-    const supabaseClient = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY) : null;
+    const supabaseClient = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
+        persistSession: true, autoRefreshToken: true, detectSessionInUrl: true,
+        storageKey: 'boss-xiao-finance-auth',
+        storage: window.localStorage
+      }
+    }) : null;
     let currentUser = null;
     let cloudLoaded = false;
     let cloudSaveTimer = null;
     let isSavingCloud = false;
 
+    let lastCloudUpdatedAt = null;
     function setSyncStatus(text, isLoggedIn){
       const el = document.getElementById('sync-status');
       const banner = document.getElementById('cloud-banner-text');
       const emailEl = document.getElementById('auth-email');
       const loginBtn = document.getElementById('auth-btn');
       const logoutBtn = document.getElementById('logout-btn');
+      const bannerLogin = document.getElementById('banner-login-btn');
+      const bannerSync = document.getElementById('banner-sync-btn');
+      const bannerPush = document.getElementById('banner-push-btn');
+      if(bannerLogin) bannerLogin.classList.toggle('hidden', !!isLoggedIn);
+      if(bannerSync) bannerSync.classList.toggle('hidden', !isLoggedIn);
+      if(bannerPush) bannerPush.classList.toggle('hidden', !isLoggedIn);
+      const el2 = document.getElementById('auth-email');
       const bannerBox = document.getElementById('cloud-banner');
       if(el) el.textContent = text;
       if(banner) banner.textContent = text;
@@ -542,7 +563,7 @@
       if(!email||!password) return showAuthError('請輸入 Email 和密碼。');
       const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
       if(error) return showAuthError('登入失敗：'+error.message);
-      currentUser=data.user; closeAuthModal(); await loadFromCloud(); setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
+      currentUser=data.user; closeAuthModal(); setSyncStatus('登入成功，同步中…', true);
     }
     async function handleRegister(){
       if(!supabaseClient) return showAuthError('雲端服務未載入，請檢查網路後重新整理。');
@@ -552,7 +573,7 @@
       const {data,error}=await supabaseClient.auth.signUp({email,password});
       if(error) return showAuthError('註冊失敗：'+error.message);
       if(data.user && !data.session) return showAuthError('註冊成功，請到信箱收驗證信，驗證後再登入。若不想驗證，請到 Supabase 關掉 Confirm email。');
-      currentUser=data.user; closeAuthModal(); await loadFromCloud(); setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
+      currentUser=data.user; closeAuthModal(); setSyncStatus('註冊成功，同步中…', true);
     }
     async function handleLogout(){
       if(!supabaseClient) return;
@@ -583,22 +604,62 @@
         if(document.getElementById('pen-rate') && d.pension.rate!=='') document.getElementById('pen-rate').value=d.pension.rate;
       }
     }
+    function isDefaultDemoData(){
+      // 預設假資料：3 筆記帳 + 2330/0056/2412 + 房屋貸款 + 兩筆存款，且金額都剛好是預設值
+      try{
+        if(transactions.length!==3) return false;
+        if(stocks.length!==3 || stocks[0].code!=='2330 台積電') return false;
+        if(loans.length!==1 || loans[0].name!=='房屋貸款') return false;
+        if(savings.length!==2) return false;
+        return true;
+      }catch(e){ return false; }
+    }
+    function saveLocalOnly(){
+      try{
+        localStorage.setItem('teacher_tx', JSON.stringify(transactions));
+        localStorage.setItem('teacher_stocks', JSON.stringify(stocks));
+        localStorage.setItem('teacher_loans', JSON.stringify(loans));
+        localStorage.setItem('teacher_savings', JSON.stringify(savings));
+        savePensionLocal();
+      }catch(e){}
+    }
     async function loadFromCloud(){
       if(!supabaseClient || !currentUser) return;
       setSyncStatus('同步中…', true);
-      const {data,error}=await supabaseClient.from('finance_data').select('data').eq('user_id', currentUser.id).maybeSingle();
+      const {data,error}=await supabaseClient.from('finance_data').select('data, updated_at').eq('user_id', currentUser.id).maybeSingle();
       if(error){ console.error(error); setSyncStatus('雲端讀取失敗，顯示本機資料：'+error.message, true); return; }
-      if(data && data.data){
+      if(data && data.data && Object.keys(data.data).length>0){
         applyData(data.data);
         cloudLoaded=true;
+        lastCloudUpdatedAt=data.updated_at || null;
+        const tEl=document.getElementById('cloud-updated-at');
+        if(tEl && lastCloudUpdatedAt) tEl.textContent='雲端最後更新：'+new Date(lastCloudUpdatedAt).toLocaleString();
+        saveLocalOnly(); // 雲端覆蓋本機快取，下次沒網路也顯示最新
         renderDashboard(); renderTxTable(); renderStocks(); renderLoans(); renderSavings(); calcPension();
         setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
       }else{
-        // 雲端是空的，把本機資料上傳（第一次登入不遺失）
         cloudLoaded=true;
-        await saveToCloud(true);
-        setSyncStatus('已登入・本機資料已上傳到雲端：'+currentUser.email, true);
+        // 雲端是空的：若本機是預設假資料，不要上傳假資料覆蓋；若本機有真資料，先問再上傳
+        if(isDefaultDemoData()){
+          setSyncStatus('已登入・雲端是空的，本機是預設範例，未上傳假資料：'+currentUser.email, true);
+          return;
+        }
+        if(confirm('雲端還沒有資料，要把這台電腦的資料上傳到雲端嗎？按「確定」上傳，按「取消」先保留空白雲端。')){
+          await saveToCloud(true);
+          setSyncStatus('已登入・本機資料已上傳到雲端：'+currentUser.email, true);
+        }else{
+          setSyncStatus('已登入・雲端是空的，已保留空白：'+currentUser.email, true);
+        }
       }
+    }
+    async function manualSyncFromCloud(){
+      if(!currentUser) return alert('請先登入。');
+      if(confirm('要從雲端重新載入嗎？這會用雲端的資料覆蓋這台電腦目前顯示的資料。')){ await loadFromCloud(); }
+    }
+    async function manualPushToCloud(){
+      if(!currentUser) return alert('請先登入。');
+      await saveToCloud(true);
+      alert('已同步到雲端。另一台電腦按「從雲端重新載入」或重新整理就會看到。');
     }
     function saveToCloud(immediate){
       if(!supabaseClient || !currentUser) return Promise.resolve();
@@ -613,7 +674,12 @@
       return supabaseClient.from('finance_data').upsert(payload, {onConflict:'user_id'}).then(({error})=>{
         isSavingCloud=false;
         if(error){ console.error(error); setSyncStatus('雲端儲存失敗：'+error.message, true); }
-        else setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
+        else{
+          lastCloudUpdatedAt=payload.updated_at;
+          const tEl=document.getElementById('cloud-updated-at');
+          if(tEl) tEl.textContent='雲端最後更新：'+new Date(payload.updated_at).toLocaleString();
+          setSyncStatus('已登入・已同步到雲端：'+currentUser.email, true);
+        }
       });
     }
     function savePensionLocal(){
@@ -664,10 +730,30 @@
         } else {
           setSyncStatus('未登入・資料只在這台電腦', false);
         }
-        supabaseClient.auth.onAuthStateChange(async (_event, session)=>{
-          if(session && session.user && !currentUser){ currentUser=session.user; await loadFromCloud(); }
-          if(!session){ currentUser=null; setSyncStatus('未登入・資料只在這台電腦', false); }
+        supabaseClient.auth.onAuthStateChange(async (event, session)=>{
+          if(event==='SIGNED_IN' && session && session.user){
+            if(!currentUser || currentUser.id!==session.user.id || !cloudLoaded){ currentUser=session.user; await loadFromCloud(); }
+          } else if(event==='SIGNED_OUT'){
+            currentUser=null; cloudLoaded=false; setSyncStatus('已登出・資料只在這台電腦', false);
+          } else if(event==='TOKEN_REFRESHED' && session && session.user){
+            currentUser=session.user;
+          } else if(event==='INITIAL_SESSION' && session && session.user){
+            if(!cloudLoaded){ currentUser=session.user; await loadFromCloud(); }
+          }
         });
+        // 切回分頁時，若雲端比本機新，自動重新載入
+        document.addEventListener('visibilitychange', async ()=>{
+          if(!document.hidden && currentUser && cloudLoaded){
+            try{
+              const {data}=await supabaseClient.from('finance_data').select('updated_at').eq('user_id', currentUser.id).maybeSingle();
+              if(data && data.updated_at && lastCloudUpdatedAt && new Date(data.updated_at) > new Date(lastCloudUpdatedAt)){
+                await loadFromCloud();
+              }
+            }catch(e){}
+          }
+        });
+        // 關閉 / 重新整理前，把還沒存到雲端的改動立刻存上去
+        window.addEventListener('beforeunload', ()=>{ if(currentUser && cloudSaveTimer){ clearTimeout(cloudSaveTimer); saveToCloud(true); } });
       }
 
       document.getElementById('tx-date').valueAsDate = new Date();
