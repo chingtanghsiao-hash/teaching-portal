@@ -37,12 +37,13 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 .formal-doc .formal-table th{background:#eef2f7;color:#1e3a5f;width:15%;font-weight:700;text-align:center;vertical-align:middle}
 .formal-doc .formal-table tr{break-inside:avoid;page-break-inside:avoid}
 .formal-doc .formal-section h2{font-size:13pt;margin:16px 0 10px;padding:7px 12px;background:#1e3a5f;color:#fff;letter-spacing:1px;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid}
-.formal-doc .formal-field{break-inside:avoid;page-break-inside:avoid;margin:0 0 10px}
+.formal-doc .formal-field{break-inside:auto;page-break-inside:auto;margin:0 0 10px}
 .formal-doc .formal-label{font-weight:700;margin:0 0 5px;font-size:11pt;color:#1e3a5f;border-left:4px solid #1e3a5f;padding-left:8px;break-after:avoid;page-break-after:avoid}
-.formal-doc .formal-box{border:1px solid #94a3b8;min-height:64px;padding:9px 10px;font-size:11pt;white-space:pre-wrap;word-break:break-word;background:#fff;line-height:1.8}
+.formal-doc .formal-box{border:1px solid #94a3b8;min-height:64px;height:auto;overflow:visible;padding:9px 10px;font-size:11pt;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;background:#fff;line-height:1.8;break-inside:auto;page-break-inside:auto}
 .formal-doc .formal-box.tall{min-height:84px}
 .formal-doc .formal-checks{font-size:11pt;line-height:2.1;border:1px solid #94a3b8;padding:8px 10px;background:#f8fafc}
 .formal-doc .formal-empty{color:#94a3b8}
+.formal-doc .formal-box.expandable{min-height:90px;height:auto;overflow:visible;break-inside:auto;page-break-inside:auto}
 .formal-doc .formal-sign{display:flex;justify-content:space-between;gap:16px;margin-top:24px;break-inside:avoid;page-break-inside:avoid}
 .formal-doc .formal-sign>div{flex:1;border-top:1.5px solid #1e3a5f;padding-top:8px;text-align:center;font-size:11pt;color:#334155}
 .formal-doc .formal-footer{margin-top:18px;font-size:9.5pt;color:#64748b;text-align:center;border-top:1px solid #cbd5e1;padding-top:8px;break-inside:avoid;page-break-inside:avoid}
@@ -52,7 +53,8 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
   .top,.authbar,.wrap,.modal-backdrop{display:none!important}
   #formalPrint{display:block!important;margin:0;padding:0;width:100%}
   .formal-doc{display:block!important;margin:0;width:100%;max-width:100%}
-  .formal-doc .formal-field,.formal-doc .formal-table,.formal-doc .formal-checks,.formal-doc .formal-box,.formal-doc .formal-sign,.formal-doc .formal-top{break-inside:avoid;page-break-inside:avoid}
+  .formal-doc .formal-table,.formal-doc .formal-checks,.formal-doc .formal-sign,.formal-doc .formal-top{break-inside:avoid;page-break-inside:avoid}
+  .formal-doc .formal-field,.formal-doc .formal-box{break-inside:auto;page-break-inside:auto;height:auto;overflow:visible}
   .formal-doc .formal-section h2,.formal-doc .formal-label{break-after:avoid;page-break-after:avoid}
 }
 </style>
@@ -288,8 +290,8 @@ function buildFormalPrint(){
     + '<tr><th>約定事項</th><td>' + val(d.agreement) + '</td><th>追蹤日期</th><td>' + val(d.follow_date) + '</td></tr></table>'
     + '<div class="formal-field"><div class="formal-label">輔導方式</div><div class="formal-checks">' + checks(counselOptions, d.counsel_ways) + '</div></div>'
     + '<div class="formal-field"><div class="formal-label">導師輔導內容</div><div class="formal-box tall">' + box(d.counsel_content) + '</div></div>'
-    + '<div class="formal-field"><div class="formal-label">學生回應與改善計畫</div><div class="formal-box">' + box(d.improve_plan) + '</div></div>'
-    + '<div class="formal-field"><div class="formal-label">家長聯繫與回應</div><div class="formal-box">' + box(d.parent_reply) + '</div></div></div>'
+    + '<div class="formal-field expandable"><div class="formal-label">學生回應與改善計畫</div><div class="formal-box expandable">' + box(d.improve_plan) + '</div></div>'
+    + '<div class="formal-field expandable"><div class="formal-label">家長聯繫與回應</div><div class="formal-box expandable">' + box(d.parent_reply) + '</div></div></div>'
     + '<div class="formal-sign"><div>填表人簽名<br><br>（學生本人）</div><div>導師簽名<br><br>' + (d.teacher_sign ? esc(d.teacher_sign) : '　　　　　') + '</div><div>日期<br><br>' + val(d.fill_date) + '</div></div>'
     + '<div class="formal-footer">本表由學生填寫事件紀錄，導師填寫輔導部分並留存。請勿於本表填寫身分證、密碼等敏感個資。</div>'
     + '</div>';
