@@ -62,6 +62,16 @@ h1{margin-bottom:5px}
 
 .print-header{display:none}
 .print-footer{display:none}
+.print-blackboard-title{display:none}
+@media print{
+  .blackboard.has-print-title .screen-blackboard-title{display:none}
+  .blackboard.has-print-title{width:calc(100% - 2mm)!important;max-width:none!important}
+  .blackboard.has-print-title .print-blackboard-title{
+    display:block;width:100%;padding:0 2mm;text-align:center;
+    font-size:23px;font-weight:800;letter-spacing:1px;line-height:1.15;
+    overflow-wrap:anywhere;
+  }
+}
 .print-panel{margin-top:14px}
 .print-panel h3{margin:0 0 10px;text-align:left;font-size:16px;color:#1e3a5f;border-left:5px solid #1e3a5f;padding-left:10px}
 .print-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
@@ -388,11 +398,13 @@ body{background:#f4f6f8!important}
   body{display:block!important;background:#f3f5f7!important}
   .print-header,.print-footer{display:none!important}
   .main-layout{box-sizing:border-box!important;width:100%!important;height:100%!important;max-width:none!important;margin:0!important;padding:1mm 4mm 2mm 1mm!important;flex-direction:row!important;align-items:flex-start!important;gap:3mm!important}
-  .roster-sidebar{box-sizing:border-box!important;width:25mm!important;align-self:flex-start!important;border-radius:9px!important}
-  .roster-sidebar h4{padding:5px 2px!important;text-align:center!important;border-bottom:0!important}
+  .roster-sidebar{box-sizing:border-box!important;width:25mm!important;align-self:flex-start!important;border-radius:9px!important;margin-top:4mm!important}
+  .roster-sidebar h4{font-size:13px!important;line-height:16px!important;padding:4px 1px!important;text-align:center!important;border-bottom:0!important}
   .roster-sidebar table{display:table!important}
-  .roster-sidebar th,.roster-sidebar td{padding:1.5px 3px!important;border-bottom:1px solid #e2e8f0!important}
-  .roster-sidebar td:first-child{width:25px!important}
+  .roster-sidebar th,.roster-sidebar td{font-size:15px!important;line-height:17px!important;padding:1px 2px!important;border-bottom:1px solid #e2e8f0!important}
+  .roster-sidebar th:first-child{font-size:11px!important;white-space:nowrap}
+  .roster-sidebar td:first-child{width:26px!important}
+  .roster-sidebar td:last-child{font-weight:600}
   .roster-sidebar tr:nth-child(even) td{background:#f8fafc!important}
   .main-center{position:relative;height:100%!important;padding-top:3mm!important;box-sizing:border-box!important}
   .blackboard{box-sizing:border-box!important;width:88%!important;height:10mm!important;display:grid;place-items:center;padding:0!important;margin:0 auto 2mm!important;background:linear-gradient(180deg,#2e5a4a,#1e3a30)!important;box-shadow:0 4px 10px rgba(15,23,42,.14)!important}
@@ -416,10 +428,10 @@ body{background:#f4f6f8!important}
   .fixed-badge{font-size:10px!important;line-height:11px!important;margin-top:1px!important}
   body.print-show-fixed .seat-card.fixed{background:#fff3cd!important;border:1px solid #fcd34d!important}
   body.print-show-fixed .fixed-badge{background:#f59e0b!important}
-  .cadres-box{position:absolute;left:1mm;top:calc(3mm + 10mm + 2mm + 5mm + 1.5mm + 6 * (31mm + 1.5mm));width:calc((100% - 11mm) * 6 / 7 + 6.5mm)!important;box-sizing:border-box!important;margin:0!important;border-radius:9px!important;break-inside:avoid}
-  .cadres-box h4{background:linear-gradient(90deg,#0f766e,#14b8a6)!important;border-left:0!important}
+  .cadres-box{position:absolute;left:1mm;top:calc(3mm + 10mm + 2mm + 5mm + 1.5mm + 6 * (31mm + 1.5mm) + 25mm);width:calc((100% - 11mm) * 6 / 7 + 6.5mm)!important;box-sizing:border-box!important;margin:0!important;border-radius:9px!important;break-inside:avoid}
+  .cadres-box h4{background:linear-gradient(90deg,#0f766e,#14b8a6)!important;border-left:0!important;font-size:16px!important;line-height:18px!important;padding:3px 8px!important;text-align:center!important}
   .cadres-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;padding:5px!important}
-  .cadre-item{box-sizing:border-box!important;height:auto!important;border-radius:8px!important;line-height:1.15!important;padding:2px!important}
+  .cadre-item{box-sizing:border-box!important;height:auto!important;border-radius:8px!important;display:block!important;font-size:var(--cadre-print-font,14px)!important;line-height:16px!important;padding:2px!important;white-space:nowrap;text-align:left!important}
 }
 </style>
 </head>
@@ -498,7 +510,7 @@ body{background:#f4f6f8!important}
 <div class="main-layout">
   <div id="rosterSidebar" class="roster-sidebar"></div>
   <div class="main-center">
-    <div class="blackboard">講 台 / 黑 板</div>
+    <div class="blackboard"><span class="screen-blackboard-title">講 台 / 黑 板</span><span class="print-blackboard-title"></span></div>
     <div id="classroom" class="classroom"></div>
     <div id="cadresBox" class="cadres-box"></div>
   </div>
@@ -700,7 +712,30 @@ function printBlank(){
   syncPrintHeader();
   window.print();
 }
-window.addEventListener('afterprint', clearPrintMode);
+let titleBeforePrint;
+window.addEventListener('beforeprint', () => {
+  const measure = document.createElement('canvas').getContext('2d');
+  document.querySelectorAll('.cadre-item').forEach(item => {
+    measure.font = '700 14px ' + getComputedStyle(item).fontFamily;
+    const width = measure.measureText(item.textContent.trim()).width;
+    // Allow for the four A4 grid columns, gaps, borders and cell padding.
+    item.style.setProperty('--cadre-print-font', Math.min(14, 128 * 14 / width) + 'px');
+  });
+  if (titleBeforePrint === undefined) titleBeforePrint = document.title;
+  const className = document.getElementById('printClassNameInput').value.trim();
+  const teacher = document.getElementById('printTeacherInput').value.trim();
+  const details = [className, teacher && '導師 ' + teacher].filter(Boolean);
+  const title = ['班級座位表', ...details].join('｜');
+  const blackboard = document.querySelector('.blackboard');
+  blackboard.classList.toggle('has-print-title', details.length > 0);
+  blackboard.querySelector('.print-blackboard-title').textContent = title;
+  document.title = title;
+});
+window.addEventListener('afterprint', () => {
+  clearPrintMode();
+  if (titleBeforePrint !== undefined) document.title = titleBeforePrint;
+  titleBeforePrint = undefined;
+});
 
 
 // ---- 大頭照：檔名用座號命名，存在 localStorage ----
@@ -799,11 +834,11 @@ function renderRosterSidebar(){
   const box = el('rosterSidebar');
   if(!box) return;
   if(roster.length===0){
-    box.innerHTML = '<h4>座號・姓名對照</h4><div style="padding:8px;font-size:12px;color:#64748b">尚未匯入名單<br>請教師匯入 Excel</div>';
+    box.innerHTML = '<h4>名條</h4><div style="padding:8px;font-size:12px;color:#64748b">尚未匯入名單<br>請教師匯入 Excel</div>';
     return;
   }
   const sorted = [...roster].sort((a,b)=>Number(a.seat)-Number(b.seat));
-  box.innerHTML = '<h4>座號・姓名對照</h4><table><tr><th>座號</th><th>姓名</th></tr>' + sorted.map(r=>'<tr><td>'+esc(r.seat)+'</td><td>'+esc(r.name)+'</td></tr>').join('') + '</table>';
+  box.innerHTML = '<h4>名條</h4><table><tr><th>座號</th><th>姓名</th></tr>' + sorted.map(r=>'<tr><td>'+esc(r.seat)+'</td><td>'+esc(r.name)+'</td></tr>').join('') + '</table>';
 }
 function renderCadres(){
   const box = el('cadresBox');
