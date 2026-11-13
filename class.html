@@ -192,7 +192,7 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
 <div><label>記錄時間（匯入時自動產生，不需手填）</label><input id="attRecordedAt" placeholder="按下確認匯入時自動填入" readonly style="background:#f8fafc;color:#64748b"></div>
 </div>
 </div>
-<div class="panel"><h2>方法一：選取 Excel / CSV 版操行報表</h2><p class="desc">選教學組提供的操行報表 .xlsx / .xls / .csv 檔案，系統會自動把第一個工作表或表格填到下方貼上區，再按「解析預覽」即可，不用再選 PDF。</p>
+<div class="panel"><h2>方法一：選取 Excel / CSV 版操行報表</h2><p class="desc">選教學組提供的操行報表 .xlsx / .xls / .csv 檔案，系統會自動把第一個工作表填到下方貼上區，再按「解析預覽」即可，不用再選 PDF。</p>
 <div class="row"><input type="file" id="attFileInput" accept=".xlsx,.xls,.csv" onchange="handleAttendanceFile(this)"></div>
 <div class="row" style="margin-top:10px"><button class="btn green" onclick="confirmAttendanceImport()">✅ 確認匯入（用上面已解析的結果）</button><span style="font-size:13px;color:#64748b">選完檔案會自動解析並顯示在下方預覽，確認無誤再按這裡匯入。選同一個檔案沒反應時，先點「清除」再重新選，或重新整理頁面。</span></div>
 </div>
@@ -1337,13 +1337,11 @@ function parseAttendanceText(text){
   let lines=String(text||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
   if(!lines.length) return [];
   let header=splitAttLine(lines[0]);
-  // 找到標題列：含 座號 + 姓名 就當標題列，不然整份當資料
   let startIdx=0; let colMap={};
   if(header.includes('座號') && header.includes('姓名')){
     header.forEach((h,i)=>{ colMap[h]=i; });
     startIdx=1;
   } else {
-    // 沒標題列，假設順序就是 座號、姓名 + ATT_FIELDS
     attHeader().forEach((h,i)=>{ colMap[h]=i; });
   }
   let rows=[];
@@ -1413,7 +1411,6 @@ async function handleAttendanceFile(input){
 }
 function confirmAttendanceImport(){
   if(!parsedAttendance.length){
-    // 若貼上區有內容但還沒解析，先自動解析
     let t=document.getElementById('attPaste').value;
     if(t.trim()){ parsedAttendance=parseAttendanceText(t); }
   }
