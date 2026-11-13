@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>班級學生資料管理系統 - 115-1 資處三忠專用格式</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:"PingFang TC","Microsoft JhengHei",system-ui,sans-serif;background:#f3f5f9;color:#1a2332}
+header{background:#0f3b5f;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:21px} header p{margin:4px 0 0;opacity:.85;font-size:13px;line-height:1.5}
+.badge{background:#ffcc00;color:#0f3b5f;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700}
+nav{display:flex;gap:8px;padding:12px 22px;background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+nav button{border:1px solid #dbe3ee;background:#f8fafc;padding:9px 15px;border-radius:999px;cursor:pointer;font-size:14px}
+nav button.active{background:#0f3b5f;color:#fff;border-color:#0f3b5f}
+main{max-width:1280px;margin:0 auto;padding:18px 14px 60px}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card small{color:#64748b} .card b{font-size:26px;display:block;margin-top:6px}
+.panel{background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:16px;overflow-x:auto}
+.panel h2{margin:0 0 6px;font-size:18px} .panel p.desc{margin:0 0 14px;color:#64748b;font-size:13px;line-height:1.7}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,select,textarea{padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;font-family:inherit}
+input[type=file]{border:1px dashed #94a3b8;background:#f8fafc}
+textarea{width:100%;min-height:130px;line-height:1.6}
+.btn{background:#0f3b5f;color:#fff;border:0;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:14px}
+.btn.green{background:#15803d} .btn.orange{background:#ea580c} .btn.gray{background:#e2e8f0;color:#1a2332} .btn.red{background:#dc2626} .btn.small{padding:6px 10px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px;min-width:760px}
+th{background:#f1f5f9;text-align:left;padding:9px;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+td{padding:9px;border-bottom:1px solid #f1f5f9;vertical-align:top;white-space:nowrap}
+.tag{padding:3px 8px;border-radius:999px;font-size:12px;background:#e0f2fe;display:inline-block}
+.tag.red{background:#fee2e2;color:#991b1b} .tag.green{background:#dcfce7;color:#166534} .tag.yellow{background:#fef9c3;color:#854d0e} .tag.purple{background:#ede9fe;color:#5b21b6}
+.flex{display:flex;gap:12px;flex-wrap:wrap} .flex>div{flex:1;min-width:260px}
+label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.hidden{display:none!important}
+        #loginGate{position:fixed;inset:0;background:#0f3b5f;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+        #loginGate .gate-box{background:#fff;width:100%;max-width:420px;border-radius:16px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+        #loginGate h2{margin:0 0 6px;font-size:22px;color:#0f3b5f}
+        #loginGate p{margin:0 0 16px;color:#64748b;font-size:13px;line-height:1.7}
+        #loginGate input{width:100%;margin-bottom:10px}
+        #loginGate .err{color:#dc2626;font-size:13px;min-height:18px;margin-bottom:6px}
+        #syncBar{background:#fffbeb;border:1px solid #fde68a;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.7;margin:0 0 12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+        #syncBar.ok{background:#f0fdf4;border-color:#bbf7d0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;padding:20px;z-index:20;overflow:auto}
+.modal.open{display:flex}
+.modal-box{background:#fff;width:100%;max-width:1080px;border-radius:16px;padding:20px;margin:auto;overflow-x:auto}.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.table-scroll table{min-width:0}
+.tip{background:#fffbeb;border:1px solid #fde68a;padding:12px;border-radius:10px;font-size:13px;line-height:1.7;margin:10px 0}
+.success{background:#f0fdf4;border:1px solid #bbf7d0;padding:10px;border-radius:10px;font-size:13px}
+.privacy{background:#fef2f2;border:1px solid #fecaca;padding:12px;border-radius:10px;font-size:13px;line-height:1.7}
+@media(max-width:800px){.cards{grid-template-columns:1fr 1fr 1fr}.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="loginGate">
+  <div class="gate-box">
+    <h2>🏫 班級學生資料管理</h2>
+    <p>此頁含學生個資（身分證、電話、地址），登入後才可以觀看。請用已建立的帳號登入，和理財網站、教學入口是同一個 Supabase 專案，用同一組 Email + 密碼。</p>
+    <label>Email</label>
+    <input id="loginEmail" type="email" placeholder="你的 Email">
+    <label>密碼</label>
+    <input id="loginPassword" type="password" placeholder="密碼" onkeydown="if(event.key==='Enter')handleLogin()">
+    <div id="loginError" class="err"></div>
+    <div class="row">
+      <button class="btn" style="flex:1" onclick="handleLogin()">登入</button>
+    </div>
+    <p style="margin-top:12px;font-size:12px;color:#94a3b8">登入狀態存在瀏覽器裡，同一台電腦、同一瀏覽器、同一網址只需登入一次。換電腦、換瀏覽器、清除瀏覽資料才需要再登一次。</p>
+  </div>
+</div>
+<header>
+<div><h1>🏫 班級學生資料管理系統</h1><p>對應格式：115-1 資處三忠.xlsx · 含「班級個人資料 / 幹部名單 / IEP」3 個工作表<br>登入後才可觀看，資料存到雲端，換電腦登入也能看到</p></div>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+<div id="syncStatus" style="font-size:12px;background:rgba(255,255,255,.15);padding:6px 10px;border-radius:999px">正在檢查登入…</div>
+<span id="authEmail" style="font-size:12px;opacity:.9;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+<button id="authBtn" onclick="openLoginGate()" class="btn" style="background:#ffcc00;color:#0f3b5f;font-weight:700">登入</button>
+<button id="logoutBtn" onclick="handleLogout()" class="btn gray hidden">登出</button>
+</div>
+</header>
+<nav>
+<button class="active" onclick="showTab('dashboard',this)">📊 總覽</button>
+<button onclick="showTab('students',this)">👩‍🎓 學生名單</button>
+<button onclick="showTab('cadres',this)">⭐ 幹部名單</button>
+<button onclick="showTab('iep',this)">♿ IEP / 特教</button>
+<button onclick="showTab('import',this)">📥 匯入 Excel</button>
+<button onclick="showTab('learning',this)">🗂 輔導紀錄</button>
+<button onclick="showTab('grades',this)">🏆 成績 / 評語</button>
+<button onclick="showTab('photos',this)">📷 學生照片</button>
+<button onclick="showTab('help',this)">❓ 說明</button>
+</nav>
+<main>
+<div id="syncBar"><span><b>☁️ 雲端同步：</b><span id="syncBarText">正在檢查登入…</span> <span id="cloudUpdatedAt" style="color:#64748b"></span></span><span style="display:flex;gap:6px"><button class="btn small" onclick="manualSyncFromCloud()">從雲端重新載入</button><button class="btn small green" onclick="manualPushToCloud()">立即同步到雲端</button></span></div>
+<section id="tab-dashboard">
+<div class="privacy">🔒 <b>個資保護：</b>身分證、手機、地址直接顯示完整，不遮罩。請勿將此檔案或匯出的 CSV 上傳到公開網站或傳給不相關的人。資料已改為登入後存到雲端，換電腦登入也能看到。未登入時無法查看。</div>
+<div style="margin:12px 0" class="row"><span style="font-size:13px;color:#475569">身分證 / 電話 / 地址直接顯示完整，不遮罩。</span><span id="classInfo" style="font-weight:700"></span></div>
+<div class="cards">
+<div class="card"><small>全班人數</small><b id="statTotal">0</b><span id="statGender"></span></div>
+<div class="card"><small>身心障礙 / 一般生</small><b id="statIdentity">-</b><span id="statIdentity2"></span></div>
+<div class="card"><small>經濟弱勢</small><b id="statEco">0</b><span>低收入戶 / 中低收入等</span></div>
+<div class="card"><small>幹部人數</small><b id="statCadre">0</b><span id="statCadreList"></span></div>
+<div class="card"><small>IEP 人數</small><b id="statIep">0</b><span>需個別化教育計畫</span></div>
+<div class="card"><small>輔導紀錄</small><b id="statRecords">0</b><span id="statAlert"></span></div>
+</div>
+<div class="panel"><h2>班級速覽</h2><div id="dashboardTable"></div></div>
+<div class="panel"><h2>最近輔導紀錄</h2><div id="recentList"></div></div>
+</section>
+
+<section id="tab-students" class="hidden">
+<div class="panel"><h2>學生名單 — 班級個人資料（20 欄）</h2><p class="desc">欄位完全對應 Excel「班級個人資料」：科別、姓名、班級、座號、學號、性別、身分證、報名身分別、經濟狀況、出生年/月/日、西元出生、畢業國中、家長姓名、學生手機、家長手機、電話、郵遞區號、地址。點「詳情」可看完整資料與輔導紀錄。</p>
+<div class="row">
+<input id="searchStudent" placeholder="搜尋 姓名 / 學號 / 座號 / 畢業國中" oninput="renderStudents()" style="flex:1;min-width:220px">
+<select id="filterGender" onchange="renderStudents()"><option value="">全部性別</option><option value="男">男</option><option value="女">女</option></select>
+<select id="filterIdentity" onchange="renderStudents()"><option value="">全部身分別</option><option value="一般生">一般生</option><option value="身心障礙">身心障礙</option></select>
+<select id="filterEco" onchange="renderStudents()"><option value="">全部經濟狀況</option><option value="低收入戶">低收入戶</option><option value="中低收入戶">中低收入戶</option></select>
+<button class="btn" onclick="openStudentModal()">＋ 新增學生</button>
+<button class="btn gray" onclick="exportCSV()">⬇ 匯出 CSV（同 Excel 格式）</button>
+<button class="btn gray" onclick="restoreSeedStudents()">↩ 還原 42 位學生（內建名單）</button>
+</div>
+<div id="studentTable"></div>
+</div>
+</section>
+
+<section id="tab-cadres" class="hidden">
+<div class="panel"><h2>幹部名單 — 對應 Excel「幹部名單」工作表</h2><p class="desc">職務、姓名。匯入 Excel 時會自動帶入，也可以在此手動新增 / 刪除。學生名單會自動顯示每位學生的幹部職務。</p>
+<div class="row"><input id="cadreRole" placeholder="職務，例如 班長"><input id="cadreName" placeholder="姓名"><button class="btn" onclick="addCadre()">＋ 新增幹部</button></div>
+<div id="cadreTable"></div>
+</div>
+</section>
+
+<section id="tab-iep" class="hidden">
+<div class="panel"><h2>IEP — 對應 Excel「IEP」工作表</h2><p class="desc">座號、姓名、性別、程度、報名身分別（詳細描述）、註冊狀況。此區為特教敏感資料，請特別注意保密。</p>
+<div class="row"><input id="iepSeat" placeholder="座號"><input id="iepName" placeholder="姓名"><select id="iepGender"><option>男</option><option>女</option></select><input id="iepLevel" placeholder="程度，例如 嚴重 / 普"><input id="iepDetail" placeholder="報名身分別描述" style="flex:1"><input id="iepReg" placeholder="註冊狀況"><button class="btn" id="iepAddBtn" onclick="addIep()">＋ 新增</button><button class="btn gray" id="iepCancelBtn" onclick="cancelEditIep()" style="display:none">取消編輯</button></div>
+<div id="iepTable"></div>
+</div>
+</section>
+
+<section id="tab-import" class="hidden">
+<div class="panel"><h2>方法一：直接選取你的 Excel 檔案（最推薦）</h2><p class="desc">直接選 <b>115-1資處三忠.xlsx</b> 這個檔案，系統會自動讀取 3 個工作表：<b>班級個人資料 → 學生名單、幹部名單 → 幹部、IEP → IEP</b>。欄位名稱會自動對應，不用手動調整順序。</p>
+<input type="file" id="excelFile" accept=".xlsx,.xls,.csv" onchange="handleExcelFile(this)">
+<div class="tip">💡 Excel 裡的文字前面有一個 <b>'</b> 符號（例如 '呂家羽、'女），是 Excel 強制文字格式，系統匯入時會自動去掉，不會影響資料。<br>💡 「西元出生」若是 Excel 日期，會自動轉成 YYYY-MM-DD；「學生手機 / 家長手機」會保留原始格式（含 0 開頭與 -）。</div>
+<div id="importResult"></div>
+</div>
+<div class="panel"><h2>方法二：從 Excel 複製貼上（班級個人資料）</h2><p class="desc">在 Excel「班級個人資料」工作表全選 → 複製 → 貼到下方。第一行必須是標題列：科別、姓名、班級、座號、學號、性別、身分證統一編號、報名身分別(原&身)、經濟狀況、出生年、出生月、出生日、西元出生、畢業國中名稱、家長姓名、學生手機、家長手機、電話、郵遞區號、地址。</p>
+<textarea id="pasteArea" placeholder="貼上時請包含標題列，範例第一行：&#10;科別	姓名	班級	座號	學號	性別	身分證統一編號	報名身分別(原&身)	經濟狀況	出生年	出生月	出生日	西元出生	畢業國中名稱	家長姓名	學生手機	家長手機	電話	郵遞區號	地址"></textarea>
+<div class="row" style="margin-top:10px"><button class="btn" onclick="parseImport()">🔍 解析預覽</button><button class="btn green" onclick="confirmImport()">✅ 確認匯入</button><button class="btn gray" onclick="document.getElementById('pasteArea').value=''">清除</button><button class="btn orange" onclick="loadSample()">載入格式範例（假資料）</button></div>
+<div id="importPreview"></div><div id="importMsg"></div>
+</div>
+<div class="panel"><h2>匯出 / 清除</h2><div class="row"><button class="btn gray" onclick="exportCSV()">⬇ 匯出 班級個人資料 CSV</button><button class="btn gray" onclick="exportCadreCSV()">⬇ 匯出 幹部名單 CSV</button><button class="btn gray" onclick="exportIepCSV()">⬇ 匯出 IEP CSV</button><button class="btn red" onclick="clearAll()">🗑 清除全部資料</button></div><p style="font-size:13px;color:#64748b">建議每週匯出備份一次。清除後無法復原，請先匯出。</p></div>
+</section>
+
+<section id="tab-learning" class="hidden">
+<div class="panel"><h2>全班輔導紀錄</h2><div class="row"><select id="filterCounselType" onchange="renderLearning()"><option value="">全部事件類別</option><option>遲到早退</option><option>服儀不整</option><option>上課秩序</option><option>作業未交</option><option>手機使用不當</option><option>同儕衝突</option><option>言語不當</option><option>損壞公物</option><option>抽菸 / 違禁品</option><option>其他</option></select><select id="filterCounselFollow" onchange="renderLearning()"><option value="">全部追蹤</option><option value="是">需追蹤：是</option><option value="否">需追蹤：否</option></select><input id="filterLearningName" placeholder="搜尋學生姓名" oninput="renderLearning()"></div><div id="learningTable"></div></div>
+<div class="panel"><h2>📄 匯入輔導紀錄 CSV</h2><p class="desc">直接選輔導紀錄 .csv 檔案，系統會按欄位讀出姓名、學號、事件類別、輔導內容，存成輔導紀錄，也會自動填到下面表單給你確認。一個 CSV 可以一次匯入多筆（每列一筆）。 <button class="btn gray small" onclick="downloadCounselCsvTemplate()">⬇ 下載 CSV 範本</button><br><b>如果 CSV 讀不到姓名/學號，系統會用你下面選的學生當作備援，不會直接失敗；也可以把 CSV 文字貼到下方框框再按「用這段 CSV 解析」。</b></p>
+<div class="row"><label>選擇學生（備援：PDF 讀不到姓名時就用這位）</label><select id="lcStudent"></select></div>
+<div class="flex"><div><label>1. 選擇輔導紀錄 CSV</label><input type="file" id="lcPdfInput" accept=".csv" onchange="handleCounselCsv(this,'list')"><div id="lcPdfMsg"></div></div><div><label>2. 或把 CSV 文字貼到這裡，再按解析</label><textarea id="lcPdfText" placeholder="把 CSV 文字貼到這裡，第一列是欄位名稱，例如：學號,姓名,發生日期,事件類別,導師輔導內容…" style="min-height:90px"></textarea><button class="btn gray" style="margin-top:8px" onclick="parseCounselCsvFromBox('list')">🔍 用這段 CSV 解析</button></div></div>
+<div id="lcPdfDebug" style="font-size:12px;color:#475569;line-height:1.6;margin-top:8px"></div>
+
+<div style="border:1px solid #cbd5e1;background:#f8fafc;padding:12px;border-radius:10px;margin-top:12px"><b>＋ 手動新增輔導紀錄（照學生輔導紀錄表）</b>
+<div class="grid3"><div><label>學年度</label><input id="lcSchoolYear" placeholder="例如 115" value="115"></div><div><label>學期</label><select id="lcSemester"><option>上學期</option><option>下學期</option></select></div><div><label>填表日期</label><input type="date" id="lcFormDate"></div></div>
+<div class="grid3"><div><label>導師姓名</label><input id="lcTeacherName" placeholder="例如 蕭慶堂" value="蕭慶堂"></div><div><label>填表人</label><input id="lcFiller" placeholder="學生本人 / 導師" value="學生本人"></div><div><label>學生（與上方備援相同）</label><select id="lcStudent2"></select></div></div>
+<div class="grid3"><div><label>發生日期</label><input type="date" id="lcEventDate"></div><div><label>發生時間</label><input id="lcEventTime" placeholder="例如 14:50"></div><div><label>發生地點</label><input id="lcEventPlace" placeholder="例如 電五"></div></div>
+<div><label>事件類別（可多選）</label><div id="lcEventTypes" class="row" style="gap:8px"></div></div>
+<div><label>事件經過描述</label><textarea id="lcEventDesc" placeholder="學生怎麼說、發生什麼事..." style="min-height:70px"></textarea></div>
+<div><label>學生自述與反省</label><textarea id="lcStudentReflection" placeholder="學生自己寫的反省..." style="min-height:60px"></textarea></div>
+<div class="grid3"><div><label>輔導日期</label><input type="date" id="lcCounselDate"></div><div><label>是否通知家長</label><input id="lcNotifyParent" placeholder="例如 已LINE連繫家長"></div><div><label>處理結果</label><input id="lcResult" placeholder="例如 通知家長"></div></div>
+<div class="grid3"><div><label>是否需持續追蹤</label><select id="lcNeedFollow"><option>否</option><option>是</option></select></div><div><label>約定事項</label><input id="lcAgreement" placeholder="例如 —" value="—"></div><div><label>追蹤日期</label><input type="date" id="lcFollowDate"></div></div>
+<div><label>輔導方式（可多選）</label><div id="lcMethods" class="row" style="gap:8px"></div></div>
+<div><label>導師輔導內容</label><textarea id="lcCounselContent" placeholder="導師怎麼輔導、提醒什麼..." style="min-height:90px"></textarea></div>
+<div><label>學生回應與改善計畫</label><textarea id="lcStudentResponse" placeholder="學生回應..." style="min-height:60px"></textarea></div>
+<div><label>家長聯繫與回應</label><textarea id="lcParentResponse" placeholder="家長怎麼回應..." style="min-height:60px"></textarea></div>
+<div class="grid3"><div><label>導師簽名</label><input id="lcTeacherSign" value="蕭慶堂"></div><div><label>簽名日期</label><input type="date" id="lcSignDate"></div><div><label>&nbsp;</label><button class="btn green" onclick="saveCounselFromList()">💾 存成輔導紀錄</button></div></div>
+<div id="lcMsg"></div></div>
+</div>
+</section>
+
+<section id="tab-grades" class="hidden">
+<div class="panel"><h2>成績 / 評語 — 匯入每位學生的成績 Excel</h2><p class="desc">每一位學生一份 Excel，例如「呂家羽│二年級歷年成績總表.xlsx」。一次可選多個檔案，系統會自動從檔名 / 標題認出姓名與年級（一年級 / 二年級 / 三年級），存成該學生的成績。同一位學生匯入一年級、二年級、三年級三份，會自動彙總成歷年總表，科目也會跨年彙總。</p>
+<div class="row"><label>年級（不確定就選自動判斷）</label><select id="gradeYearOverride"><option value="">自動判斷（從檔名 / 標題）</option><option>一年級</option><option>二年級</option><option>三年級</option></select><label>選擇成績 Excel（可一次選多個）</label><input type="file" id="gradesFile" accept=".xlsx,.xls" multiple onchange="handleGradesFiles(this)"></div>
+<div id="gradesMsg"></div></div>
+<div class="panel"><h2>彙整總表（各年級對照）</h2><p class="desc">每一位學生一列，一年級 / 二年級 / 三年級並排對照：學年平均、上 / 下學期名次、實得學分。這個表會一直保留。</p><div class="row"><input id="filterGradeName" placeholder="搜尋學生姓名 / 學號" oninput="renderGrades()" style="flex:1;min-width:220px"><select id="filterGradeYear" onchange="renderGrades()"><option value="">全部年級</option><option>一年級</option><option>二年級</option><option>三年級</option></select><button class="btn gray" onclick="clearAllGrades()">🗑 清除全部成績</button></div><div id="gradesTable"></div></div>
+<div class="panel"><h2>科目彙整（各年級學年成績對照）</h2><p class="desc">上面是全班各科目、各年級的學年成績平均；下面可選一位學生，看他自己的科目在各年級的學年成績對照。這兩個表都會一直保留。</p><div id="gradesSubjectTable"></div><div style="margin-top:16px"><div class="row"><label>個別學生科目對照 — 選一位學生</label><select id="filterGradeSubjectStudent" onchange="renderGrades()"></select></div><div id="gradesSubjectStudentTable"></div></div></div>
+</section>
+<section id="tab-photos" class="hidden">
+<div class="panel"><h2>學生照片 — 依座號匯入大頭照</h2><p class="desc">一次可選多張照片。檔名用座號開頭即可認人，例如：<b>01.jpg、01_呂家羽.jpg、1.jpg、07_朱品諺.jpg</b>。如果檔名沒有座號，會再從檔名裡的姓名去對。同一位學生匯入新照片會直接覆蓋舊的。照片會自動縮小、壓縮後保存，不會把 localStorage 塞爆。</p>
+<div class="row"><label>選擇照片（可一次選多張，jpg / png）</label><input type="file" id="photoFile" accept="image/*" multiple onchange="handlePhotoFiles(this)"></div>
+<div id="photoMsg"></div></div>
+<div class="panel"><h2>照片牆 <span id="photoCount" style="font-size:14px;color:#64748b"></span></h2><div class="row"><input id="filterPhotoName" placeholder="搜尋姓名 / 座號 / 學號" oninput="renderPhotos()" style="flex:1;min-width:220px"><select id="filterPhotoHas" onchange="renderPhotos()"><option value="">全部學生</option><option value="has">有照片</option><option value="none">還沒有照片</option></select><button class="btn gray" onclick="clearAllPhotos()">🗑 清除全部照片</button></div><div id="photoGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:12px"></div></div>
+</section>
+<section id="tab-help" class="hidden">
+<div class="panel"><h2>使用說明 — 對應你的 Excel</h2><p style="line-height:1.9;font-size:14px">
+<b>1. 怎麼匯入？</b><br>到「匯入 Excel」→ 選取 <b>115-1資處三忠.xlsx</b> → 系統自動讀取 3 個工作表並顯示匯入結果。也可以用複製貼上方式匯入「班級個人資料」。<br><br>
+<b>2. 欄位怎麼對應？</b><br>不用自己對欄位。系統會認標題列：科別、姓名、班級、座號、學號、性別、身分證統一編號、報名身分別、經濟狀況、出生年/月/日、西元出生、畢業國中名稱、家長姓名、學生手機、家長手機、電話、郵遞區號、地址。<br><br>
+<b>3. 幹部 / IEP 怎麼看？</b><br>匯入後分別在「幹部名單」和「IEP」分頁查看。學生詳情頁也會顯示該生的幹部職務與 IEP 狀況。<br><br>
+<b>4. 個資怎麼保護？</b><br>身分證、手機、地址直接顯示完整，不遮罩。不要把匯出的 CSV 傳到群組或公開雲端。<br><br>
+<b>5. 成績 / 評語怎麼匯入？</b><br>到「成績 / 評語」→ 一次選多份學生各自的成績 Excel（檔名或標題有姓名與年級），系統會自動認出是誰、哪一年級。同一位學生匯入一年級、二年級、三年級，會自動彙總。詳情頁也會顯示該生的歷年成績。<br><br><b>6. 輔導紀錄怎麼用？</b><br>到「輔導紀錄」→ 手動填表，或直接選輔導紀錄 .csv 檔案匯入（第一列是欄位名稱，學號,姓名,發生日期,事件類別,導師輔導內容…，可一次匯入多筆）。讀不到姓名/學號時會自動用你選的學生當備援，不會直接失敗。如果手邊只有文字，請把 CSV 文字貼到框框再按「用這段 CSV 解析」，或直接手動填。<br><br><b>7. 照片怎麼匯入？</b><br>到「學生照片」→ 一次選多張照片，檔名用座號開頭即可，例如 01.jpg、07_朱品諺.jpg。照片會自動縮小壓縮後保存，點照片牆的照片可看詳情，也可在詳情頁看到該生的大頭照。<br><br><b>8. 換電腦怎麼辦？</b><br>先在舊電腦「匯出 CSV」備份，到新電腦再用「匯入 Excel」選原始 xlsx 重新匯入即可。
+</p></div>
+</section>
+</main>
+
+<div class="modal" id="studentModal"><div class="modal-box"><h3 id="studentModalTitle">新增學生</h3><input type="hidden" id="editStudentId">
+<div class="grid4">
+<div><label>科別</label><input id="fDept" value="資料處理科"></div><div><label>班級</label><input id="fClass" value="資處三忠"></div><div><label>座號 *</label><input id="fSeat"></div><div><label>學號 *</label><input id="fSid"></div>
+<div><label>姓名 *</label><input id="fName"></div><div><label>性別</label><select id="fGender"><option>男</option><option>女</option></select></div><div><label>身分證統一編號</label><input id="fIdNo" placeholder="敏感資料，請謹慎填寫"></div><div><label>報名身分別</label><select id="fIdentity"><option>一般生</option><option>身心障礙</option><option>原住民</option><option>其他</option></select></div>
+<div><label>經濟狀況</label><input id="fEco" placeholder="例如 低收入戶，空白即一般"></div><div><label>出生年（民國）</label><input id="fBirthY"></div><div><label>出生月</label><input id="fBirthM"></div><div><label>出生日</label><input id="fBirthD"></div>
+<div><label>西元出生</label><input id="fBirthDate" type="date"></div><div><label>畢業國中名稱</label><input id="fGrad"></div><div><label>家長姓名</label><input id="fParent"></div><div><label>學生手機</label><input id="fStudentPhone"></div>
+<div><label>家長手機</label><input id="fParentPhone"></div><div><label>電話（市話）</label><input id="fHomePhone"></div><div><label>郵遞區號</label><input id="fZip"></div><div><label>地址</label><input id="fAddress"></div>
+</div>
+<div class="row" style="margin-top:16px"><button class="btn" onclick="saveStudent()">儲存</button><button class="btn gray" onclick="closeModal('studentModal')">取消</button></div>
+</div></div>
+
+<div class="modal" id="detailModal"><div class="modal-box"><div class="row" style="justify-content:space-between"><h3 id="detailTitle">學生詳情</h3><div style="display:flex;gap:6px"><button class="btn red small" onclick="deleteStudent(currentSid)">🗑 刪除這位學生</button><button class="btn gray small" onclick="closeModal('detailModal')">✕ 關閉</button></div></div><div id="detailPhoto" style="margin-bottom:12px"></div><div id="detailInfo"></div><div id="detailStats" style="margin:12px 0"></div><div id="detailCadreIep" style="margin:10px 0"></div>
+<h4>＋ 新增輔導紀錄</h4>
+<div style="border:1px solid #cbd5e1;background:#f0fdf4;padding:12px;border-radius:10px;margin-bottom:12px"><b>📄 匯入輔導紀錄 CSV</b><p style="font-size:13px;color:#475569;margin:6px 0">直接選輔導紀錄 .csv 檔案，系統會按欄位讀出姓名、學號、事件類別、輔導內容，存成這位學生的輔導紀錄，也會自動填到下面表單給你確認。一個 CSV 可以一次匯入多筆（每列一筆）。<br><b>讀不到姓名/學號時，會自動用這位學生當備援，不會直接失敗。</b> <button class="btn gray small" onclick="downloadCounselCsvTemplate()">⬇ 下載 CSV 範本</button></p><input type="file" id="cPdfInput" accept=".csv" onchange="handleCounselCsv(this,'detail')"><div id="cPdfMsg"></div><div style="margin-top:8px"><label>或把 CSV 文字貼到這裡</label><textarea id="cPdfText" placeholder="把 CSV 文字貼到這裡，第一列是欄位名稱，例如：學號,姓名,發生日期,事件類別,導師輔導內容…" style="min-height:70px"></textarea><button class="btn gray small" style="margin-top:6px" onclick="parseCounselCsvFromBox('detail')">🔍 用這段 CSV 解析</button></div><div id="cPdfDebug" style="font-size:12px;color:#475569;line-height:1.6;margin-top:6px"></div></div>
+<div class="grid3"><div><label>學年度</label><input id="cSchoolYear" placeholder="例如 115" value="115"></div><div><label>學期</label><select id="cSemester"><option>上學期</option><option>下學期</option></select></div><div><label>填表日期</label><input type="date" id="cFormDate"></div></div>
+<div class="grid3"><div><label>導師姓名</label><input id="cTeacherName" placeholder="例如 蕭慶堂" value="蕭慶堂"></div><div><label>填表人</label><input id="cFiller" placeholder="學生本人 / 導師" value="學生本人"></div><div><label>座號 / 姓名（自動帶入）</label><input id="cStudentLabel" readonly style="background:#f8fafc"></div></div>
+<div class="grid3"><div><label>發生日期</label><input type="date" id="cEventDate"></div><div><label>發生時間</label><input id="cEventTime" placeholder="例如 14:50"></div><div><label>發生地點</label><input id="cEventPlace" placeholder="例如 電五"></div></div>
+<div><label>事件類別（可多選）</label><div id="cEventTypes" class="row" style="gap:8px"></div></div>
+<div><label>事件經過描述</label><textarea id="cEventDesc" placeholder="學生怎麼說、發生什麼事..." style="min-height:70px"></textarea></div>
+<div><label>學生自述與反省</label><textarea id="cStudentReflection" placeholder="學生自己寫的反省..." style="min-height:60px"></textarea></div>
+<div class="grid3"><div><label>輔導日期</label><input type="date" id="cCounselDate"></div><div><label>是否通知家長</label><input id="cNotifyParent" placeholder="例如 已LINE連繫家長"></div><div><label>處理結果</label><input id="cResult" placeholder="例如 通知家長"></div></div>
+<div class="grid3"><div><label>是否需持續追蹤</label><select id="cNeedFollow"><option>否</option><option>是</option></select></div><div><label>約定事項</label><input id="cAgreement" placeholder="例如 —" value="—"></div><div><label>追蹤日期</label><input type="date" id="cFollowDate"></div></div>
+<div><label>輔導方式（可多選）</label><div id="cMethods" class="row" style="gap:8px"></div></div>
+<div><label>導師輔導內容</label><textarea id="cCounselContent" placeholder="導師怎麼輔導、提醒什麼..." style="min-height:90px"></textarea></div>
+<div><label>學生回應與改善計畫</label><textarea id="cStudentResponse" placeholder="學生回應..." style="min-height:60px"></textarea></div>
+<div><label>家長聯繫與回應</label><textarea id="cParentResponse" placeholder="家長怎麼回應..." style="min-height:60px"></textarea></div>
+<div class="grid3"><div><label>導師簽名</label><input id="cTeacherSign" value="蕭慶堂"></div><div><label>簽名日期</label><input type="date" id="cSignDate"></div><div><label>&nbsp;</label><button class="btn green" onclick="addRecord()">💾 新增這筆輔導紀錄</button></div></div><h4 style="margin-top:18px">成績 / 評語</h4><div id="detailGrades"></div><h4 style="margin-top:18px">輔導紀錄</h4><div id="detailRecords"></div>
+</div></div>
+
+<script>
+// ===== Supabase 雲端同步（和理財 / 教學入口同一個專案）=====
+const SUPABASE_URL = "https://ethxjdihoqysmugygdta.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vun13ZjidhA7UhxcjJm4GQ_ePFqVqUt";
+const supabaseClient = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'boss-xiao-class-auth', storage: window.localStorage } }) : null;
+let currentUser = null;
+let cloudLoaded = false;
+let cloudSaveTimer = null;
+let isSavingCloud = false;
+let lastCloudUpdatedAt = null;
+function setSyncUI(text, isLoggedIn){
+  const s = document.getElementById('syncStatus');
+  const b = document.getElementById('syncBarText');
+  const bar = document.getElementById('syncBar');
+  const emailEl = document.getElementById('authEmail');
+  const loginBtn = document.getElementById('authBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  if(s) s.textContent = text;
+  if(b) b.textContent = text;
+  if(bar) bar.className = isLoggedIn ? 'ok' : '';
+  if(emailEl) emailEl.textContent = (isLoggedIn && currentUser) ? currentUser.email : '';
+  if(loginBtn) loginBtn.classList.toggle('hidden', !!isLoggedIn);
+  if(logoutBtn) logoutBtn.classList.toggle('hidden', !isLoggedIn);
+  const gate = document.getElementById('loginGate');
+  if(gate) gate.style.display = isLoggedIn ? 'none' : 'flex';
+}
+function openLoginGate(){ document.getElementById('loginGate').style.display='flex'; }
+async function handleLogin(){
+  if(!supabaseClient){ document.getElementById('loginError').textContent='雲端服務未載入，請檢查網路後重新整理。'; return; }
+  const email=document.getElementById('loginEmail').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  if(!email||!password){ document.getElementById('loginError').textContent='請輸入 Email 和密碼。'; return; }
+  document.getElementById('loginError').textContent='登入中…';
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error){ document.getElementById('loginError').textContent='登入失敗：'+error.message; return; }
+  currentUser=data.user; document.getElementById('loginError').textContent='';
+}
+async function handleLogout(){
+  if(!supabaseClient) return;
+  await supabaseClient.auth.signOut();
+  currentUser=null; cloudLoaded=false;
+  setSyncUI('已登出，請登入才可觀看', false);
+}
+function getAllClassData(){ return { students, cadres, ieps, records, counselPdfs, studentGrades, studentPhotos, updatedAt: new Date().toISOString() }; }
+function applyClassData(d){
+  if(!d) return;
+  if(Array.isArray(d.students)) students=d.students;
+  if(Array.isArray(d.cadres)) cadres=d.cadres;
+  if(Array.isArray(d.ieps)) ieps=d.ieps;
+  if(Array.isArray(d.records)) records=d.records;
+  if(d.counselPdfs && typeof d.counselPdfs==='object') counselPdfs=d.counselPdfs;
+  if(d.studentGrades && typeof d.studentGrades==='object') studentGrades=d.studentGrades;
+  if(d.studentPhotos && typeof d.studentPhotos==='object') studentPhotos=d.studentPhotos;
+}
+function saveLocalOnly(){
+  try{
+    localStorage.setItem('zichu_students_v2', JSON.stringify(students));
+    localStorage.setItem('zichu_cadres_v2', JSON.stringify(cadres));
+    localStorage.setItem('zichu_ieps_v2', JSON.stringify(ieps));
+    localStorage.setItem('zichu_records_v2', JSON.stringify(records));
+    localStorage.setItem('zichu_counsel_pdfs_v1', JSON.stringify(counselPdfs));
+    localStorage.setItem('zichu_grades_v1', JSON.stringify(studentGrades));
+    localStorage.setItem('zichu_photos_v1', JSON.stringify(studentPhotos));
+  }catch(e){}
+}
+async function loadFromCloud(){
+  if(!supabaseClient || !currentUser) return;
+  setSyncUI('同步中…', true);
+  const {data,error}=await supabaseClient.from('class_data').select('data, updated_at').eq('user_id', currentUser.id).maybeSingle();
+  if(error){ console.error(error); setSyncUI('雲端讀取失敗，顯示本機資料：'+error.message, true); return; }
+  if(data && data.data && Object.keys(data.data).length>0){
+    applyClassData(data.data);
+    cloudLoaded=true; lastCloudUpdatedAt=data.updated_at||null;
+    const tEl=document.getElementById('cloudUpdatedAt'); if(tEl && lastCloudUpdatedAt) tEl.textContent='雲端最後更新：'+new Date(lastCloudUpdatedAt).toLocaleString();
+    saveLocalOnly(); renderAll();
+    setSyncUI('已登入・已同步到雲端：'+currentUser.email, true);
+  }else{
+    cloudLoaded=true;
+    if(confirm('雲端還沒有班級資料，要把這台電腦的資料上傳到雲端嗎？按「確定」上傳，按「取消」先保留空白雲端。')){
+      await saveToCloud(true);
+      setSyncUI('已登入・本機資料已上傳到雲端：'+currentUser.email, true);
+    }else{
+      setSyncUI('已登入・雲端是空的，已保留空白：'+currentUser.email, true);
+    }
+  }
+}
+function saveToCloud(immediate){
+  if(!supabaseClient || !currentUser) return Promise.resolve();
+  if(!immediate){ clearTimeout(cloudSaveTimer); return new Promise(res=>{ cloudSaveTimer=setTimeout(()=>{ saveToCloud(true).then(res); }, 800); }); }
+  if(isSavingCloud) return Promise.resolve();
+  isSavingCloud=true; setSyncUI('同步中…', true);
+  const payload={ user_id: currentUser.id, data: getAllClassData(), updated_at: new Date().toISOString() };
+  return supabaseClient.from('class_data').upsert(payload, {onConflict:'user_id'}).then(({error})=>{
+    isSavingCloud=false;
+    if(error){ console.error(error); setSyncUI('雲端儲存失敗：'+error.message, true); }
+    else{ lastCloudUpdatedAt=payload.updated_at; const tEl=document.getElementById('cloudUpdatedAt'); if(tEl) tEl.textContent='雲端最後更新：'+new Date(payload.updated_at).toLocaleString(); setSyncUI('已登入・已同步到雲端：'+currentUser.email, true); }
+  });
+}
+async function manualSyncFromCloud(){ if(!currentUser) return alert('請先登入。'); if(confirm('要從雲端重新載入嗎？這會用雲端的資料覆蓋這台電腦目前顯示的資料。')) await loadFromCloud(); }
+async function manualPushToCloud(){ if(!currentUser) return alert('請先登入。'); await saveToCloud(true); alert('已同步到雲端。另一台電腦按「從雲端重新載入」或重新整理就會看到。'); }
+async function initClassAuth(){
+  if(!supabaseClient){ setSyncUI('雲端服務未載入，請檢查網路', false); return; }
+  setSyncUI('正在檢查登入…', false);
+  const {data}=await supabaseClient.auth.getSession();
+  if(data && data.session && data.session.user){ currentUser=data.session.user; await loadFromCloud(); }
+  else setSyncUI('未登入，請登入才可觀看', false);
+  supabaseClient.auth.onAuthStateChange(async (event, session)=>{
+    if(event==='SIGNED_IN' && session && session.user){ if(!currentUser || currentUser.id!==session.user.id || !cloudLoaded){ currentUser=session.user; await loadFromCloud(); } }
+    else if(event==='SIGNED_OUT'){ currentUser=null; cloudLoaded=false; setSyncUI('已登出，請登入才可觀看', false); }
+    else if(event==='TOKEN_REFRESHED' && session && session.user){ currentUser=session.user; }
+    else if(event==='INITIAL_SESSION' && session && session.user){ if(!cloudLoaded){ currentUser=session.user; await loadFromCloud(); } }
+  });
+  document.addEventListener('visibilitychange', async ()=>{
+    if(!document.hidden && currentUser && cloudLoaded){
+      try{ const {data}=await supabaseClient.from('class_data').select('updated_at').eq('user_id', currentUser.id).maybeSingle(); if(data && data.updated_at && lastCloudUpdatedAt && new Date(data.updated_at) > new Date(lastCloudUpdatedAt)) await loadFromCloud(); }catch(e){}
+    }
+  });
+  window.addEventListener('beforeunload', ()=>{ if(currentUser && cloudSaveTimer){ clearTimeout(cloudSaveTimer); saveToCloud(true); } });
+}
+
+const SEED_STUDENTS=[{"dept": "資料處理科", "name": "呂家羽", "className": "資處二忠", "seat": "1", "sid": "312001", "gender": "女", "idNo": "F232092487", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "07", "birthD": "20", "birthDate": "2009-07-20", "gradSchool": "新北市立樹林高中附設國中", "parentName": "溫之瑜", "studentPhone": "966937580", "parentPhone": "0915918233", "homePhone": "0286863342", "zip": "238", "address": "新北市樹林區樹中街61巷3號"}, {"dept": "資料處理科", "name": "陳冠綸", "className": "資處二忠", "seat": "2", "sid": "312002", "gender": "男", "idNo": "P125147892", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "09", "birthD": "25", "birthDate": "2008-09-25", "gradSchool": "新北市立溪崑國民中學", "parentName": "李溫琪", "studentPhone": "965012016", "parentPhone": "0932237693", "homePhone": "0226758982", "zip": "220", "address": "新北市板橋區大觀路3段136號4樓"}, {"dept": "資料處理科", "name": "曾子杰", "className": "資處二忠", "seat": "3", "sid": "312003", "gender": "男", "idNo": "F132758933", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "03", "birthD": "15", "birthDate": "2009-03-15", "gradSchool": "新北市立溪崑國民中學", "parentName": "阮玉鳳", "studentPhone": "0979-141-442", "parentPhone": "918282896", "homePhone": "0286884865", "zip": "238", "address": "新北市樹林區俊英街121巷41號2樓"}, {"dept": "資料處理科", "name": "黃羽妡", "className": "資處二忠", "seat": "4", "sid": "312004", "gender": "女", "idNo": "F232075351", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "10", "birthD": "30", "birthDate": "2008-10-30", "gradSchool": "新北市立新莊國民中學", "parentName": "林詩佩", "studentPhone": "0980-410-538", "parentPhone": "0986177818", "homePhone": "0222076229", "zip": "242", "address": "新北市新莊區瓊林路55號7樓"}, {"dept": "資料處理科", "name": "張裕蓁", "className": "資處二忠", "seat": "5", "sid": "312005", "gender": "女", "idNo": "F232076312", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "11", "birthD": "05", "birthDate": "2008-11-05", "gradSchool": "新北市立新莊國民中學", "parentName": "余安琪", "studentPhone": "0968-897-271", "parentPhone": "0953561505", "homePhone": "0222062022", "zip": "242", "address": "新北市新莊區景德路252號3樓"}, {"dept": "資料處理科", "name": "蔡彥廷", "className": "資處二忠", "seat": "6", "sid": "312006", "gender": "男", "idNo": "F132078225", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "06", "birthD": "25", "birthDate": "2009-06-25", "gradSchool": "新北市市新泰國民中學", "parentName": "林彩", "studentPhone": "0962-071-626", "parentPhone": "0955-710-626", "homePhone": "0229940336", "zip": "242", "address": "新北市新莊區新泰路289巷38號5樓"}, {"dept": "資料處理科", "name": "朱品諺", "className": "資處二忠", "seat": "7", "sid": "312007", "gender": "男", "idNo": "F132432005", "identity": "身心障礙", "economy": "低收入戶", "birthY": "097", "birthM": "10", "birthD": "22", "birthDate": "2008-10-22", "gradSchool": "市立鶯歌國中", "parentName": "朱宇蕾", "studentPhone": "", "parentPhone": "903608178", "homePhone": "26792576", "zip": "239010", "address": "新北市鶯歌區西鶯里013鄰中山路138巷20號3樓"}, {"dept": "資料處理科", "name": "鄭諺濃", "className": "資處二忠", "seat": "8", "sid": "312008", "gender": "男", "idNo": "H126678435", "identity": "身心障礙", "economy": "", "birthY": "097", "birthM": "08", "birthD": "13", "birthDate": "2008-08-13", "gradSchool": "市立鶯歌國中", "parentName": "吳靜萍", "studentPhone": "0987-519-857", "parentPhone": "0907376862", "homePhone": "03-3805508", "zip": "335011", "address": "桃園市大溪區中新里大鶯路1320巷77號"}, {"dept": "資料處理科", "name": "陳詩妮", "className": "資處二忠", "seat": "9", "sid": "312009", "gender": "女", "idNo": "F231915749", "identity": "身心障礙", "economy": "", "birthY": "097", "birthM": "10", "birthD": "07", "birthDate": "2008-10-07", "gradSchool": "市立三峽國中", "parentName": "陳姵錡", "studentPhone": "0928114855", "parentPhone": "0928114855", "homePhone": "", "zip": "237021", "address": "新北市三峽區大學路17號7樓"}, {"dept": "資料處理科", "name": "童怡潔", "className": "資處二忠", "seat": "10", "sid": "312099", "gender": "女", "idNo": "F231838147", "identity": "一般生", "economy": "", "birthY": "97", "birthM": "12", "birthD": "17", "birthDate": "2008-12-17", "gradSchool": "康寧視光轉入", "parentName": "童啟榮", "studentPhone": "903206411", "parentPhone": "983007646", "homePhone": "02-29593359", "zip": "", "address": "新北市板橋區縣民大道3段270巷19號3樓"}, {"dept": "資料處理科", "name": "吳佩芸", "className": "資處二忠", "seat": "11", "sid": "312011", "gender": "女", "idNo": "F232092576", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "08", "birthD": "17", "birthDate": "2009-08-17", "gradSchool": "新北市立育林國民中學", "parentName": "俞雅文", "studentPhone": "0918-013-817", "parentPhone": "0920602716", "homePhone": "86871392", "zip": "238", "address": "新北市樹林區東昇里22鄰復興路450號4樓"}, {"dept": "資料處理科", "name": "吳姵嫻", "className": "資處二忠", "seat": "12", "sid": "312012", "gender": "女", "idNo": "P224617557", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "08", "birthD": "06", "birthDate": "2009-08-06", "gradSchool": "新北市立中平國民中學", "parentName": "王采婷", "studentPhone": "0983-167-698", "parentPhone": "0922372703", "homePhone": "89936079", "zip": "242", "address": "新北市新莊區幸福路864號10樓"}, {"dept": "資料處理科", "name": "吳思蕎", "className": "資處二忠", "seat": "13", "sid": "312013", "gender": "女", "idNo": "F231968919", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "01", "birthD": "30", "birthDate": "2009-01-30", "gradSchool": "新北市立義學國民中學", "parentName": "吳建邦", "studentPhone": "0968-721-792", "parentPhone": "0953243192", "homePhone": "0222965330", "zip": "243", "address": "新北市泰山區明志路3段182巷39號"}, {"dept": "資料處理科", "name": "劉家愷", "className": "資處二忠", "seat": "14", "sid": "312100", "gender": "男", "idNo": "F132286941", "identity": "一般生", "economy": "", "birthY": "96", "birthM": "12", "birthD": "1", "birthDate": "2007-12-01", "gradSchool": "觀二孝轉入", "parentName": "郭金英", "studentPhone": "903201516", "parentPhone": "920330163", "homePhone": "", "zip": "", "address": "新北市土城區明德路一段240巷8號6樓"}, {"dept": "資料處理科", "name": "李佳蓁", "className": "資處二忠", "seat": "15", "sid": "312015", "gender": "女", "idNo": "F231492661", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "02", "birthD": "27", "birthDate": "2009-02-27", "gradSchool": "新北市立中正國民中學", "parentName": "李政儀", "studentPhone": "0921143827", "parentPhone": "0909293726", "homePhone": "", "zip": "236", "address": "新北市土城區日新里19鄰中央路1段242巷2弄12號1樓"}, {"dept": "資料處理科", "name": "辛宥霆", "className": "資處二忠", "seat": "16", "sid": "312016", "gender": "男", "idNo": "F132860330", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "07", "birthD": "23", "birthDate": "2009-07-23", "gradSchool": "新北市立福營國民中學", "parentName": "辛威良", "studentPhone": "913556443", "parentPhone": "0983-718-163", "homePhone": "0222035227", "zip": "242", "address": "242新北市新莊區民安里21鄰民安西路88巷5弄70號6樓"}, {"dept": "資料處理科", "name": "林峻緯", "className": "資處二忠", "seat": "17", "sid": "312017", "gender": "男", "idNo": "F132433306", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "03", "birthD": "21", "birthDate": "2009-03-21", "gradSchool": "新北市立鳳鳴國民中學", "parentName": "林宏達", "studentPhone": "903733503", "parentPhone": "920211507", "homePhone": "", "zip": "239", "address": "239新北市鶯歌區鳳祥里20鄰鶯桃路455巷6弄30號"}, {"dept": "資料處理科", "name": "徐志豪", "className": "資處二忠", "seat": "18", "sid": "312018", "gender": "男", "idNo": "F132521356", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "01", "birthD": "07", "birthDate": "2009-01-07", "gradSchool": "新北市立三多國民中學", "parentName": "徐子揚", "studentPhone": "0968-327-287", "parentPhone": "0916199435", "homePhone": "", "zip": "238", "address": "新北市樹林區三德街10巷3號"}, {"dept": "資料處理科", "name": "郭姿岑", "className": "資處二忠", "seat": "19", "sid": "312019", "gender": "女", "idNo": "F231843391", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "02", "birthD": "10", "birthDate": "2009-02-10", "gradSchool": "新北市立海山高級中學附設國民中學", "parentName": "郭佳宗", "studentPhone": "", "parentPhone": "0935770760", "homePhone": "29593561", "zip": "220", "address": "新北市板橋區香丘里1鄰縣民大道2段116號3樓"}, {"dept": "資料處理科", "name": "黃則勛", "className": "資處二忠", "seat": "20", "sid": "312020", "gender": "男", "idNo": "F132304962", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "06", "birthD": "29", "birthDate": "2009-06-29", "gradSchool": "新北市立土城國民中學", "parentName": "黃金木", "studentPhone": "0932833-139", "parentPhone": "0912515808", "homePhone": "82621608", "zip": "236", "address": "新北市土城區土城里19鄰中央路2段211號10樓之5"}, {"dept": "資料處理科", "name": "黃聖翔", "className": "資處二忠", "seat": "21", "sid": "312021", "gender": "男", "idNo": "F132546979", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "02", "birthD": "14", "birthDate": "2008-02-14", "gradSchool": "新北市立忠孝國民中學", "parentName": "湯婷婷", "studentPhone": "938769629", "parentPhone": "0919331625", "homePhone": "229616656", "zip": "220", "address": "新北市板橋區四川路一段225號7樓"}, {"dept": "資料處理科", "name": "蔡廷浤", "className": "資處二忠", "seat": "22", "sid": "312022", "gender": "男", "idNo": "F132768957", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "03", "birthD": "20", "birthDate": "2009-03-20", "gradSchool": "新北市立溪崑國民中學", "parentName": "王恩萍", "studentPhone": "958182135", "parentPhone": "0939548131", "homePhone": "86871659", "zip": "220", "address": "新北市板橋區篤行路3段玉平巷68弄13號3樓"}, {"dept": "資料處理科", "name": "蕭愛玲", "className": "資處二忠", "seat": "23", "sid": "312023", "gender": "女", "idNo": "F231781056", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "04", "birthD": "19", "birthDate": "2009-04-19", "gradSchool": "桃園市立新興高中", "parentName": "蕭弘琪", "studentPhone": "968916535", "parentPhone": "0930030978", "homePhone": "0226794536", "zip": "239", "address": "新北市鶯歌區永明街5號"}, {"dept": "資料處理科", "name": "賴恆宇", "className": "資處二忠", "seat": "24", "sid": "312024", "gender": "男", "idNo": "F132763167", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "08", "birthD": "25", "birthDate": "2009-08-25", "gradSchool": "新北市立育林國民中學", "parentName": "賴煥霖", "studentPhone": "986670551", "parentPhone": "953164641", "homePhone": "26823370", "zip": "238", "address": "新北市樹林區復興路198號8樓之2"}, {"dept": "資料處理科", "name": "吳承恩", "className": "資處二忠", "seat": "25", "sid": "312025", "gender": "男", "idNo": "G122684927", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "12", "birthD": "18", "birthDate": "2008-12-18", "gradSchool": "樹林高中", "parentName": "劉惠雲", "studentPhone": "979666076", "parentPhone": "989113809", "homePhone": "", "zip": "", "address": "新北市樹林區樹德街105號"}, {"dept": "資料處理科", "name": "戴翊庭", "className": "資處二忠", "seat": "26", "sid": "312026", "gender": "男", "idNo": "F131958742", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "07", "birthD": "18", "birthDate": "2009-07-18", "gradSchool": "育林國中", "parentName": "練馨云", "studentPhone": "983775060", "parentPhone": "939363730", "homePhone": "26821885", "zip": "", "address": "新北市樹林區復興路430號4樓"}, {"dept": "資料處理科", "name": "余靖譜", "className": "資處二忠", "seat": "27", "sid": "312027", "gender": "男", "idNo": "F132435686", "identity": "一般生", "economy": "低收入戶", "birthY": "098", "birthM": "06", "birthD": "10", "birthDate": "2009-06-10", "gradSchool": "鶯歌國中", "parentName": "余楊生", "studentPhone": "", "parentPhone": "968021561", "homePhone": "86775167", "zip": "", "address": "新北市鶯歌區西湖街2-14號8樓"}, {"dept": "資料處理科", "name": "林呈祐", "className": "資處二忠", "seat": "28", "sid": "312028", "gender": "男", "idNo": "F132754999", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "10", "birthD": "14", "birthDate": "2008-10-14", "gradSchool": "溪崑國中", "parentName": "洪錦雲", "studentPhone": "916101459", "parentPhone": "937838443", "homePhone": "", "zip": "", "address": "新北市樹林區大安路107號4樓"}, {"dept": "資料處理科", "name": "林宥孜", "className": "資處二忠", "seat": "29", "sid": "312029", "gender": "女", "idNo": "F231885880", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "09", "birthD": "17", "birthDate": "2008-09-17", "gradSchool": "明德高中", "parentName": "林永浤", "studentPhone": "970838917", "parentPhone": "939530252", "homePhone": "", "zip": "", "address": "新北市樹林區俊興街211巷10號"}, {"dept": "資料處理科", "name": "莊宜臻", "className": "資處二忠", "seat": "30", "sid": "312030", "gender": "女", "idNo": "C221774788", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "11", "birthD": "02", "birthDate": "2008-11-02", "gradSchool": "自強國中", "parentName": "王美華", "studentPhone": "966010631", "parentPhone": "933040314", "homePhone": "", "zip": "", "address": "新北市土城區延和路125巷15號5樓"}, {"dept": "資料處理科", "name": "葉佳旻", "className": "資處二忠", "seat": "31", "sid": "312031", "gender": "男", "idNo": "F132519043", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "12", "birthD": "04", "birthDate": "2008-12-04", "gradSchool": "忠孝國中", "parentName": "葉南炎", "studentPhone": "905380976", "parentPhone": "917958583", "homePhone": "", "zip": "", "address": "新北市板橋區溪崑一街30巷15弄23號"}, {"dept": "資料處理科", "name": "王薏茹", "className": "資處二忠", "seat": "32", "sid": "312032", "gender": "女", "idNo": "F232089659", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "03", "birthD": "05", "birthDate": "2009-03-05", "gradSchool": "樹林高中", "parentName": "楊乃萍", "studentPhone": "908526398", "parentPhone": "958336392", "homePhone": "", "zip": "", "address": "新北市樹林區太平路150巷43號8樓之三"}, {"dept": "資料處理科", "name": "吳岱林", "className": "資處二忠", "seat": "33", "sid": "312033", "gender": "男", "idNo": "F170183967", "identity": "一般生", "economy": "中低收入戶", "birthY": "097", "birthM": "03", "birthD": "08", "birthDate": "2008-03-08", "gradSchool": "溪崑國中", "parentName": "吳鐘榮", "studentPhone": "978431803", "parentPhone": "978431803", "homePhone": "", "zip": "", "address": "新北市樹林區樹新路100巷6號2樓"}, {"dept": "資料處理科", "name": "許芷涵", "className": "資處二忠", "seat": "34", "sid": "312034", "gender": "女", "idNo": "F231879499", "identity": "一般生", "economy": "", "birthY": "096", "birthM": "11", "birthD": "09", "birthDate": "2007-11-09", "gradSchool": "台中中平國中", "parentName": "許瑞恩", "studentPhone": "919015297", "parentPhone": "978901570", "homePhone": "", "zip": "", "address": "台中市新平路一段209巷18號5樓"}, {"dept": "資料處理科", "name": "吳承翰", "className": "資處二忠", "seat": "35", "sid": "312101", "gender": "男", "idNo": "N127210468", "identity": "一般生", "economy": "", "birthY": "97", "birthM": "9", "birthD": "25", "birthDate": "2008-09-25", "gradSchool": "莊敬資處轉入", "parentName": "唐素鶯", "studentPhone": "933482800", "parentPhone": "983590100", "homePhone": "", "zip": "", "address": "桃園市中壢區新生路158號5樓"}, {"dept": "資料處理科", "name": "廖堉安", "className": "資處二忠", "seat": "36", "sid": "312036", "gender": "男", "idNo": "F132851797", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "02", "birthD": "19", "birthDate": "2009-02-19", "gradSchool": "溪崑國中", "parentName": "丁菁儀", "studentPhone": "0966-829-739", "parentPhone": "966829739", "homePhone": "", "zip": "", "address": "新北市新莊區民安西路470之一號11樓"}, {"dept": "資料處理科", "name": "莊博宇", "className": "資處二忠", "seat": "38", "sid": "312038", "gender": "男", "idNo": "F132545427", "identity": "一般生", "economy": "", "birthY": "096", "birthM": "12", "birthD": "18", "birthDate": "2007-12-18", "gradSchool": "桃園經國國中", "parentName": "林麗美", "studentPhone": "981838995", "parentPhone": "933245740", "homePhone": "", "zip": "", "address": "新北市樹林區龍興街60巷12號3樓"}, {"dept": "資料處理科", "name": "黃唯宸", "className": "資處二忠", "seat": "42", "sid": "312042", "gender": "男", "idNo": "F132581147", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "05", "birthD": "18", "birthDate": "2009-05-18", "gradSchool": "安溪國中", "parentName": "林婉婷", "studentPhone": "958854542", "parentPhone": "935812733", "homePhone": "", "zip": "", "address": "新北市三峽區永安街145號5樓"}, {"dept": "資料處理科", "name": "潘芊佑", "className": "資處二忠", "seat": "43", "sid": "312043", "gender": "女", "idNo": "F231341721", "identity": "一般生", "economy": "", "birthY": "095", "birthM": "07", "birthD": "19", "birthDate": "2006-07-19", "gradSchool": "中和國中", "parentName": "陳姿蓉", "studentPhone": "972305850", "parentPhone": "975805959", "homePhone": "", "zip": "", "address": "新北市中和區興有路2段136號4樓"}, {"dept": "資料處理科", "name": "劉曄", "className": "資處二忠", "seat": "44", "sid": "312044", "gender": "男", "idNo": "F131982131", "identity": "一般生", "economy": "", "birthY": "097", "birthM": "11", "birthD": "01", "birthDate": "2008-11-01", "gradSchool": "新北市立鶯歌國民中學", "parentName": "劉意川", "studentPhone": "0976517587", "parentPhone": "0976517587", "homePhone": "", "zip": "", "address": "新北市鶯歌區南靖里014鄰文化路136巷52弄1號1樓"}, {"dept": "資料處理科", "name": "林怡瑄", "className": "資處二忠", "seat": "45", "sid": "312045", "gender": "女", "idNo": "F231991972", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "03", "birthD": "21", "birthDate": "2009-03-21", "gradSchool": "三峽國中", "parentName": "盧靜華", "studentPhone": "0900572395", "parentPhone": "0921533669", "homePhone": "", "zip": "", "address": "新北市三峽區中正路一段108巷7弄2號3樓之5"}, {"dept": "資料處理科", "name": "王惠鈴", "className": "資處二忠", "seat": "47", "sid": "312047", "gender": "女", "idNo": "F232090821", "identity": "一般生", "economy": "", "birthY": "098", "birthM": "05", "birthD": "20", "birthDate": "2006-05-20", "gradSchool": "新北市立丹鳳高級中學附設國民中學", "parentName": "王宗輝", "studentPhone": "979337937", "parentPhone": "956608510", "homePhone": "", "zip": "", "address": "新北市樹林區三龍里16鄰三龍街113之5號7樓"}];
+const SEED_CADRES=[{"role": "副班長", "name": "吳佩嫻"}, {"role": "學藝", "name": "蕭愛玲"}, {"role": "副學藝", "name": "王薏茹"}, {"role": "總務", "name": "葉佳旻"}, {"role": "風紀", "name": "林怡瑄"}, {"role": "體育", "name": "劉曄"}, {"role": "副體育", "name": "郭姿岑"}, {"role": "資訊", "name": "林呈祐"}, {"role": "補助金", "name": "呂家羽"}, {"role": "班代表", "name": "許芷涵"}, {"role": "衛 生", "name": "廖堉安"}, {"role": "副衛生", "name": "戴翊庭"}, {"role": "學習歷程", "name": "莊宜臻"}, {"role": "學習歷程", "name": "李佳蓁"}];
+const SEED_IEPS=[{"seat": "7", "name": "朱品諺", "gender": "男", "level": "嚴重", "detail": "自閉症，知覺失調症，會幻想，說謊，書寫障礙、上課插話、不按牌理出牌。", "reg": "完成註冊"}, {"seat": "8", "name": "鄭諺濃", "gender": "男", "level": "普", "detail": "學習障礙(知覺 動作)", "reg": "8/6已繳費，8/28才會補交註冊單"}, {"seat": "9", "name": "陳詩妮", "gender": "女", "level": "普", "detail": "學習障礙(口語理解表達，閱讀理解)", "reg": "完成註冊"}, {"seat": "5018", "name": "資料處理科", "gender": "朱品諺", "level": "資處一忠", "detail": "7", "reg": "312007"}, {"seat": "5020", "name": "資料處理科", "gender": "鄭諺濃", "level": "資處一忠", "detail": "8", "reg": "312008"}, {"seat": "5023", "name": "資料處理科", "gender": "陳詩妮", "level": "資處一忠", "detail": "9", "reg": "312009"}, {"seat": "5027", "name": "資料處理科", "gender": "陳宥瑄", "level": "資處一忠", "detail": "10", "reg": "312010"}, {"seat": "8707", "name": "資料處理科", "gender": "張智興", "level": "資處一忠", "detail": "39", "reg": "312039"}, {"seat": "8723", "name": "資料處理科", "gender": "何權木", "level": "資處一忠", "detail": "41", "reg": "312041"}, {"seat": "", "name": "資料處理科", "gender": "曾宥捷", "level": "資處一忠", "detail": "48", "reg": "312048"}];
+let _s=JSON.parse(localStorage.getItem('zichu_students_v2')||'null');
+let students=(_s&&_s.length)?_s:JSON.parse(JSON.stringify(SEED_STUDENTS));
+let _c=JSON.parse(localStorage.getItem('zichu_cadres_v2')||'null');
+let cadres=(_c&&_c.length)?_c:JSON.parse(JSON.stringify(SEED_CADRES));
+let _i=JSON.parse(localStorage.getItem('zichu_ieps_v2')||'null');
+let ieps=(_i&&_i.length)?_i:JSON.parse(JSON.stringify(SEED_IEPS));
+let records=JSON.parse(localStorage.getItem('zichu_records_v2')||'[]');
+let counselPdfs=JSON.parse(localStorage.getItem('zichu_counsel_pdfs_v1')||'{}');
+let studentGrades=JSON.parse(localStorage.getItem('zichu_grades_v1')||'{}');
+let studentPhotos=JSON.parse(localStorage.getItem('zichu_photos_v1')||'{}');
+let parsedImport=[]; let currentSid=null;
+function save(){localStorage.setItem('zichu_students_v2',JSON.stringify(students));localStorage.setItem('zichu_cadres_v2',JSON.stringify(cadres));localStorage.setItem('zichu_ieps_v2',JSON.stringify(ieps));localStorage.setItem('zichu_records_v2',JSON.stringify(records));localStorage.setItem('zichu_counsel_pdfs_v1',JSON.stringify(counselPdfs));localStorage.setItem('zichu_grades_v1',JSON.stringify(studentGrades));localStorage.setItem('zichu_photos_v1',JSON.stringify(studentPhotos));renderAll(); saveToCloud(false);}
+function showTab(id,btn){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById('tab-'+id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function clean(v){if(v==null)return '';let s=String(v).trim();if(s.startsWith("'"))s=s.slice(1);return s.trim();}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function maskId(id){return id||'';}
+function maskPhone(p){return p||'';}
+function maskAddr(a){return a||'';}
+function getStudent(sid){return students.find(s=>s.sid===sid)}
+function getCadreByName(name){return cadres.filter(c=>c.name===name).map(c=>c.role)}
+function getIepByName(name){return ieps.find(i=>i.name===name)}
+function excelDateToISO(v){if(!v)return '';if(v instanceof Date)return v.toISOString().slice(0,10);if(typeof v==='number'){let d=new Date(Math.round((v-25569)*86400*1000));return d.toISOString().slice(0,10);}let s=clean(v);let m=s.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);if(m)return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;return s;}
+function renderAll(){renderDashboard();renderStudents();renderCadres();renderIeps();renderLearning();if(typeof renderGrades==='function')renderGrades();if(typeof renderPhotos==='function')renderPhotos();fillStudentSelects();}
+
+/* ---------- 輔導紀錄：對應「資料處理科 學生輔導紀錄表」PDF ---------- */
+const COUNSEL_EVENT_TYPES=["遲到早退","服儀不整","上課秩序","作業未交","手機使用不當","同儕衝突","言語不當","損壞公物","抽菸 / 違禁品","其他"];
+const COUNSEL_METHODS=["個別談話","團體輔導","電話聯繫家長","LINE聯繫家長","家長到校面談","轉介輔導室","轉介教官室"];
+const SEED_COUNSEL_312007={id:20261112001,type:"counseling",sid:"312007",schoolYear:"115",semester:"上學期",formDate:"2026-11-11",teacherName:"—",filler:"學生本人",eventDate:"2026-11-12",eventTime:"14:50",eventPlace:"電五",eventTypes:["上課秩序","手機使用不當"],eventDesc:"就是想到我爸跟我媽的問題我火燒起來砸東西\n\"以下為導師補充: 學生於課堂（自習）時間情緒失控摔東西，嚇到班上同學，導致課堂暫停 10 分鐘，經科任老師（王彥傑老師）轉介至輔導室進行輔導。\"",studentReflection:"找教官或班導或輔導處",counselDate:"2026-11-11",notifyParent:"已LINE連繫家長",result:"通知家長",needFollow:"否",agreement:"—",followDate:"2026-11-12",counselMethods:["LINE聯繫家長"],counselContent:"1. 行為反思與情緒控制：引導學生思考在學校摔東西宣洩，遠在天邊的父親完全感受不到，反而嚇到班上無辜的同學與老師，浪費自己的時間。\n2. 焦點轉移與自我提升：告誡學生現階段唯一的任務是「提升自己」。唯有自己好好學習、工程名就、事業有成，讓講話有份量，才能讓父親感到後悔，並讓母親感到驕傲。\n3. 手機使用與訊息處理：提醒學生在上課/自習時間拿手機與母親討論複雜的家庭紛爭，文字溝通容易產生誤解並持續刺激情緒。建議上課時間不拿手機，等放學回家面對面溝通。\n4. 法律程序認知：提醒學生目前仍為學生身分，法律程序繁雜，未經深思熟慮盲目提告可能面臨告不成甚至反被被告的風險。",studentResponse:"本節課安排學生於輔導室專用座位坐下安靜沉澱、誦經平復心情，待下一節體育課情緒平穩後再返回班上上課。",parentResponse:"家長承諾會和學生好好溝通，並建議後續若有關於官司或家庭等較沉重的議題，可以等品諺放學回家後面對面平靜地溝通，盡量避免讓孩子在學校上課期間透過手機打字討論，以免文字缺乏溫度，讓孩子一時情緒失控影響到學習與班上秩序。",teacherSign:"蕭慶堂",signDate:"2026-11-11",date:"2026-11-12",source:"範例",fileName:""};
+if(!records.some(r=>r.type==='counseling' && r.sid==='312007' && r.eventDate==='2026-11-12')){ records.push(JSON.parse(JSON.stringify(SEED_COUNSEL_312007))); }
+function counselDateOf(r){ return r.eventDate||r.counselDate||r.formDate||r.date||''; }
+function normalizePdfText(t){
+  let s=String(t||'').replace(/\u3000/g,' ').replace(/[：:]/g,':').replace(/\r/g,'\n');
+  // 修被換行切斷的標籤（PDF 表格常把「是否通知家長」切成兩行）
+  s=s.replace(/是否通知家\s*\n\s*長/g,'是否通知家長').replace(/是否需持續\s*\n\s*追蹤/g,'是否需持續追蹤').replace(/言語不\s*\n\s*當/g,'言語不當').replace(/學生自述與\s*\n\s*反省/g,'學生自述與反省').replace(/學生回應與\s*\n\s*改善計畫/g,'學生回應與改善計畫').replace(/家長聯繫與\s*\n\s*回應/g,'家長聯繫與回應').replace(/導師輔導\s*\n\s*內容/g,'導師輔導內容').replace(/事件經過\s*\n\s*描述/g,'事件經過描述');
+  return s.replace(/[ \t]+/g,' ').replace(/\n\s*\n+/g,'\n');
+}
+function findDateAfter(t,label){
+  let idx=t.indexOf(label); if(idx<0) return '';
+  let seg=t.slice(idx, idx+120);
+  let m=seg.match(/(\d{4}[-/]\d{1,2}[-/]\d{1,2})/); return m?m[1].replace(/\//g,'-'):'';
+}
+function findValAfter(t,label,delims){
+  let idx=t.indexOf(label); if(idx<0) return '';
+  let start=idx+label.length;
+  let end=t.length;
+  (delims||[]).forEach(d=>{ let j=t.indexOf(d,start); if(j>=0 && j<end) end=j; });
+  let v=t.slice(start,end).trim().replace(/^[:：\s]+/,'').replace(/[:：\s]+$/,'');
+  v=v.split('\n').map(s=>s.trim()).filter(Boolean).join(' ');
+  return v.slice(0,80);
+}
+function parseCounselPdfText(raw){
+  let t=normalizePdfText(raw);
+  let d={schoolYear:'115',semester:'上學期',formDate:'',teacherName:'',filler:'',eventDate:'',eventTime:'',eventPlace:'',eventTypes:[],eventDesc:'',studentReflection:'',counselDate:'',notifyParent:'',result:'',needFollow:'否',agreement:'—',followDate:'',counselMethods:[],counselContent:'',studentResponse:'',parentResponse:'',teacherSign:'',signDate:'',studentName:'',sid:'',seat:''};
+  // 學年度 / 學期 / 填表日期
+  let mY=t.match(/學年度\s*[:：]?\s*(\d{2,3})/); if(mY) d.schoolYear=mY[1];
+  if(/下學期/.test(t)) d.semester='下學期';
+  d.formDate=findDateAfter(t,'填表日期')||findDateAfter(t,'填表人簽名')||'';
+  // 姓名 / 學號：多種寫法都試
+  // 1) 姓名 ... 學號 在同一段
+  let mName=t.match(/姓名\s*[:：]?\s*([^\n:：]{2,6}?)\s*(?:學號|座號|導師姓名)/);
+  if(mName) d.studentName=mName[1].trim();
+  // 2) 姓名在下一行
+  if(!d.studentName){ let lines=t.split('\n').map(s=>s.trim()); let ix=lines.findIndex(s=>s.replace(/[:：\s]/g,'')==='姓名'); if(ix>=0 && lines[ix+1]) d.studentName=lines[ix+1].replace(/[:：]/g,'').trim().slice(0,6); }
+  // 2.5) 驗證：抓到的姓名若不在名單裡（例如被攪亂的順序抓到學號），就丟掉，改用已知姓名備援
+  if(d.studentName && !students.some(s=>s.name===d.studentName)){
+    // 若抓到的是數字或含數字，肯定是錯的
+    if(/\d/.test(d.studentName) || d.studentName.length>6) d.studentName='';
+  }
+  // 3) 直接在文字裡找已知學生姓名（備援，最穩）
+  if(!d.studentName){
+    let found=students.filter(s=>s.name && t.includes(s.name));
+    if(found.length===1) d.studentName=found[0].name;
+    else if(found.length>1){
+      // 取離「姓名」最近的那一位
+      let ni=t.indexOf('姓名'); let best=null,bestD=1e9;
+      found.forEach(s=>{ let j=t.indexOf(s.name); if(j>=0 && Math.abs(j-ni)<bestD){bestD=Math.abs(j-ni); best=s;} });
+      if(best) d.studentName=best.name;
+    }
+  }
+  // 學號：優先找 312xxx 且對得上學生名單
+  let sidCands=[...(t.match(/\b\d{6}\b/g)||[])];
+  let sidFromName='';
+  if(d.studentName){ let st=students.find(s=>s.name===d.studentName); if(st) sidFromName=st.sid; }
+  if(sidFromName && sidCands.includes(sidFromName)) d.sid=sidFromName;
+  else if(sidCands.length){
+    let inList=sidCands.find(c=>students.some(s=>s.sid===c));
+    d.sid=inList||sidCands[0];
+  }
+  if(!d.studentName && d.sid){ let st=students.find(s=>s.sid===d.sid); if(st) d.studentName=st.name; }
+  if(!d.sid && d.studentName){ let st=students.find(s=>s.name===d.studentName); if(st) d.sid=st.sid; }
+  // 座號
+  let mSeat=t.match(/座號\s*[:：]?\s*(\d{1,2})/); if(mSeat) d.seat=mSeat[1];
+  if(!d.seat && d.sid){ let st=students.find(s=>s.sid===d.sid); if(st) d.seat=st.seat; }
+  // 導師 / 填表人
+  d.teacherName=findValAfter(t,'導師姓名',['填表人','一、','發生日期','事件'])||'';
+  d.filler=findValAfter(t,'填表人',['一、','發生日期','班級','座號'])||'';
+  if(d.filler.length>12) d.filler=d.filler.slice(0,12);
+  // 事件
+  d.eventDate=findDateAfter(t,'發生日期')||'';
+  let mTime=t.match(/發生時間\s*[:：]?\s*(\d{1,2}[:：]\d{2})/); if(mTime) d.eventTime=mTime[1].replace('：',':');
+  d.eventPlace=findValAfter(t,'發生地點',['事件類別','事件經過','一、','二、'])||'';
+  COUNSEL_EVENT_TYPES.forEach(c=>{ let re=new RegExp('[☑☒✓✔■]\\s*'+c.replace(/[()\/]/g,'\\$&')); if(re.test(t)) d.eventTypes.push(c); });
+  // 若勾選符號沒被讀出來（掃描/字體問題），用關鍵字備援：事件類別那段出現該詞就當有勾
+  if(!d.eventTypes.length){
+    let ei=t.indexOf('事件類別'); if(ei>=0){ let seg=t.slice(ei, ei+220); COUNSEL_EVENT_TYPES.forEach(c=>{ if(seg.includes(c)) d.eventTypes.push(c); }); }
+  }
+  // 事件經過：取「事件經過描述」到「學生自述」之間
+  let getSec=(a,b)=>{ let i=t.indexOf(a); if(i<0) return ''; let s=i+a.length; let e=t.length; (b||[]).forEach(x=>{ let j=t.indexOf(x,s); if(j>=0&&j<e) e=j; }); return t.slice(s,e).trim(); };
+  d.eventDesc=getSec('事件經過描述',['學生自述','二、','輔導日期','是否通知']);
+  d.studentReflection=getSec('學生自述與反省',['二、','輔導日期','是否通知']);
+  d.studentReflection=getSec('學生自述',['二、','輔導日期','是否通知'])||d.studentReflection;
+  // 導師輔導
+  d.counselDate=findDateAfter(t,'輔導日期')||'';
+  d.notifyParent=findValAfter(t,'是否通知家長',['處理結果','是否需持續','約定事項','追蹤日期','輔導方式'])||'';
+  d.result=findValAfter(t,'處理結果',['是否需持續','約定事項','追蹤日期','輔導方式'])||'';
+  let mF=t.match(/是否需持續\s*追蹤\s*([是否])/); if(mF) d.needFollow=mF[1];
+  else { let nf=findValAfter(t,'是否需持續追蹤',['約定事項','追蹤日期','輔導方式']); if(nf) d.needFollow=nf.includes('是')?'是':'否'; }
+  d.agreement=findValAfter(t,'約定事項',['追蹤日期','輔導方式','導師輔導'])||'—';
+  d.followDate=findDateAfter(t,'追蹤日期')||'';
+  COUNSEL_METHODS.forEach(c=>{ let re=new RegExp('[☑☒✓✔■]\\s*'+c.replace(/[()\/]/g,'\\$&')); if(re.test(t)) d.counselMethods.push(c); });
+  d.counselContent=getSec('導師輔導內容',['學生回應','家長聯繫','填表人簽名','導師簽名']);
+  d.studentResponse=getSec('學生回應與改善計畫',['家長聯繫','填表人簽名','導師簽名']);
+  d.parentResponse=getSec('家長聯繫與回應',['填表人簽名','導師簽名','日期']);
+  d.teacherSign=findValAfter(t,'導師簽名',['日期','填表人簽名','本表'])||'';
+  if(d.teacherSign.length>10) d.teacherSign=d.teacherSign.slice(0,10);
+  d.signDate=findDateAfter(t,'導師簽名')||'';
+  if(!d.signDate){ let all=[...t.matchAll(/(\d{4}[-/]\d{1,2}[-/]\d{1,2})/g)].map(m=>m[1]); if(all.length) d.signDate=all[all.length-1].replace(/\//g,'-'); }
+  return d;
+}
+function counselCardHTML(r){
+  let st=getStudent(r.sid);
+  let pdf=counselPdfs[String(r.id)];
+  let pdfLink=pdf?`<div style="margin:8px 0"><a href="${pdf.dataUrl}" target="_blank" rel="noopener">📄 查看原始 PDF（${esc(pdf.fileName||'輔導紀錄.pdf')}）</a> <span style="font-size:12px;color:#64748b">點開會在新分頁顯示 PDF 原文</span></div>`:'';
+  let rows=[
+    ['學年度 / 學期', `${esc(r.schoolYear||'')} / ${esc(r.semester||'')}`],
+    ['填表日期', esc(r.formDate||'')],
+    ['導師 / 填表人', `${esc(r.teacherName||'')} / ${esc(r.filler||'')}`],
+    ['發生日期 / 時間 / 地點', `${esc(r.eventDate||'')} ${esc(r.eventTime||'')} ${esc(r.eventPlace||'')}`],
+    ['事件類別', esc((r.eventTypes||[]).join('、')||'—')],
+    ['事件經過描述', esc(r.eventDesc||'')],
+    ['學生自述與反省', esc(r.studentReflection||'')],
+    ['輔導日期', esc(r.counselDate||'')],
+    ['是否通知家長', esc(r.notifyParent||'')],
+    ['處理結果', esc(r.result||'')],
+    ['是否需持續追蹤 / 約定事項 / 追蹤日期', `${esc(r.needFollow||'')} / ${esc(r.agreement||'')} / ${esc(r.followDate||'')}`],
+    ['輔導方式', esc((r.counselMethods||[]).join('、')||'—')],
+    ['導師輔導內容', esc(r.counselContent||'')],
+    ['學生回應與改善計畫', esc(r.studentResponse||'')],
+    ['家長聯繫與回應', esc(r.parentResponse||'')],
+    ['導師簽名 / 日期', `${esc(r.teacherSign||'')} / ${esc(r.signDate||'')}`],
+  ];
+  return `<details style="border:1px solid #e2e8f0;border-radius:10px;padding:0 10px 10px;background:#fff;margin-bottom:10px"><summary style="cursor:pointer;padding:10px 0;font-weight:700">🗂 ${esc(counselDateOf(r))} · ${st?esc(st.name):esc(r.sid)}（${esc(r.sid)}）· ${esc((r.eventTypes||[]).join('、')||'輔導紀錄')} · ${esc(r.eventPlace||'')} · 點開看完整內容</summary>${pdfLink}<div style="line-height:1.8;font-size:13px">${rows.map(x=>`<div><b>${x[0]}：</b>${x[1]||'—'}</div>`).join('')}</div><div style="margin-top:8px"><button class="btn red small" onclick="deleteRecord(${r.id})">刪除這筆</button></div></details>`;
+}
+function collectCounselForm(p){
+  let gv=id=>document.getElementById(id)?.value||'';
+  let checks=name=>[...document.querySelectorAll(`input[name="${p}${name}"]:checked`)].map(e=>e.value);
+  return {schoolYear:gv(p+'SchoolYear'),semester:gv(p+'Semester'),formDate:gv(p+'FormDate'),teacherName:gv(p+'TeacherName'),filler:gv(p+'Filler'),eventDate:gv(p+'EventDate'),eventTime:gv(p+'EventTime'),eventPlace:gv(p+'EventPlace'),eventTypes:checks('EventType'),eventDesc:gv(p+'EventDesc'),studentReflection:gv(p+'StudentReflection'),counselDate:gv(p+'CounselDate'),notifyParent:gv(p+'NotifyParent'),result:gv(p+'Result'),needFollow:gv(p+'NeedFollow'),agreement:gv(p+'Agreement'),followDate:gv(p+'FollowDate'),counselMethods:checks('Method'),counselContent:gv(p+'CounselContent'),studentResponse:gv(p+'StudentResponse'),parentResponse:gv(p+'ParentResponse'),teacherSign:gv(p+'TeacherSign'),signDate:gv(p+'SignDate')};
+}
+function fillCounselForm(p,d){
+  let sv=(id,v)=>{ let el=document.getElementById(id); if(el) el.value=v||''; };
+  sv(p+'SchoolYear',d.schoolYear); sv(p+'Semester',d.semester); sv(p+'FormDate',d.formDate); sv(p+'TeacherName',d.teacherName); sv(p+'Filler',d.filler);
+  sv(p+'EventDate',d.eventDate); sv(p+'EventTime',d.eventTime); sv(p+'EventPlace',d.eventPlace);
+  sv(p+'EventDesc',d.eventDesc); sv(p+'StudentReflection',d.studentReflection);
+  sv(p+'CounselDate',d.counselDate); sv(p+'NotifyParent',d.notifyParent); sv(p+'Result',d.result); sv(p+'NeedFollow',d.needFollow); sv(p+'Agreement',d.agreement); sv(p+'FollowDate',d.followDate);
+  sv(p+'CounselContent',d.counselContent); sv(p+'StudentResponse',d.studentResponse); sv(p+'ParentResponse',d.parentResponse);
+  sv(p+'TeacherSign',d.teacherSign); sv(p+'SignDate',d.signDate);
+  document.querySelectorAll(`input[name="${p}EventType"]`).forEach(el=>{ el.checked=(d.eventTypes||[]).includes(el.value); });
+  document.querySelectorAll(`input[name="${p}Method"]`).forEach(el=>{ el.checked=(d.counselMethods||[]).includes(el.value); });
+}
+function applyParsedCounsel(d, mode, pdfData){
+  // mode: 'detail' | 'list'，pdfData: {fileName, dataUrl} 或 null
+  let prefix = mode==='detail' ? 'c' : 'lc';
+  // 先決定學生：解析到的優先，否則用備援
+  let sid = d.sid || '';
+  let fallbackSid = '';
+  if(mode==='detail') fallbackSid = currentSid||'';
+  else fallbackSid = document.getElementById('lcStudent')?.value || document.getElementById('lcStudent2')?.value || '';
+  let usedFallback=false;
+  if(!sid && fallbackSid){ sid=fallbackSid; usedFallback=true; let st=getStudent(sid); if(st && !d.studentName) d.studentName=st.name; }
+  if(!sid) return {ok:false, reason:'no_sid', d};
+  let st=getStudent(sid);
+  if(!st) return {ok:false, reason:'sid_not_found', d, sid};
+  d.sid=sid;
+  // 填表單
+  fillCounselForm(prefix, d);
+  if(mode==='list'){
+    let s1=document.getElementById('lcStudent'); if(s1) s1.value=sid;
+    let s2=document.getElementById('lcStudent2'); if(s2) s2.value=sid;
+  }
+  // 存檔
+  let rec={id:Date.now(),type:'counseling',...d,sid,date:d.eventDate||d.counselDate||d.formDate||new Date().toISOString().slice(0,10),source:'CSV',fileName:pdfData?.fileName||''};
+  records.push(rec);
+  if(pdfData && pdfData.dataUrl) counselPdfs[String(rec.id)]=pdfData;
+  save();
+  if(mode==='list') renderLearning();
+  else renderDetail();
+  return {ok:true, rec, st, usedFallback, d};
+}
+async function ensurePdfJs(){
+  if(window.pdfjsLib) return true;
+  // 嘗試再載一次 CDN
+  try{
+    await new Promise((res,rej)=>{ let s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+    return !!window.pdfjsLib;
+  }catch(e){ return false; }
+}
+function pdfItemsToText(items){
+  // 關鍵修正：pdf.js 回傳的 items 是內容流順序，不是閱讀順序。必須按座標 (x,y) 排成行，否則表格左右兩欄會攪在一起，姓名/學號就對不上。
+  let pts=items.map(it=>{ let tr=it.transform||[1,0,0,1,0,0]; return {x:tr[4], y:tr[5], str:it.str||''}; }).filter(p=>p.str.trim());
+  if(!pts.length) return '';
+  // 按 y 分行（容忍 4px），行內按 x 排
+  pts.sort((a,b)=> b.y - a.y || a.x - b.x);
+  let lines=[]; let cur=[]; let curY=null;
+  pts.forEach(p=>{
+    if(curY===null || Math.abs(p.y-curY)<=4){ cur.push(p); if(curY===null) curY=p.y; }
+    else { lines.push(cur); cur=[p]; curY=p.y; }
+  });
+  if(cur.length) lines.push(cur);
+  lines.forEach(l=>l.sort((a,b)=>a.x-b.x));
+  return lines.map(l=>l.map(p=>p.str).join(' ')).join('\n');
+}
+async function handleCounselPdf(input, mode){
+  let file=input.files && input.files[0]; if(!file) return;
+  let msgId = mode==='detail' ? 'cPdfMsg' : 'lcPdfMsg';
+  let dbgId = mode==='detail' ? 'cPdfDebug' : 'lcPdfDebug';
+  let msgEl=document.getElementById(msgId); let dbgEl=document.getElementById(dbgId);
+  if(msgEl) msgEl.innerHTML='⏳ 正在讀 PDF，請稍候…';
+  if(dbgEl) dbgEl.innerHTML='';
+  try{
+    let ok=await ensurePdfJs();
+    if(!ok || !window.pdfjsLib){ throw new Error('PDF 解析工具載入失敗，請檢查網路後再試，或用下方「貼文字」方式。'); }
+    if(window.pdfjsLib.GlobalWorkerOptions && !window.pdfjsLib.GlobalWorkerOptions.workerSrc){
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    let buf=await file.arrayBuffer();
+    let pdf=await window.pdfjsLib.getDocument({data:buf}).promise;
+    let allItems=[];
+    let rawLines=[];
+    for(let p=1;p<=pdf.numPages;p++){
+      let page=await pdf.getPage(p);
+      let tc=await page.getTextContent();
+      tc.items.forEach(it=>allItems.push(it));
+      rawLines.push(tc.items.map(it=>it.str).join('\n'));
+    }
+    let sortedText=pdfItemsToText(allItems);
+    let rawText=rawLines.join('\n');
+    // 兩種文字都試：座標排序版優先，串流順序版備援
+    let d=parseCounselPdfText(sortedText);
+    let usedText=sortedText;
+    if(!d.sid && !d.studentName){ let d2=parseCounselPdfText(rawText); if(d2.sid||d2.studentName){ d=d2; usedText=rawText; } }
+    // 還是沒有，就用備援學生
+    let fallbackSid = mode==='detail' ? (currentSid||'') : (document.getElementById('lcStudent')?.value||document.getElementById('lcStudent2')?.value||'');
+    if(!d.sid && !d.studentName && !fallbackSid){
+      if(msgEl) msgEl.innerHTML='<div style="color:#dc2626">❌ 讀不到姓名 / 學號，而且你還沒選學生。<br>這份 PDF 可能沒有文字（掃描圖片），或不是「學生輔導紀錄表」。<br>請先在上方選一位學生，再重新選 PDF（會用你選的學生當備援），或把 PDF 文字貼到下方框框再按「用這段文字解析」。</div>';
+      if(dbgEl) dbgEl.innerHTML='<b>讀到的文字（前 800 字）：</b><pre style="white-space:pre-wrap;background:#fff;border:1px solid #e2e8f0;padding:8px;border-radius:8px;max-height:220px;overflow:auto">'+esc((usedText||'').slice(0,800)||'（完全沒有讀到文字，可能是掃描圖片）')+'</pre>';
+      input.value='';
+      return;
+    }
+    // 讀 PDF 檔案本體（2MB 以下才存，避免 localStorage 爆掉）
+    let pdfData=null;
+    if(file.size<=2*1024*1024){
+      let dataUrl=await new Promise((res,rej)=>{ let r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); });
+      pdfData={fileName:file.name, dataUrl};
+    }
+    let res=applyParsedCounsel(d, mode, pdfData);
+    if(!res.ok){
+      if(msgEl) msgEl.innerHTML='<div style="color:#dc2626">❌ 學號 '+esc(d.sid||'')+' 在名單裡找不到，請確認是這班的學生，或先選學生再重試。</div>';
+      input.value=''; return;
+    }
+    let warn='';
+    if(res.usedFallback) warn='<br><span style="color:#92400e">⚠️ PDF 裡沒讀到姓名/學號，已用你選的學生「'+esc(res.st.name)+'」當備援，請檢查下面表單內容是否正確。</span>';
+    if(!d.eventDate && !d.counselContent && !d.eventDesc) warn+='<br><span style="color:#92400e">⚠️ 只讀到姓名/學號，其他欄位幾乎是空的，可能是掃描圖片或格式不同，請檢查表單並手動補上。</span>';
+    if(msgEl) msgEl.innerHTML='<div class="success">✅ 已匯入：'+esc(res.st.name)+'（'+esc(res.st.sid)+'）· '+esc((d.eventTypes||[]).join('、')||'輔導紀錄')+warn+'</div>';
+    if(dbgEl) dbgEl.innerHTML='<b>讀到的文字（前 500 字，給你對照）：</b><pre style="white-space:pre-wrap;background:#fff;border:1px solid #e2e8f0;padding:8px;border-radius:8px;max-height:160px;overflow:auto">'+esc(usedText.slice(0,500))+'</pre>';
+  }catch(e){
+    console.error(e);
+    if(msgEl) msgEl.innerHTML='<div style="color:#dc2626">❌ 讀取失敗：'+esc(e.message||'未知錯誤')+'<br>可以改用下方「貼文字」方式：把 PDF 文字全選複製，貼到框框再按解析。</div>';
+  }
+  input.value='';
+}
+function parseCounselTextFromBox(mode){
+  let boxId = mode==='detail' ? 'cPdfText' : 'lcPdfText';
+  let msgId = mode==='detail' ? 'cPdfMsg' : 'lcPdfMsg';
+  let dbgId = mode==='detail' ? 'cPdfDebug' : 'lcPdfDebug';
+  let txt=document.getElementById(boxId)?.value||'';
+  if(!txt.trim()){ alert('請先把 PDF 文字貼到框框裡'); return; }
+  let d=parseCounselPdfText(txt);
+  let fallbackSid = mode==='detail' ? (currentSid||'') : (document.getElementById('lcStudent')?.value||document.getElementById('lcStudent2')?.value||'');
+  if(!d.sid && !d.studentName && !fallbackSid){ document.getElementById(msgId).innerHTML='<div style="color:#dc2626">❌ 這段文字裡還是讀不到姓名 / 學號。請確認貼的是「學生輔導紀錄表」的文字，或先選一位學生再按解析（會用你選的學生當備援）。</div>'; return; }
+  let res=applyParsedCounsel(d, mode, null);
+  if(!res.ok){ document.getElementById(msgId).innerHTML='<div style="color:#dc2626">❌ 學號在名單裡找不到。</div>'; return; }
+  let warn=res.usedFallback?'<br><span style="color:#92400e">⚠️ 文字裡沒讀到姓名/學號，已用你選的學生「'+esc(res.st.name)+'」當備援。</span>':'';
+  document.getElementById(msgId).innerHTML='<div class="success">✅ 已用貼上的文字匯入：'+esc(res.st.name)+'（'+esc(res.st.sid)+'）'+warn+'</div>';
+  let dbg=document.getElementById(dbgId); if(dbg) dbg.innerHTML='';
+}
+
+
+
+/* ---------- 輔導紀錄 CSV 匯入 ---------- */
+function parseCsvText(text){
+  text=String(text||'').replace(/^\uFEFF/,'');
+  let rows=[]; let row=[]; let cur=''; let inQ=false;
+  for(let i=0;i<text.length;i++){
+    let ch=text[i];
+    if(inQ){
+      if(ch==='"'){
+        if(text[i+1]==='"'){ cur+='"'; i++; }
+        else inQ=false;
+      } else cur+=ch;
+    } else {
+      if(ch==='"') inQ=true;
+      else if(ch===',') { row.push(cur); cur=''; }
+      else if(ch==='\r'){ /* 等 \n 處理 */ }
+      else if(ch==='\n'){ row.push(cur); cur=''; rows.push(row); row=[]; }
+      else cur+=ch;
+    }
+  }
+  if(cur!=='' || row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r=>r.some(c=>String(c||'').trim()!==''));
+}
+function normalizeCsvDate(v){
+  v=String(v||'').trim(); if(!v) return '';
+  v=v.replace(/\//g,'-');
+  let m=v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(m) return m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0');
+  return v;
+}
+function splitCsvList(v){
+  return String(v||'').split(/[、，,;；|／/、]+/).map(s=>s.trim()).filter(s=>s);
+}
+function parseCounselCsvText(csvText){
+  let rows=parseCsvText(csvText);
+  if(!rows.length) return {ok:false, reason:'empty'};
+  let header=rows[0].map(h=>String(h||'').trim().replace(/^\uFEFF/,''));
+  let hasHeader=header.some(h=>h.includes('學號')||h.includes('姓名')||h.includes('發生日期')||h.includes('事件'));
+  if(!hasHeader) return {ok:false, reason:'no_header', header};
+  let col=(...names)=>{
+    for(let n of names){ let i=header.findIndex(h=>h===n||h.includes(n)); if(i>=0) return i; }
+    return -1;
+  };
+  let idx={ sid:col('學號'), name:col('姓名'), seat:col('座號'), schoolYear:col('學年度'), semester:col('學期'), formDate:col('填表日期'), teacherName:col('導師姓名'), filler:col('填表人'), eventDate:col('發生日期'), eventTime:col('發生時間'), eventPlace:col('發生地點'), eventTypes:col('事件類別'), eventDesc:col('事件經過'), studentReflection:col('學生自述'), counselDate:col('輔導日期'), notifyParent:col('是否通知家長','通知家長'), result:col('處理結果'), needFollow:col('是否需持續追蹤','需追蹤','持續追蹤'), agreement:col('約定事項'), followDate:col('追蹤日期'), methods:col('輔導方式'), counselContent:col('導師輔導內容','輔導內容'), studentResponse:col('學生回應'), parentResponse:col('家長聯繫'), teacherSign:col('導師簽名'), signDate:col('簽名日期') };
+  let get=(r,i)=>{ if(i<0) return ''; return String(r[i]||'').trim(); };
+  let out=[];
+  rows.slice(1).forEach(r=>{
+    if(!r.some(c=>String(c||'').trim())) return;
+    let d={schoolYear:get(r,idx.schoolYear)||'115',semester:get(r,idx.semester)||'上學期',formDate:normalizeCsvDate(get(r,idx.formDate)),teacherName:get(r,idx.teacherName),filler:get(r,idx.filler),eventDate:normalizeCsvDate(get(r,idx.eventDate)),eventTime:get(r,idx.eventTime),eventPlace:get(r,idx.eventPlace),eventTypes:[],eventDesc:get(r,idx.eventDesc),studentReflection:get(r,idx.studentReflection),counselDate:normalizeCsvDate(get(r,idx.counselDate)),notifyParent:get(r,idx.notifyParent),result:get(r,idx.result),needFollow:'否',agreement:get(r,idx.agreement)||'—',followDate:normalizeCsvDate(get(r,idx.followDate)),counselMethods:[],counselContent:get(r,idx.counselContent),studentResponse:get(r,idx.studentResponse),parentResponse:get(r,idx.parentResponse),teacherSign:get(r,idx.teacherSign),signDate:normalizeCsvDate(get(r,idx.signDate)),studentName:get(r,idx.name),sid:get(r,idx.sid),seat:get(r,idx.seat)};
+    let rawTypes=splitCsvList(get(r,idx.eventTypes));
+    d.eventTypes=rawTypes.filter(t=>COUNSEL_EVENT_TYPES.includes(t));
+    rawTypes.forEach(t=>{ if(!COUNSEL_EVENT_TYPES.includes(t) && t) d.eventTypes.push(t); });
+    d.counselMethods=splitCsvList(get(r,idx.methods)).filter(t=>COUNSEL_METHODS.includes(t));
+    let nf=get(r,idx.needFollow);
+    if(nf && /是|需|要|Y|y/.test(nf)) d.needFollow='是';
+    if(d.semester && d.semester.includes('下')) d.semester='下學期'; else if(d.semester) d.semester='上學期';
+    if(d.studentName && !d.sid){ let st=students.find(s=>s.name===d.studentName); if(st) d.sid=st.sid; }
+    if(d.sid && !d.studentName){ let st=students.find(s=>s.sid===d.sid); if(st) d.studentName=st.name; }
+    if(d.sid && !d.seat){ let st=students.find(s=>s.sid===d.sid); if(st) d.seat=st.seat; }
+    out.push(d);
+  });
+  return {ok:true, rows:out, header};
+}
+function importCounselCsvText(csvText, mode){
+  let msgId = mode==='detail' ? 'cPdfMsg' : 'lcPdfMsg';
+  let msgEl=document.getElementById(msgId);
+  let parsed=parseCounselCsvText(csvText);
+  if(!parsed.ok){
+    if(msgEl) msgEl.innerHTML='<div style="color:#dc2626">❌ CSV 讀不到欄位名稱。第一列必須是欄位名稱，例如：<br>學號,姓名,發生日期,事件類別,導師輔導內容<br>請按「⬇ 下載 CSV 範本」看看格式。</div>';
+    return;
+  }
+  if(!parsed.rows.length){
+    if(msgEl) msgEl.innerHTML='<div style="color:#dc2626">❌ CSV 裡沒有資料列（只有欄位名稱）。</div>';
+    return;
+  }
+  let fallbackSid = mode==='detail' ? (currentSid||'') : (document.getElementById('lcStudent')?.value||document.getElementById('lcStudent2')?.value||'');
+  if(parsed.rows.length===1){
+    let res=applyParsedCounsel(parsed.rows[0], mode, null);
+    if(!res.ok){
+      if(msgEl) msgEl.innerHTML='<div style="color:#dc2626">❌ 學號 '+(parsed.rows[0].sid||'')+' 在名單裡找不到'+(fallbackSid?'，而且備援學生也對不上':'，請確認是這班的學生，或先選學生再重試')+'。</div>';
+      return;
+    }
+    let warn=res.usedFallback?'<br><span style="color:#92400e">⚠️ CSV 裡沒讀到姓名/學號，已用你選的學生「'+esc(res.st.name)+'」當備援。</span>':'';
+    if(msgEl) msgEl.innerHTML='<div class="success">✅ 已用 CSV 匯入：'+esc(res.st.name)+'（'+esc(res.st.sid)+'）'+warn+'</div>';
+    return;
+  }
+  // 多筆：逐列建檔，存一次
+  let okCount=0, failList=[]; let firstOk=null;
+  let prefix = mode==='detail' ? 'c' : 'lc';
+  parsed.rows.forEach((d,ri)=>{
+    let sid=d.sid||'';
+    let usedFallback=false;
+    if(!sid && fallbackSid){ sid=fallbackSid; usedFallback=true; let st=getStudent(sid); if(st && !d.studentName) d.studentName=st.name; }
+    let st=sid?getStudent(sid):null;
+    if(st) d.sid=sid;
+    if(!st){ failList.push('第 '+(ri+2)+' 列：'+(d.studentName||d.sid||'（空白）')+' 找不到學生'); return; }
+    let rec={id:Date.now()+ri,type:'counseling',...d,sid,date:d.eventDate||d.counselDate||d.formDate||new Date().toISOString().slice(0,10),source:'CSV',fileName:''};
+    records.push(rec);
+    if(!firstOk) firstOk={d, st, usedFallback};
+    okCount++;
+  });
+  if(firstOk) fillCounselForm(prefix, firstOk.d);
+  if(mode==='list'){
+    if(firstOk){ let s1=document.getElementById('lcStudent'); if(s1) s1.value=firstOk.st.sid; let s2=document.getElementById('lcStudent2'); if(s2) s2.value=firstOk.st.sid; }
+    renderLearning();
+  } else renderDetail();
+  save();
+  let msg='<div class="success">✅ 已用 CSV 匯入 '+okCount+' 筆輔導紀錄'+(firstOk && firstOk.usedFallback?'（部分用備援學生）':'')+'</div>';
+  if(failList.length) msg+='<div style="color:#92400e;font-size:13px;margin-top:6px">'+failList.map(f=>esc(f)).join('<br>')+'</div>';
+  if(msgEl) msgEl.innerHTML=msg;
+}
+async function handleCounselCsv(input, mode){
+  let file=input.files && input.files[0]; if(!file) return;
+  let msgId = mode==='detail' ? 'cPdfMsg' : 'lcPdfMsg';
+  let msgEl=document.getElementById(msgId);
+  if(msgEl) msgEl.innerHTML='⏳ 正在讀 CSV，請稍候…';
+  try{
+    let text=await file.text();
+    importCounselCsvText(text, mode);
+  }catch(e){
+    if(msgEl) msgEl.innerHTML='<div style="color:#dc2626">❌ 讀 CSV 失敗：'+esc(String(e&&e.message||e))+'</div>';
+  }
+  input.value='';
+}
+function parseCounselCsvFromBox(mode){
+  let boxId = mode==='detail' ? 'cPdfText' : 'lcPdfText';
+  let txt=document.getElementById(boxId)?.value||'';
+  if(!txt.trim()){ alert('請先把 CSV 文字貼到框框裡'); return; }
+  let firstLine=txt.trim().split(/\r?\n/)[0]||'';
+  let looksCsv = firstLine.includes(',') && (firstLine.includes('學號')||firstLine.includes('姓名')||firstLine.includes('發生日期'));
+  if(!looksCsv){
+    // 不是 CSV（例如直接貼 PDF 文字），沿用舊的自由文字解析，不會直接失敗
+    parseCounselTextFromBox(mode);
+    return;
+  }
+  importCounselCsvText(txt, mode);
+}
+function downloadCounselCsvTemplate(){
+  let header=['學號','姓名','座號','學年度','學期','填表日期','導師姓名','填表人','發生日期','發生時間','發生地點','事件類別','事件經過描述','學生自述與反省','輔導日期','是否通知家長','處理結果','是否需持續追蹤','約定事項','追蹤日期','輔導方式','導師輔導內容','學生回應與改善計畫','家長聯繫與回應','導師簽名','簽名日期'];
+  let ex=['312007','朱品諺','7','115','上學期','2026-11-13','蕭慶堂','學生本人','2026-11-13','14:50','電五','遲到早退','易產生誤解並持續刺激情緒。','會注意不再犯。','2026-11-13','已LINE連繫家長','通知家長','否','—','','個別談話','建議上課時間不拿手機，等放學回家面對面溝通。','','','蕭慶堂','2026-11-13'];
+  let escCsv=(v)=>{ v=String(v??''); return /[",\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+  let csv='\uFEFF'+header.map(escCsv).join(',')+'\r\n'+ex.map(escCsv).join(',')+'\r\n';
+  let blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='輔導紀錄匯入範本.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ---------- 成績 / 評語：每位學生一份 Excel，支援多年度彙總 ---------- */
+function parseGradesRows(rows, fileName, yearOverride){
+  let flat=rows.map(r=>r||[]);
+  let title=String(flat[0]?.[0]||'');
+  let title2=String(flat[1]?.[0]||'');
+  let allText=flat.map(r=>r.join(' ')).join('\n');
+  // 姓名：標題「呂家羽│二年級...」或檔名「呂家羽_二年級...」
+  let name='';
+  let mTitle=title.match(/^([^│|｜_\-\s]{2,6})\s*[│|｜_\-]/);
+  if(mTitle) name=mTitle[1].trim();
+  if(!name){
+    let mFile=String(fileName||'').match(/^([^_\-\s]{2,6})\s*[_\-]/);
+    if(mFile) name=mFile[1].trim();
+  }
+  if(!name){
+    // 標題裡直接找名單裡的學生姓名
+    let found=students.filter(s=>s.name && allText.includes(s.name));
+    if(found.length===1) name=found[0].name;
+  }
+  // 年級：一年級 / 二年級 / 三年級
+  let grade='';
+  let mGrade=(title+' '+title2+' '+fileName).match(/([一二三]年級)/);
+  if(mGrade) grade=mGrade[1];
+  if(yearOverride) grade=yearOverride;
+  if(!grade) grade='二年級';
+  // 學年度：114學年度
+  let mYear=(title2+' '+title).match(/(\d{3})\s*學年度/);
+  let schoolYear=mYear?mYear[1]:'';
+  // 找科目表頭
+  let headerIdx=-1;
+  for(let i=0;i<flat.length;i++){ if(String(flat[i]?.[0]||'').trim()==='科目'){ headerIdx=i; break; } }
+  if(headerIdx<0) return {ok:false, reason:'找不到「科目」表頭，請確認是成績總表', name, grade};
+  let subjects=[];
+  let summary={upAvg:'',downAvg:'',yearAvg:'',upRank:'',downRank:'',upCredits:'',downCredits:'',upTotal:'',downTotal:'',upIntel:'',downIntel:'',yearIntel:''};
+  let comments={};
+  for(let i=headerIdx+1;i<flat.length;i++){
+    let r=flat[i]; if(!r) continue;
+    let a=String(r[0]||'').trim();
+    if(!a) continue;
+    if(a==='各項總成績') continue;
+    if(a==='日常綜合表現') break; // 科目結束，後面是評語
+    // 彙總行
+    if(['補前平均','學科平均','智育成績','體育成績','實習成績','軍訓成績','實得學分','實得累計','學期名次'].includes(a)){
+      let up=r[1], down=r[2], yr=r[3];
+      let num=v=> (v==null||v==='')?'':Number(v);
+      if(a==='學科平均'){ summary.upAvg=num(up); summary.downAvg=num(down); summary.yearAvg=num(yr); }
+      if(a==='智育成績'){ summary.upIntel=num(up); summary.downIntel=num(down); summary.yearIntel=num(yr); }
+      if(a==='補前平均' && summary.yearAvg===''){ summary.upAvg=num(up); summary.downAvg=num(down); summary.yearAvg=num(yr); }
+      if(a==='實得學分'){ summary.upCredits=num(up); summary.downCredits=num(down); }
+      if(a==='實得累計'){ summary.upTotal=num(up); summary.downTotal=num(down); }
+      if(a==='學期名次'){ summary.upRank=num(up); summary.downRank=num(down); }
+      continue;
+    }
+    // 科目行：B上屬性 C上學分 D上成績 E下屬性 F下學分 G下成績 H學年成績
+    let subj={name:a, upAttr:String(r[1]||'').trim(), upCredit:r[2]==null?'':Number(r[2]), upScore:r[3]==null?'':Number(r[3]), downAttr:String(r[4]||'').trim(), downCredit:r[5]==null?'':Number(r[5]), downScore:r[6]==null?'':Number(r[6]), yearScore:r[7]==null?'':Number(r[7])};
+    // 過濾掉明顯不是科目的行（例如「各項總成績」已跳過）
+    if(subj.name.length<=20) subjects.push(subj);
+  }
+  // 評語：找「上學期」/「下學期」區塊裡的「評量」下一行
+  let currentSem='';
+  for(let i=0;i<flat.length;i++){
+    let r=flat[i]; if(!r) continue;
+    let a=String(r[0]||'').trim();
+    if(a==='上學期' || a==='下學期'){ currentSem=a; continue; }
+    if(a==='評量'){
+      // 下一行 B 欄是描述
+      let next=flat[i+1];
+      if(next && next[1] && currentSem) comments[currentSem]=String(next[1]).trim();
+      else if(next && next[0] && currentSem) comments[currentSem]=String(next[0]).trim();
+    }
+  }
+  if(!subjects.length) return {ok:false, reason:'沒有讀到任何科目', name, grade};
+  return {ok:true, name, grade, schoolYear, subjects, summary, comments};
+}
+async function handleGradesFiles(input){
+  let files=[...input.files]; if(!files.length) return;
+  let yearOverride=document.getElementById('gradeYearOverride')?.value||'';
+  let msgEl=document.getElementById('gradesMsg');
+  if(msgEl) msgEl.innerHTML='⏳ 正在讀取 '+files.length+' 個檔案…';
+  let okList=[], failList=[];
+  for(let file of files){
+    try{
+      let buf=await file.arrayBuffer();
+      let wb=XLSX.read(buf,{type:'array'});
+      let ws=wb.Sheets[wb.SheetNames[0]];
+      let rows=XLSX.utils.sheet_to_json(ws,{header:1, defval:''});
+      let parsed=parseGradesRows(rows, file.name, yearOverride);
+      if(!parsed.ok){ failList.push(file.name+'：'+parsed.reason); continue; }
+      let st=students.find(s=>s.name===parsed.name);
+      if(!st){ failList.push(file.name+'：姓名「'+(parsed.name||'（沒讀到）')+'」在名單裡找不到，請確認姓名跟學生名單一致'); continue; }
+      if(!studentGrades[st.sid]) studentGrades[st.sid]={};
+      studentGrades[st.sid][parsed.grade]={grade:parsed.grade, schoolYear:parsed.schoolYear, subjects:parsed.subjects, summary:parsed.summary, comments:parsed.comments, fileName:file.name, importedAt:new Date().toISOString().slice(0,10)};
+      okList.push(st.name+'（'+st.sid+'）· '+parsed.grade+' · '+parsed.subjects.length+' 科');
+    }catch(e){ console.error(e); failList.push(file.name+'：讀取失敗 '+e.message); }
+  }
+  save();
+  let htmlMsg='';
+  if(okList.length) htmlMsg+='<div class="success">✅ 已匯入 '+okList.length+' 份：<br>'+okList.map(s=>esc(s)).join('<br>')+'</div>';
+  if(failList.length) htmlMsg+='<div style="color:#dc2626;margin-top:8px">❌ 失敗 '+failList.length+' 份：<br>'+failList.map(s=>esc(s)).join('<br>')+'</div>';
+  if(msgEl) msgEl.innerHTML=htmlMsg||'沒有匯入任何檔案';
+  input.value='';
+  renderGrades();
+}
+function gradesForStudent(sid){ return studentGrades[sid]||{}; }
+function renderGrades(){
+  let q=(document.getElementById('filterGradeName')?.value||'').toLowerCase();
+  let yearFilter=document.getElementById('filterGradeYear')?.value||'';
+  let tableEl=document.getElementById('gradesTable'); if(!tableEl) return;
+  let list=students.filter(s=>{ let g=gradesForStudent(s.sid); if(!Object.keys(g).length) return false; if(q && !(s.name+s.sid).toLowerCase().includes(q)) return false; if(yearFilter && !g[yearFilter]) return false; return true; }).sort((a,b)=>Number(a.seat)-Number(b.seat));
+  if(!list.length){ tableEl.innerHTML='<p>尚無成績。請在上方選擇成績 Excel 匯入（一次可選多個檔案）。</p>'; }
+  else{
+    tableEl.innerHTML=`<table><tr><th>座號</th><th>姓名</th><th>一年級<br>學年平均 / 名次 / 學分</th><th>二年級<br>學年平均 / 名次 / 學分</th><th>三年級<br>學年平均 / 名次 / 學分</th><th>最新評語摘要</th><th>操作</th></tr>${list.map(s=>{
+      let g=gradesForStudent(s.sid);
+      let cell=yr=>{ let d=g[yr]; if(!d) return '-'; let avg=d.summary.yearAvg||d.summary.yearIntel||'-'; let cred=d.summary.upCredits!==''&&d.summary.upCredits!=null?` · 學分 ${d.summary.upCredits}/${d.summary.downCredits}`:''; return `學年 ${avg}<br><span style="font-size:12px;color:#475569">上名次 ${d.summary.upRank||'-'} · 下名次 ${d.summary.downRank||'-'}${cred}</span>`; };
+      let latest=g['三年級']||g['二年級']||g['一年級'];
+      let latestComment=(latest?.comments?.['下學期']||latest?.comments?.['上學期']||'').slice(0,40);
+      return `<tr><td>${esc(s.seat)}</td><td><b>${esc(s.name)}</b></td><td>${cell('一年級')}</td><td>${cell('二年級')}</td><td>${cell('三年級')}</td><td>${esc(latestComment)}</td><td><button class="btn small" onclick="openDetail('${esc(s.sid)}')">詳情</button> <button class="btn red small" onclick="deleteAllGradesForStudent('${esc(s.sid)}')">刪除全部成績</button>${['一年級','二年級','三年級'].filter(y=>g[y]).map(y=>` <button class="btn gray small" onclick="deleteGrade('${esc(s.sid)}','${y}')">刪${y}</button>`).join('')}</td></tr>`;
+    }).join('')}</table>`;
+  }
+  // 科目彙總：同科目各年級學年成績 + 平均
+  let subjEl=document.getElementById('gradesSubjectTable'); if(!subjEl) return;
+  let subjMap={};
+  students.forEach(s=>{ let g=gradesForStudent(s.sid); ['一年級','二年級','三年級'].forEach(yr=>{ let d=g[yr]; if(!d) return; d.subjects.forEach(sub=>{ if(!subjMap[sub.name]) subjMap[sub.name]={}; if(sub.yearScore!==''&&sub.yearScore!=null) subjMap[sub.name][yr]=sub.yearScore; }); }); });
+  let subjNames=Object.keys(subjMap).sort();
+  if(!subjNames.length){ subjEl.innerHTML='<p>尚無科目資料。</p>'; }
+  else{
+    subjEl.innerHTML=`<table><tr><th>科目</th><th>一年級學年</th><th>二年級學年</th><th>三年級學年</th><th>跨年平均（有幾位）</th></tr>${subjNames.map(n=>{
+      let vals=[]; ['一年級','二年級','三年級'].forEach(yr=>{ let v=subjMap[n][yr]; if(v!=null&&v!=='') vals.push(Number(v)); });
+      // 這裡顯示的是「全班該科目該年級的平均」，不是單一學生
+      let avgByYear=yr=>{ let arr=[]; students.forEach(s=>{ let d=gradesForStudent(s.sid)[yr]; if(!d) return; let sub=d.subjects.find(x=>x.name===n); if(sub && sub.yearScore!==''&&sub.yearScore!=null) arr.push(Number(sub.yearScore)); }); return arr.length?(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1)+'（'+arr.length+'人）':'-'; };
+      let all=[]; students.forEach(s=>{ ['一年級','二年級','三年級'].forEach(yr=>{ let d=gradesForStudent(s.sid)[yr]; if(!d) return; let sub=d.subjects.find(x=>x.name===n); if(sub && sub.yearScore!==''&&sub.yearScore!=null) all.push(Number(sub.yearScore)); }); });
+      let allAvg=all.length?(all.reduce((a,b)=>a+b,0)/all.length).toFixed(1):'-';
+      return `<tr><td>${esc(n)}</td><td>${avgByYear('一年級')}</td><td>${avgByYear('二年級')}</td><td>${avgByYear('三年級')}</td><td>${allAvg}（${all.length} 筆）</td></tr>`;
+    }).join('')}</table>`;
+  }
+  // 個別學生科目對照：該生各科目在一年級 / 二年級 / 三年級的學年成績並排
+  let stuSubEl=document.getElementById('gradesSubjectStudentTable'); if(stuSubEl){
+    let sel=document.getElementById('filterGradeSubjectStudent');
+    let withGrades=students.filter(s=>Object.keys(gradesForStudent(s.sid)).length).sort((a,b)=>Number(a.seat)-Number(b.seat));
+    let selSid=sel?.value||'';
+    if(!selSid && withGrades.length) selSid=withGrades[0].sid;
+    if(!withGrades.length){ stuSubEl.innerHTML='<p>尚無成績，請先匯入。</p>'; }
+    else{
+      let s=students.find(x=>x.sid===selSid)||withGrades[0];
+      let g=gradesForStudent(s.sid);
+      let subjSet=new Set();
+      ['一年級','二年級','三年級'].forEach(yr=>{ (g[yr]?.subjects||[]).forEach(sub=>subjSet.add(sub.name)); });
+      let subjNames2=[...subjSet].sort();
+      if(!subjNames2.length){ stuSubEl.innerHTML='<p>該生尚無科目資料。</p>'; }
+      else{
+        let rowFor=n=>{
+          let cells=['一年級','二年級','三年級'].map(yr=>{
+            let d=g[yr]; if(!d) return '-';
+            let sub=d.subjects.find(x=>x.name===n);
+            if(!sub || sub.yearScore==='' || sub.yearScore==null) return '-';
+            let up=sub.upScore!==''&&sub.upScore!=null?sub.upScore:'-';
+            let down=sub.downScore!==''&&sub.downScore!=null?sub.downScore:'-';
+            return `${sub.yearScore} (${up} / ${down})`;
+          });
+          let nums=cells.filter(c=>c!=='-').map(Number);
+          let avg=nums.length?(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1):'-';
+          return `<tr><td>${esc(n)}</td><td>${cells[0]}</td><td>${cells[1]}</td><td>${cells[2]}</td><td>${avg}</td></tr>`;
+        };
+        stuSubEl.innerHTML=`<div style="font-weight:700;margin-bottom:6px">${esc(s.seat)}號 ${esc(s.name)}（${esc(s.sid)}）的科目對照</div><table><tr><th>科目</th><th>一年級<br><span style="font-weight:400;font-size:12px">學年 (上 / 下)</span></th><th>二年級<br><span style="font-weight:400;font-size:12px">學年 (上 / 下)</span></th><th>三年級<br><span style="font-weight:400;font-size:12px">學年 (上 / 下)</span></th><th>該生跨年平均</th></tr>${subjNames2.map(rowFor).join('')}</table>`;
+      }
+    }
+  }
+}
+function deleteGrade(sid, grade){
+  let st=getStudent(sid);
+  if(!confirm('確定刪除 '+(st?st.name:sid)+' 的「'+grade+'」成績嗎？只會刪這一年，不會動到其他年級。')) return;
+  if(studentGrades[sid]){ delete studentGrades[sid][grade]; if(!Object.keys(studentGrades[sid]).length) delete studentGrades[sid]; }
+  save(); renderDetail();
+}
+function deleteAllGradesForStudent(sid){
+  let st=getStudent(sid);
+  if(!confirm('確定刪除 '+(st?st.name:sid)+' 的全部成績嗎？一年級、二年級、三年級都會刪。')) return;
+  delete studentGrades[sid]; save(); renderDetail();
+}
+function clearAllGrades(){
+  if(!confirm('確定清除全部學生的成績 / 評語嗎？')) return;
+  studentGrades={}; save(); document.getElementById('gradesMsg').innerHTML='<div class="success">已清除全部成績</div>';
+}
+function gradesCardHTML(sid){
+  let g=gradesForStudent(sid); let years=['一年級','二年級','三年級'].filter(y=>g[y]);
+  if(!years.length) return '<p>尚無成績，請到「成績 / 評語」匯入該生的成績 Excel。</p>';
+  let s=getStudent(sid);
+  // ---- 彙整總表（各年級對照）：一年級 / 二年級 / 三年級各一列 ----
+  let sumRows=years.map(yr=>{
+    let d=g[yr]; let sum=d.summary||{};
+    let upAvg=sum.upAvg!==''&&sum.upAvg!=null?sum.upAvg:'-';
+    let downAvg=sum.downAvg!==''&&sum.downAvg!=null?sum.downAvg:'-';
+    let yearAvg=sum.yearAvg!==''&&sum.yearAvg!=null?sum.yearAvg:(sum.yearIntel||'-');
+    let upIntel=sum.upIntel!==''&&sum.upIntel!=null?sum.upIntel:'-';
+    let downIntel=sum.downIntel!==''&&sum.downIntel!=null?sum.downIntel:'-';
+    let yearIntel=sum.yearIntel!==''&&sum.yearIntel!=null?sum.yearIntel:'-';
+    let upCred=sum.upCredits!==''&&sum.upCredits!=null?sum.upCredits:'-';
+    let downCred=sum.downCredits!==''&&sum.downCredits!=null?sum.downCredits:'-';
+    let upRank=sum.upRank!==''&&sum.upRank!=null?sum.upRank:'-';
+    let downRank=sum.downRank!==''&&sum.downRank!=null?sum.downRank:'-';
+    let upC=(d.comments['上學期']||'').slice(0,60);
+    let downC=(d.comments['下學期']||'').slice(0,60);
+    return `<tr><td><b>${esc(yr)}</b></td><td>${esc(d.schoolYear||'')}</td><td>${esc(yearAvg)}<br><span style="font-size:12px;color:#475569">(${esc(upAvg)} / ${esc(downAvg)})</span></td><td>${esc(yearIntel)}<br><span style="font-size:12px;color:#475569">(${esc(upIntel)} / ${esc(downIntel)})</span></td><td>${esc(upCred)} / ${esc(downCred)}</td><td>${esc(upRank)} / ${esc(downRank)}</td><td style="text-align:left;white-space:normal;min-width:180px;max-width:260px;line-height:1.6">${esc(upC||'—')}</td><td style="text-align:left;white-space:normal;min-width:180px;max-width:260px;line-height:1.6">${esc(downC||'—')}</td><td><button class="btn red small" onclick="deleteGrade('${esc(sid)}','${esc(yr)}')">刪除${esc(yr)}成績</button></td></tr>`;
+  }).join('');
+  let sumTable=`<h4 style="margin:12px 0 6px">彙整總表（各年級對照）</h4><div class="table-scroll"><table><tr><th>學年</th><th>學年度</th><th>學年平均<br><span style="font-weight:400;font-size:12px">(上 / 下)</span></th><th>智育成績<br><span style="font-weight:400;font-size:12px">(上 / 下)</span></th><th>實得學分<br><span style="font-weight:400;font-size:12px">(上 / 下)</span></th><th>學期名次<br><span style="font-weight:400;font-size:12px">(上 / 下)</span></th><th>上學期評語摘要</th><th>下學期評語摘要</th><th>操作</th></tr>${sumRows}</table></div>`;
+  // ---- 科目彙整（各年級學年成績對照）：科目一列、年級一欄，格子 = 學年 (上 / 下) ----
+  let subjSet=new Set();
+  years.forEach(yr=>{ (g[yr].subjects||[]).forEach(sub=>subjSet.add(sub.name)); });
+  let subjNames=[...subjSet].sort();
+  let subjRows=subjNames.map(n=>{
+    let cells=years.map(yr=>{
+      let d=g[yr]; let sub=(d.subjects||[]).find(x=>x.name===n);
+      if(!sub || sub.yearScore==='' || sub.yearScore==null) return '<td>—</td>';
+      let up=sub.upScore!==''&&sub.upScore!=null?sub.upScore:'-';
+      let down=sub.downScore!==''&&sub.downScore!=null?sub.downScore:'-';
+      return `<td><b>${esc(sub.yearScore)}</b> <span style="font-size:12px;color:#475569">(${esc(up)} / ${esc(down)})</span></td>`;
+    }).join('');
+    // 補齊三年級欄位（若該生只有一年級、二年級）
+    let missing=3-years.length;
+    for(let k=0;k<missing;k++) cells+='<td>—</td>';
+    return `<tr><td style="text-align:left"><b>${esc(n)}</b></td>${cells}</tr>`;
+  }).join('');
+  let subjTable=`<h4 style="margin:14px 0 6px">科目彙整（各年級學年成績對照）</h4><div class="table-scroll"><table><tr><th>科目</th><th>一年級<br><span style="font-weight:400;font-size:12px">學年 (上 / 下)</span></th><th>二年級<br><span style="font-weight:400;font-size:12px">學年 (上 / 下)</span></th><th>三年級<br><span style="font-weight:400;font-size:12px">學年 (上 / 下)</span></th></tr>${subjRows}</table></div><p style="font-size:12px;color:#64748b;margin:6px 0 0">格子格式：學年成績 (上學期成績 / 下學期成績)，— 表示該年級沒有這科。</p>`;
+  // ---- 各年級完整明細（可展開，保留原始科目表） ----
+  let details=years.map(yr=>{
+    let d=g[yr]; let sum=d.summary||{};
+    let rows=(d.subjects||[]).map(sub=>`<tr><td>${esc(sub.name)}</td><td>${esc(sub.upAttr||'')}</td><td>${esc(sub.upCredit||'')}</td><td>${esc(sub.upScore||'')}</td><td>${esc(sub.downAttr||'')}</td><td>${esc(sub.downCredit||'')}</td><td>${esc(sub.downScore||'')}</td><td><b>${esc(sub.yearScore||'')}</b></td></tr>`).join('');
+    return `<details style="border:1px solid #e2e8f0;border-radius:10px;padding:0 10px 10px;background:#fff;margin-top:10px"><summary style="cursor:pointer;padding:10px 0;font-weight:700">📄 ${esc(yr)} 完整明細（點開） <button class="btn red small" onclick="event.stopPropagation();deleteGrade('${esc(sid)}','${esc(yr)}')">刪除${esc(yr)}成績</button> — ${esc(d.fileName||'')} · 匯入 ${esc(d.importedAt||'')}</summary><div class="table-scroll"><table><tr><th>科目</th><th>上屬性</th><th>上學分</th><th>上成績</th><th>下屬性</th><th>下學分</th><th>下成績</th><th>學年</th></tr>${rows}</table></div><div style="line-height:1.8;font-size:13px;margin-top:8px"><b>上學期評語：</b>${esc(d.comments['上學期']||'—')}</div><div style="line-height:1.8;font-size:13px"><b>下學期評語：</b>${esc(d.comments['下學期']||'—')}</div></details>`;
+  }).join('');
+  return sumTable+subjTable+details;
+}
+
+
+/* ---------- 學生照片：依座號檔名匯入，一人一張，自動壓縮 ---------- */
+function parsePhotoFileName(fileName){
+  let base=String(fileName||'').replace(/\.[^.]+$/,'').trim();
+  // 學號檔名：312001.jpg → 直接當學號，不當座號
+  let mSid=base.match(/^(312\d{3})(?:\s*[_\- ]\s*(.*))?$/);
+  if(mSid) return {seat:'', name:'', sid:mSid[1], extra:(mSid[2]||'').trim()};
+  // 01_呂家羽、07-朱品諺、01 呂家羽、01呂家羽、1.jpg
+  let m=base.match(/^0?(\d{1,2})\s*[_\- ]?\s*(.*)$/);
+  let seat='', name='';
+  if(m){ seat=String(Number(m[1])); name=(m[2]||'').trim(); }
+  else{
+    // 檔名就是姓名
+    name=base;
+  }
+  return {seat, name, sid:''};
+}
+function compressImageFile(file, maxSide, quality){
+  return new Promise((resolve,reject)=>{
+    let reader=new FileReader();
+    reader.onload=()=>{
+      let img=new Image();
+      img.onload=()=>{
+        let w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+        let scale=Math.min(1, (maxSide||400)/Math.max(w,h));
+        let nw=Math.round(w*scale), nh=Math.round(h*scale);
+        let canvas=document.createElement('canvas'); canvas.width=nw; canvas.height=nh;
+        let ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,nw,nh);
+        resolve(canvas.toDataURL('image/jpeg', quality||0.82));
+      };
+      img.onerror=()=>reject(new Error('圖片讀取失敗'));
+      img.src=reader.result;
+    };
+    reader.onerror=()=>reject(new Error('檔案讀取失敗'));
+    reader.readAsDataURL(file);
+  });
+}
+async function handlePhotoFiles(input){
+  let files=[...input.files]; if(!files.length) return;
+  let msgEl=document.getElementById('photoMsg');
+  if(msgEl) msgEl.innerHTML='⏳ 正在壓縮並匯入 '+files.length+' 張照片…';
+  let okList=[], failList=[];
+  for(let file of files){
+    try{
+      let {seat, name, sid}=parsePhotoFileName(file.name);
+      let st=null;
+      if(sid) st=students.find(s=>String(s.sid)===sid);
+      if(seat) st=st||students.find(s=>String(s.seat)===seat);
+      if(!st && name) st=students.find(s=>s.name===name);
+      if(!st && name){
+        // 檔名裡含姓名（例如「呂家羽大頭照.jpg」）
+        let found=students.filter(s=>s.name && file.name.includes(s.name));
+        if(found.length===1) st=found[0];
+      }
+      if(!st){ failList.push(file.name+'：認不出是誰，請用「座號」開頭命名，例如 01.jpg、07_朱品諺.jpg'); continue; }
+      let dataUrl=await compressImageFile(file, 400, 0.82);
+      studentPhotos[st.sid]=dataUrl;
+      okList.push(st.seat+'號 '+st.name);
+    }catch(e){ console.error(e); failList.push(file.name+'：'+e.message); }
+  }
+  save();
+  let htmlMsg='';
+  if(okList.length) htmlMsg+='<div class="success">✅ 已匯入 '+okList.length+' 張：'+okList.map(s=>esc(s)).join('、')+'</div>';
+  if(failList.length) htmlMsg+='<div style="color:#dc2626;margin-top:8px">❌ 失敗 '+failList.length+' 張：<br>'+failList.map(s=>esc(s)).join('<br>')+'</div>';
+  if(msgEl) msgEl.innerHTML=htmlMsg||'沒有匯入任何照片';
+  input.value='';
+  renderPhotos();
+}
+function renderPhotos(){
+  let grid=document.getElementById('photoGrid'); if(!grid) return;
+  let q=(document.getElementById('filterPhotoName')?.value||'').toLowerCase();
+  let hasFilter=document.getElementById('filterPhotoHas')?.value||'';
+  let list=[...students].sort((a,b)=>Number(a.seat)-Number(b.seat)).filter(s=>{
+    if(q && !(s.name+s.seat+s.sid).toLowerCase().includes(q)) return false;
+    let has=!!studentPhotos[s.sid];
+    if(hasFilter==='has' && !has) return false;
+    if(hasFilter==='none' && has) return false;
+    return true;
+  });
+  let cnt=document.getElementById('photoCount'); if(cnt) cnt.textContent=`（共 ${students.length} 人，已有照片 ${Object.keys(studentPhotos).length} 人）`;
+  if(!list.length){ grid.innerHTML='<p>沒有符合的學生。</p>'; return; }
+  grid.innerHTML=list.map(s=>{
+    let url=studentPhotos[s.sid];
+    let img=url?`<img src="${url}" alt="${esc(s.name)}" style="width:100%;height:140px;object-fit:cover;border-radius:8px;cursor:pointer" onclick="openDetail('${esc(s.sid)}')">`:`<div style="width:100%;height:140px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:32px;cursor:pointer" onclick="openDetail('${esc(s.sid)}')">👤</div>`;
+    return `<div style="border:1px solid #e2e8f0;border-radius:10px;padding:8px;background:#fff;text-align:center"><div style="overflow:hidden;border-radius:8px">${img}</div><div style="font-weight:700;margin-top:6px">${esc(s.seat)}號 ${esc(s.name)}</div><div style="font-size:12px;color:#64748b">${esc(s.sid)}</div><div style="margin-top:6px;display:flex;gap:4px;justify-content:center"><button class="btn small" onclick="openDetail('${esc(s.sid)}')">詳情</button>${url?`<button class="btn red small" onclick="deletePhoto('${esc(s.sid)}')">刪除照片</button>`:''}</div></div>`;
+  }).join('');
+}
+function deletePhoto(sid){
+  if(!confirm('刪除這張照片嗎？')) return;
+  delete studentPhotos[sid]; save(); renderPhotos();
+}
+function clearAllPhotos(){
+  if(!confirm('確定清除全部學生的照片嗎？')) return;
+  studentPhotos={}; save(); let m=document.getElementById('photoMsg'); if(m) m.innerHTML='<div class="success">已清除全部照片</div>';
+}
+function photoThumbHTML(sid, size){
+  let url=studentPhotos[sid];
+  let sz=size||28;
+  if(url) return `<img src="${url}" style="width:${sz}px;height:${sz}px;object-fit:cover;border-radius:50%;vertical-align:middle" alt="">`;
+  return `<span style="display:inline-block;width:${sz}px;height:${sz}px;line-height:${sz}px;text-align:center;background:#f1f5f9;border-radius:50%;vertical-align:middle">👤</span>`;
+}
+
+function fillStudentSelects(){
+  let opts=students.map(s=>`<option value="${esc(s.sid)}">${esc(s.seat)}號 ${esc(s.name)} (${esc(s.sid)})</option>`).join('');
+  ['lcStudent','lcStudent2'].forEach(id=>{ let el=document.getElementById(id); if(el){ let cur=el.value; el.innerHTML=opts||'<option value="">請先匯入學生</option>'; if(cur) el.value=cur; } });
+  let subjSel=document.getElementById('filterGradeSubjectStudent'); if(subjSel){ let cur=subjSel.value; let withGrades=students.filter(s=>Object.keys(gradesForStudent(s.sid)).length).sort((a,b)=>Number(a.seat)-Number(b.seat)); subjSel.innerHTML=withGrades.length?withGrades.map(s=>`<option value="${esc(s.sid)}">${esc(s.seat)}號 ${esc(s.name)}</option>`).join(''):'<option value="">尚無成績</option>'; if(cur && withGrades.some(s=>s.sid===cur)) subjSel.value=cur; }
+  let pdfEl=document.getElementById('pdfStudent'); if(pdfEl){ let cur=pdfEl.value; pdfEl.innerHTML=opts||'<option value="">請先匯入學生</option>'; if(cur) pdfEl.value=cur; }
+  // 勾選框
+  let ev=document.getElementById('lcEventTypes'); if(ev && !ev.dataset.built){ ev.dataset.built='1'; ev.innerHTML=COUNSEL_EVENT_TYPES.map(c=>`<label style="display:flex;gap:4px;align-items:center;margin:0;font-size:13px"><input type="checkbox" name="lcEventType" value="${c}"> ${c}</label>`).join(''); }
+  let me=document.getElementById('lcMethods'); if(me && !me.dataset.built){ me.dataset.built='1'; me.innerHTML=COUNSEL_METHODS.map(c=>`<label style="display:flex;gap:4px;align-items:center;margin:0;font-size:13px"><input type="checkbox" name="lcMethod" value="${c}"> ${c}</label>`).join(''); }
+  let ev2=document.getElementById('cEventTypes'); if(ev2 && !ev2.dataset.built){ ev2.dataset.built='1'; ev2.innerHTML=COUNSEL_EVENT_TYPES.map(c=>`<label style="display:flex;gap:4px;align-items:center;margin:0;font-size:13px"><input type="checkbox" name="cEventType" value="${c}"> ${c}</label>`).join(''); }
+  let me2=document.getElementById('cMethods'); if(me2 && !me2.dataset.built){ me2.dataset.built='1'; me2.innerHTML=COUNSEL_METHODS.map(c=>`<label style="display:flex;gap:4px;align-items:center;margin:0;font-size:13px"><input type="checkbox" name="cMethod" value="${c}"> ${c}</label>`).join(''); }
+  // 預設日期
+  let today=new Date().toISOString().slice(0,10);
+  ['lcFormDate','lcEventDate','lcCounselDate','lcFollowDate','lcSignDate'].forEach(id=>{ let el=document.getElementById(id); if(el && !el.value) el.value=today; });
+}
+function restoreSeedStudents(){
+  let missing=JSON.parse(JSON.stringify(SEED_STUDENTS)).filter(s=>!students.find(x=>x.sid===s.sid));
+  if(!missing.length){ alert('學生名單已經是完整的，沒有需要還原的。'); return; }
+  if(!confirm('要把缺的 '+missing.length+' 位內建學生補回來嗎？\n（已有的學生不會被覆蓋）')) return;
+  missing.forEach(s=>students.push(s));
+  let missingC=JSON.parse(JSON.stringify(SEED_CADRES)).filter(c=>!cadres.find(x=>x.role===c.role&&x.name===c.name)); missingC.forEach(c=>cadres.push(c));
+  let missingI=JSON.parse(JSON.stringify(SEED_IEPS)).filter(x=>!ieps.find(y=>y.name===x.name)); missingI.forEach(x=>ieps.push(x));
+  save(); alert('已還原 '+missing.length+' 位學生，現在共 '+students.length+' 位。');
+}
+function renderDashboard(){
+  let cls=students[0]?`${esc(students[0].dept||'')} ${esc(students[0].className||'')}`:'尚未匯入';
+  document.getElementById('classInfo').textContent=students.length?`目前班級：${cls} · 共 ${students.length} 人`:'';
+  document.getElementById('statTotal').textContent=students.length;
+  let m=students.filter(s=>s.gender==='男').length,f=students.filter(s=>s.gender==='女').length;
+  document.getElementById('statGender').textContent=`男生 ${m} · 女生 ${f}`;
+  let dis=students.filter(s=>clean(s.identity).includes('身心障礙')).length;
+  document.getElementById('statIdentity').textContent=`${dis} / ${students.length-dis}`;
+  document.getElementById('statIdentity2').textContent=`身心障礙 ${dis} · 一般生 ${students.length-dis}`;
+  let eco=students.filter(s=>clean(s.economy)).length;
+  document.getElementById('statEco').textContent=eco;
+  document.getElementById('statCadre').textContent=cadres.length;
+  document.getElementById('statCadreList').textContent=cadres.slice(0,3).map(c=>c.role+' '+c.name).join('、');
+  document.getElementById('statIep').textContent=ieps.length;
+  document.getElementById('statRecords').textContent=records.filter(r=>r.type==='counseling').length;
+  let followSids=new Set(records.filter(r=>r.type==='counseling'&&r.needFollow==='是').map(r=>r.sid));
+  document.getElementById('statAlert').textContent=`需追蹤 ${followSids.size} 人`;
+  let recent=[...records].filter(r=>r.type==='counseling').sort((a,b)=>counselDateOf(b).localeCompare(counselDateOf(a))).slice(0,6);
+  document.getElementById('recentList').innerHTML=recent.length?`<table><tr><th>發生日期</th><th>學生</th><th>事件類別</th><th>地點</th><th>導師輔導摘要</th></tr>${recent.map(r=>{let st=getStudent(r.sid);return `<tr><td>${esc(counselDateOf(r))}</td><td>${st?esc(st.name):esc(r.sid)}</td><td>${esc((r.eventTypes||[]).join('、'))}</td><td>${esc(r.eventPlace||'')}</td><td>${esc((r.counselContent||r.eventDesc||'').slice(0,40))}</td></tr>`}).join('')}</table>`:'<p>尚無輔導紀錄</p>';
+  // 總覽的班級速覽表
+  let dashEl=document.getElementById('dashboardTable');
+  if(dashEl){
+    dashEl.innerHTML=students.length?`<table><tr><th>照片</th><th>座號</th><th>姓名</th><th>學號</th><th>性別</th><th>幹部</th><th>輔導次數</th><th>操作</th></tr>${[...students].sort((a,b)=>Number(a.seat)-Number(b.seat)).map(s=>{let cnt=records.filter(r=>r.sid===s.sid&&r.type==='counseling').length;return `<tr><td>${photoThumbHTML(s.sid,32)}</td><td>${esc(s.seat)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.sid)}</td><td>${esc(s.gender)}</td><td>${esc(getCadreByName(s.name).join('、')||'-')}</td><td>${cnt}</td><td><button class="btn small" onclick="openDetail('${esc(s.sid)}')">詳情</button> <button class="btn red small" onclick="deleteStudent('${esc(s.sid)}')">刪除</button></td></tr>`}).join('')}</table>`:'<p>尚無學生，請匯入 Excel 或按「還原 42 位學生」。</p>';
+  }
+}
+function renderStudents(){
+  let q=(document.getElementById('searchStudent').value||'').toLowerCase();
+  let g=document.getElementById('filterGender').value, idf=document.getElementById('filterIdentity').value, eco=document.getElementById('filterEco').value;
+  let list=students.filter(s=>(!g||s.gender===g)&&(!idf||clean(s.identity).includes(idf))&&(!eco||clean(s.economy).includes(eco))&&(!q||(s.name+s.sid+s.seat+s.gradSchool).toLowerCase().includes(q))).sort((a,b)=>Number(a.seat)-Number(b.seat));
+  document.getElementById('studentTable').innerHTML=list.length?`<table><tr><th>照片</th><th>座號</th><th>姓名</th><th>學號</th><th>性別</th><th>班級</th><th>身分別</th><th>經濟</th><th>西元出生</th><th>畢業國中</th><th>家長</th><th>學生手機</th><th>幹部</th><th>操作</th></tr>${list.map(s=>`<tr><td>${photoThumbHTML(s.sid,32)}</td><td>${esc(s.seat)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.sid)}</td><td>${esc(s.gender)}</td><td>${esc(s.className)}</td><td>${esc(s.identity)}</td><td>${esc(s.economy||'-')}</td><td>${esc(s.birthDate)}</td><td>${esc(s.gradSchool)}</td><td>${esc(s.parentName)}</td><td>${esc(maskPhone(s.studentPhone))}</td><td>${esc(getCadreByName(s.name).join('、')||'-')}</td><td><button class="btn small" onclick="openDetail('${esc(s.sid)}')">詳情</button> <button class="btn gray small" onclick="editStudent('${esc(s.sid)}')">編輯</button> <button class="btn red small" onclick="deleteStudent('${esc(s.sid)}')">刪除</button></td></tr>`).join('')}</table>`:'<p>尚無學生，請匯入 Excel。</p>';
+}
+function renderCadres(){document.getElementById('cadreTable').innerHTML=cadres.length?`<table><tr><th>職務</th><th>姓名</th><th>座號</th><th>操作</th></tr>${cadres.map((c,i)=>{let st=students.find(s=>s.name===c.name);return `<tr><td><span class="tag purple">${esc(c.role)}</span></td><td>${esc(c.name)}</td><td>${st?esc(st.seat):'-'}</td><td><button class="btn red small" onclick="deleteCadre(${i})">刪除</button></td></tr>`}).join('')}</table>`:'<p>尚無幹部，匯入 Excel「幹部名單」後會自動出現。</p>';}
+function renderIeps(){document.getElementById('iepTable').innerHTML=ieps.length?`<table><tr><th>座號</th><th>姓名</th><th>性別</th><th>程度</th><th>報名身分別（詳細）</th><th>註冊狀況</th><th>操作</th></tr>${ieps.map((x,i)=>{let _st=students.find(s=>s.name===x.name);let _sid=_st?_st.sid:'';return `<tr><td>${esc(x.seat)}</td><td><span style="cursor:pointer;color:#0f3b5f;font-weight:700;text-decoration:underline" title="點開學生詳情" onclick="openDetailByName('${esc(x.name)}')">${esc(x.name)}</span></td><td>${esc(x.gender)}</td><td>${esc(x.level)}</td><td style="white-space:normal;max-width:420px">${esc(x.detail)}</td><td>${esc(x.reg)}</td><td><button class="btn small" onclick="openDetailByName('${esc(x.name)}')">詳情</button> <button class="btn gray small" onclick="editIep(${i})">編輯</button> <button class="btn red small" onclick="deleteIep(${i})">刪除</button></td></tr>`}).join('')}</table>`:'<p>尚無 IEP 資料。</p>';}
+function openStudentModal(){document.getElementById('studentModalTitle').textContent='新增學生';document.getElementById('editStudentId').value='';['fSeat','fSid','fName','fIdNo','fEco','fBirthY','fBirthM','fBirthD','fBirthDate','fGrad','fParent','fStudentPhone','fParentPhone','fHomePhone','fZip','fAddress'].forEach(id=>document.getElementById(id).value='');document.getElementById('studentModal').classList.add('open')}
+function editStudent(sid){let s=getStudent(sid);if(!s)return;document.getElementById('studentModalTitle').textContent='編輯學生';document.getElementById('editStudentId').value=s.sid;document.getElementById('fDept').value=s.dept;document.getElementById('fClass').value=s.className;document.getElementById('fSeat').value=s.seat;document.getElementById('fSid').value=s.sid;document.getElementById('fName').value=s.name;document.getElementById('fGender').value=s.gender;document.getElementById('fIdNo').value=s.idNo;document.getElementById('fIdentity').value=s.identity.includes('身心')?'身心障礙':s.identity;document.getElementById('fEco').value=s.economy;document.getElementById('fBirthY').value=s.birthY;document.getElementById('fBirthM').value=s.birthM;document.getElementById('fBirthD').value=s.birthD;document.getElementById('fBirthDate').value=s.birthDate;document.getElementById('fGrad').value=s.gradSchool;document.getElementById('fParent').value=s.parentName;document.getElementById('fStudentPhone').value=s.studentPhone;document.getElementById('fParentPhone').value=s.parentPhone;document.getElementById('fHomePhone').value=s.homePhone;document.getElementById('fZip').value=s.zip;document.getElementById('fAddress').value=s.address;document.getElementById('studentModal').classList.add('open')}
+function saveStudent(){
+  let seat=document.getElementById('fSeat').value.trim(),sid=document.getElementById('fSid').value.trim(),name=document.getElementById('fName').value.trim();
+  if(!seat||!sid||!name){alert('請填座號、學號、姓名');return;}
+  let data={dept:document.getElementById('fDept').value,className:document.getElementById('fClass').value,seat,sid,name,gender:document.getElementById('fGender').value,idNo:document.getElementById('fIdNo').value,identity:document.getElementById('fIdentity').value,economy:document.getElementById('fEco').value,birthY:document.getElementById('fBirthY').value,birthM:document.getElementById('fBirthM').value,birthD:document.getElementById('fBirthD').value,birthDate:document.getElementById('fBirthDate').value,gradSchool:document.getElementById('fGrad').value,parentName:document.getElementById('fParent').value,studentPhone:document.getElementById('fStudentPhone').value,parentPhone:document.getElementById('fParentPhone').value,homePhone:document.getElementById('fHomePhone').value,zip:document.getElementById('fZip').value,address:document.getElementById('fAddress').value};
+  let old=document.getElementById('editStudentId').value;
+  if(old){let idx=students.findIndex(s=>s.sid===old);students[idx]=data;records.forEach(r=>{if(r.sid===old)r.sid=sid});}
+  else{if(students.find(s=>s.sid===sid)){alert('學號已存在');return;}students.push(data);}
+  closeModal('studentModal');save();alert('已儲存');
+}
+function deleteStudent(sid){let _st=getStudent(sid);let _nm=_st?(_st.seat+'號 '+_st.name+'（'+_st.sid+'）'):(sid||'');if(!confirm('確定刪除 '+_nm+' 嗎？\n會一起刪除他的照片、成績、輔導紀錄，無法復原。'))return;if(!confirm('再次確認：真的要刪除 '+_nm+' 嗎？\n按確定才會刪除，按取消就不會刪。'))return;let ids=new Set(records.filter(r=>r.sid===sid).map(r=>String(r.id)));delete studentPhotos[sid];if(studentGrades[sid]) delete studentGrades[sid];students=students.filter(s=>s.sid!==sid);records=records.filter(r=>r.sid!==sid);Object.keys(counselPdfs).forEach(k=>{if(ids.has(k)) delete counselPdfs[k];});save();let _m=document.getElementById('detailModal');if(_m) _m.classList.remove('open');}
+function addCadre(){let role=document.getElementById('cadreRole').value.trim(),name=document.getElementById('cadreName').value.trim();if(!role||!name){alert('請填職務與姓名');return;}cadres.push({role,name});document.getElementById('cadreRole').value='';document.getElementById('cadreName').value='';save();}
+function deleteCadre(i){cadres.splice(i,1);save();}
+let editingIepIndex=-1;
+function openDetailByName(name){let st=students.find(s=>s.name===name);if(!st){alert('學生名單裡找不到「'+name+'」，可能是 IEP 匯入時多了一列標題 / 錯位資料，請檢查後刪除或修改。');return;}openDetail(st.sid);}
+function editIep(i){let x=ieps[i];if(!x)return;editingIepIndex=i;document.getElementById('iepSeat').value=x.seat||'';document.getElementById('iepName').value=x.name||'';document.getElementById('iepGender').value=x.gender||'男';document.getElementById('iepLevel').value=x.level||'';document.getElementById('iepDetail').value=x.detail||'';document.getElementById('iepReg').value=x.reg||'';let b=document.getElementById('iepAddBtn');if(b)b.textContent='💾 儲存修改';let c=document.getElementById('iepCancelBtn');if(c)c.style.display='';document.getElementById('iepSeat').focus();window.scrollTo({top:0,behavior:'smooth'});}
+function cancelEditIep(){editingIepIndex=-1;['iepSeat','iepName','iepLevel','iepDetail','iepReg'].forEach(id=>{let e=document.getElementById(id);if(e)e.value='';});let b=document.getElementById('iepAddBtn');if(b)b.textContent='＋ 新增';let c=document.getElementById('iepCancelBtn');if(c)c.style.display='none';}
+function addIep(){let seat=document.getElementById('iepSeat').value.trim(),name=document.getElementById('iepName').value.trim();if(!seat||!name){alert('請填座號與姓名');return;}let data={seat,name,gender:document.getElementById('iepGender').value,level:document.getElementById('iepLevel').value,detail:document.getElementById('iepDetail').value,reg:document.getElementById('iepReg').value};if(editingIepIndex>=0&&ieps[editingIepIndex]){ieps[editingIepIndex]=data;cancelEditIep();}else{ieps.push(data);}save();}
+function deleteIep(i){ieps.splice(i,1);save();}
+function openDetail(sid){
+  currentSid=sid;let s=getStudent(sid);if(!s)return;
+  let t=document.getElementById('detailTitle'); if(t) t.textContent=`${s.seat}號 ${s.name}（${s.sid}） ${s.className}`;
+  let today=new Date().toISOString().slice(0,10);
+  ['cFormDate','cEventDate','cCounselDate','cSignDate'].forEach(id=>{ let el=document.getElementById(id); if(el && !el.value) el.value=today; });
+  try{ renderDetail(); }catch(e){ console.error('renderDetail 失敗', e); }
+  let m=document.getElementById('detailModal'); if(m) m.classList.add('open');
+}
+function renderDetail(){
+  let s=getStudent(currentSid);if(!s)return;
+  let _el=id=>document.getElementById(id);
+  let _set=(id,v)=>{ let e=_el(id); if(e) e.innerHTML=v; };
+  _set('detailInfo',`<div style="background:#f8fafc;padding:14px;border-radius:10px;line-height:1.9;font-size:14px;display:grid;grid-template-columns:1fr 1fr;gap:4px 16px"><div>科別：${esc(s.dept)}</div><div>班級：${esc(s.className)}</div><div>性別：${esc(s.gender)}</div><div>身分證：${esc(maskId(s.idNo))}</div><div>報名身分別：${esc(s.identity)}</div><div>經濟狀況：${esc(s.economy||'一般')}</div><div>出生：民國 ${esc(s.birthY)} 年 ${esc(s.birthM)} 月 ${esc(s.birthD)} 日 / 西元 ${esc(s.birthDate)}</div><div>畢業國中：${esc(s.gradSchool)}</div><div>家長：${esc(s.parentName)}</div><div>學生手機：${esc(maskPhone(s.studentPhone))}</div><div>家長手機：${esc(maskPhone(s.parentPhone))}</div><div>電話：${esc(maskPhone(s.homePhone))}</div><div>郵遞區號：${esc(s.zip)}</div><div>地址：${esc(maskAddr(s.address))}</div></div>`);
+  let rs=records.filter(r=>r.sid===currentSid).sort((a,b)=>counselDateOf(b).localeCompare(counselDateOf(a)));
+  let counselCount=rs.filter(r=>r.type==='counseling').length;
+  let followCount=rs.filter(r=>r.type==='counseling'&&r.needFollow==='是').length;
+  _set('detailStats',`<span class="tag">共 ${rs.length} 筆記錄</span> <span class="tag green">輔導 ${counselCount} 筆</span> <span class="tag red">需追蹤 ${followCount} 筆</span>`);
+  let cadre=getCadreByName(s.name),iep=getIepByName(s.name);
+  _set('detailCadreIep',`<span class="tag purple">幹部：${cadre.length?esc(cadre.join('、')):'無'}</span> <span class="tag">${iep?`IEP：程度 ${esc(iep.level)} · ${esc(iep.detail)} · ${esc(iep.reg)}`:'IEP：無'}</span>`);
+  _set('detailRecords',rs.length?rs.map(r=>r.type==='counseling'?counselCardHTML(r):`<div style="border:1px solid #e2e8f0;border-radius:10px;padding:10px;margin-bottom:10px">（舊學習記錄）${esc(r.date||'')} · ${esc(r.subject||'')} · ${esc(r.comment||'')} <button class="btn red small" onclick="deleteRecord(${r.id})">刪除</button></div>`).join(''):'<p>尚無輔導紀錄</p>');
+  let _pEl=document.getElementById('detailPhoto'); if(_pEl){ let _url=studentPhotos[currentSid]; _pEl.innerHTML=_url?`<img src="${_url}" style="width:110px;height:110px;object-fit:cover;border-radius:12px;border:1px solid #e2e8f0" alt=""> <span style="font-size:12px;color:#64748b">大頭照（到「學生照片」可更換 / 刪除）</span>`:`<span style="font-size:13px;color:#64748b">尚無照片，到「學生照片」用「${esc(s.seat)}.jpg」檔名匯入即可。</span>`; }
+  let _gEl=document.getElementById('detailGrades'); if(_gEl) _gEl.innerHTML=gradesCardHTML(currentSid);
+  let lab=document.getElementById('cStudentLabel'); if(lab) lab.value=s.seat+'號 '+s.name+'（'+s.sid+'）';
+  let cf=document.getElementById('cFormDate'); if(cf&&!cf.value) cf.value=new Date().toISOString().slice(0,10);
+}
+function addRecord(){
+  let d=collectCounselForm('c');
+  if(!d.eventDate && !d.counselDate && !d.eventDesc && !d.counselContent){ alert('請至少填寫發生日期、事件經過或導師輔導內容'); return; }
+  let rec={id:Date.now(),type:'counseling',sid:currentSid,...d,date:d.eventDate||d.counselDate||d.formDate||new Date().toISOString().slice(0,10),source:'手動',fileName:''};
+  records.push(rec); save(); renderDetail(); alert('已新增輔導紀錄');
+}
+function saveCounselFromList(){
+  let sid=document.getElementById('lcStudent2')?.value || document.getElementById('lcStudent')?.value;
+  if(!sid){ alert('請先選一位學生'); return; }
+  let d=collectCounselForm('lc');
+  if(!d.eventDate && !d.counselDate && !d.eventDesc && !d.counselContent){ alert('請至少填寫發生日期、事件經過或導師輔導內容'); return; }
+  let rec={id:Date.now(),type:'counseling',sid,...d,date:d.eventDate||d.counselDate||d.formDate||new Date().toISOString().slice(0,10),source:'手動',fileName:''};
+  records.push(rec); save(); document.getElementById('lcMsg').innerHTML='<div class="success">✅ 已存成輔導紀錄</div>'; renderLearning();
+}
+function deleteRecord(id){if(!confirm('刪除這筆輔導紀錄？'))return;records=records.filter(r=>r.id!==id);delete counselPdfs[String(id)];save();renderDetail();}
+function renderLearning(){
+  let typeFilter=document.getElementById('filterCounselType')?.value||'';
+  let followFilter=document.getElementById('filterCounselFollow')?.value||'';
+  let name=(document.getElementById('filterLearningName')?.value||'').toLowerCase();
+  let list=records.filter(r=>{
+    if(r.type==='counseling'){
+      let st=getStudent(r.sid);
+      if(name && !(st && st.name.toLowerCase().includes(name)) && !String(r.sid||'').includes(name)) return false;
+      if(typeFilter && !(r.eventTypes||[]).includes(typeFilter)) return false;
+      if(followFilter && r.needFollow!==followFilter) return false;
+      return true;
+    }
+    return false;
+  }).sort((a,b)=>counselDateOf(b).localeCompare(counselDateOf(a)));
+  document.getElementById('learningTable').innerHTML=list.length?list.map(r=>counselCardHTML(r)).join(''):'<p>沒有符合的輔導紀錄</p>';
+}
+function parseImport(){
+  let text=document.getElementById('pasteArea').value.trim();if(!text){alert('請先貼上 Excel 資料');return;}
+  let lines=text.split(/\r?\n/).filter(l=>l.trim());
+  let header=lines[0].split(/\t|,|，/).map(h=>clean(h));
+  let idx={};header.forEach((h,i)=>idx[h]=i);
+  let get=(parts,name)=>{let i=idx[name];return i!=null?clean(parts[i]):''};
+  // 若無標題列，改用固定順序
+  let hasHeader=header.includes('姓名')&&header.includes('學號');
+  let dataLines=hasHeader?lines.slice(1):lines;
+  parsedImport=dataLines.map(line=>{let parts=line.includes('\t')?line.split('\t'):line.split(/[,，]/);parts=parts.map(p=>clean(p));if(hasHeader){return {dept:get(parts,'科別'),name:get(parts,'姓名'),className:get(parts,'班級'),seat:get(parts,'座號'),sid:get(parts,'學號'),gender:get(parts,'性別'),idNo:get(parts,'身分證統一編號'),identity:get(parts,'報名身分別(原&身)')||get(parts,'報名身分別'),economy:get(parts,'經濟狀況'),birthY:get(parts,'出生年'),birthM:get(parts,'出生月'),birthD:get(parts,'出生日'),birthDate:excelDateToISO(get(parts,'西元出生')),gradSchool:get(parts,'畢業國中名稱'),parentName:get(parts,'家長姓名'),studentPhone:get(parts,'學生手機'),parentPhone:get(parts,'家長手機'),homePhone:get(parts,'電話'),zip:get(parts,'郵遞區號'),address:get(parts,'地址')};}else{return {dept:parts[0]||'',name:parts[1]||'',className:parts[2]||'',seat:parts[3]||'',sid:parts[4]||'',gender:parts[5]||'',idNo:parts[6]||'',identity:parts[7]||'',economy:parts[8]||'',birthY:parts[9]||'',birthM:parts[10]||'',birthD:parts[11]||'',birthDate:excelDateToISO(parts[12]),gradSchool:parts[13]||'',parentName:parts[14]||'',studentPhone:parts[15]||'',parentPhone:parts[16]||'',homePhone:parts[17]||'',zip:parts[18]||'',address:parts[19]||''};}}).filter(r=>r.name);
+  document.getElementById('importPreview').innerHTML=`<p><b>預覽 ${parsedImport.length} 筆</b></p><table><tr><th>座號</th><th>姓名</th><th>學號</th><th>性別</th><th>班級</th><th>身分別</th><th>經濟</th><th>西元出生</th><th>畢業國中</th><th>家長</th></tr>${parsedImport.map(r=>`<tr><td>${esc(r.seat)}</td><td>${esc(r.name)}</td><td>${esc(r.sid)}</td><td>${esc(r.gender)}</td><td>${esc(r.className)}</td><td>${esc(r.identity)}</td><td>${esc(r.economy)}</td><td>${esc(r.birthDate)}</td><td>${esc(r.gradSchool)}</td><td>${esc(r.parentName)}</td></tr>`).join('')}</table>`;
+}
+function confirmImport(){if(!parsedImport.length){parseImport();if(!parsedImport.length)return;}let added=0,skipped=0;parsedImport.forEach(r=>{if(students.find(s=>s.sid===r.sid))skipped++;else{students.push(r);added++;}});document.getElementById('importMsg').innerHTML=`<div class="success">✅ 已匯入 ${added} 筆，跳過重複學號 ${skipped} 筆</div>`;save();}
+async function handleExcelFile(input){
+  let file=input.files[0];if(!file)return;
+  if(typeof XLSX==='undefined'){alert('需要網路載入 Excel 解析工具，請改用複製貼上方式。');return;}
+  let buf=await file.arrayBuffer();let wb=XLSX.read(buf,{cellDates:true});
+  let sCount=0,cCount=0,iCount=0;
+  // 班級個人資料
+  let mainName=wb.SheetNames.find(n=>n.includes('個人資料'))||wb.SheetNames[0];
+  if(mainName){let ws=wb.Sheets[mainName];let rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});let header=rows[0].map(h=>clean(h));let idx={};header.forEach((h,i)=>idx[h]=i);let get=(r,name)=>clean(r[idx[name]]);let list=[];for(let k=1;k<rows.length;k++){let r=rows[k];if(!r||!clean(r[idx['姓名']]))continue;list.push({dept:get(r,'科別'),name:get(r,'姓名'),className:get(r,'班級'),seat:get(r,'座號'),sid:get(r,'學號'),gender:get(r,'性別'),idNo:get(r,'身分證統一編號'),identity:get(r,'報名身分別(原&身)')||get(r,'報名身分別'),economy:get(r,'經濟狀況'),birthY:get(r,'出生年'),birthM:get(r,'出生月'),birthD:get(r,'出生日'),birthDate:excelDateToISO(r[idx['西元出生']]),gradSchool:get(r,'畢業國中名稱'),parentName:get(r,'家長姓名'),studentPhone:get(r,'學生手機'),parentPhone:get(r,'家長手機'),homePhone:get(r,'電話'),zip:get(r,'郵遞區號'),address:get(r,'地址')});}let added=0;list.forEach(r=>{if(!students.find(s=>s.sid===r.sid)){students.push(r);added++;}});sCount=added;}
+  // 幹部名單
+  let cadreName=wb.SheetNames.find(n=>n.includes('幹部'));
+  if(cadreName){let ws=wb.Sheets[cadreName];let rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});for(let k=1;k<rows.length;k++){let r=rows[k];if(!r||!clean(r[1]))continue;let role=clean(r[0]),name=clean(r[1]);if(role.includes('幹部')||role.includes('名單'))continue;if(!cadres.find(c=>c.role===role&&c.name===name)){cadres.push({role,name});cCount++;}}}
+  // IEP
+  let iepName=wb.SheetNames.find(n=>n.includes('IEP'));
+  if(iepName){let ws=wb.Sheets[iepName];let rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});for(let k=1;k<rows.length;k++){let r=rows[k];if(!r||!clean(r[1]))continue;let obj={seat:clean(r[0]),name:clean(r[1]),gender:clean(r[2]),level:clean(r[3]),detail:clean(r[4]),reg:clean(r[5])};if(!ieps.find(x=>x.name===obj.name)){ieps.push(obj);iCount++;}}}
+  document.getElementById('importResult').innerHTML=`<div class="success">✅ 已匯入：班級個人資料 ${sCount} 筆新學生（總共 ${students.length} 人）、幹部 ${cCount} 筆（總共 ${cadres.length}）、IEP ${iCount} 筆（總共 ${ieps.length}）。請到各分頁查看。</div>`;
+  save();input.value='';
+}
+async function handlePdfFile(input){ handleCounselPdf(input,'list'); }
+function savePdfAsRecord(){ saveCounselFromList(); }
+function exportCSV(){if(!students.length){alert('尚無學生');return;}let header='科別,姓名,班級,座號,學號,性別,身分證統一編號,報名身分別(原&身),經濟狀況,出生年,出生月,出生日,西元出生,畢業國中名稱,家長姓名,學生手機,家長手機,電話,郵遞區號,地址\n';let body=students.map(s=>[s.dept,s.name,s.className,s.seat,s.sid,s.gender,s.idNo,s.identity,s.economy,s.birthY,s.birthM,s.birthD,s.birthDate,s.gradSchool,s.parentName,s.studentPhone,s.parentPhone,s.homePhone,s.zip,s.address].map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');downloadFile('班級個人資料.csv',header+body);}
+function exportCadreCSV(){let header='職務,姓名\n';let body=cadres.map(c=>`${c.role},${c.name}`).join('\n');downloadFile('幹部名單.csv',header+body);}
+function exportIepCSV(){let header='座號,姓名,性別,程度,報名身分別,註冊狀況\n';let body=ieps.map(x=>[x.seat,x.name,x.gender,x.level,x.detail,x.reg].map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');downloadFile('IEP.csv',header+body);}
+function downloadFile(name,content){let blob=new Blob(['\uFEFF'+content],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+function clearAll(){if(!confirm('確定清除全部學生、幹部、IEP、輔導紀錄嗎？請先匯出備份。'))return;if(!confirm('再次確認：真的要清除全部嗎？清除後無法復原。'))return;if(!confirm('最後確認：按確定將清空全部資料，按取消就不會清。'))return;students=[];cadres=[];ieps=[];records=[];counselPdfs={};save();}
+function loadSample(){
+  if(students.length&&!confirm('已有資料，要加入假資料範例嗎？'))return;
+  let sample=[
+    {dept:'資料處理科',name:'王小明',className:'資處三忠',seat:'1',sid:'999001',gender:'男',idNo:'A123456789',identity:'一般生',economy:'',birthY:'098',birthM:'07',birthD:'20',birthDate:'2009-07-20',gradSchool:'範例國中',parentName:'王爸爸',studentPhone:'0912345678',parentPhone:'0911111111',homePhone:'0288888888',zip:'238',address:'範例地址'},
+    {dept:'資料處理科',name:'陳小華',className:'資處三忠',seat:'2',sid:'999002',gender:'女',idNo:'A223456789',identity:'一般生',economy:'低收入戶',birthY:'097',birthM:'09',birthD:'25',birthDate:'2008-09-25',gradSchool:'範例國中',parentName:'陳媽媽',studentPhone:'0922345678',parentPhone:'0922222222',homePhone:'0288888889',zip:'242',address:'範例地址'},
+    {dept:'資料處理科',name:'林小同',className:'資處三忠',seat:'3',sid:'999003',gender:'男',idNo:'A323456789',identity:'身心障礙',economy:'',birthY:'098',birthM:'03',birthD:'15',birthDate:'2009-03-15',gradSchool:'範例國中',parentName:'林爸爸',studentPhone:'0933345678',parentPhone:'0933333333',homePhone:'',zip:'220',address:'範例地址'}
+  ];
+  sample.forEach(s=>{if(!students.find(x=>x.sid===s.sid))students.push(s)});
+  if(!cadres.length){cadres.push({role:'班長',name:'王小明'},{role:'副班長',name:'陳小華'})}
+  if(!ieps.length){ieps.push({seat:'3',name:'林小同',gender:'男',level:'普',detail:'學習障礙（範例）',reg:'完成註冊'})}
+  save();alert('已載入假資料範例，請用你自己的 Excel 匯入取代');
+}
+document.getElementById('pdfDate').value=new Date().toISOString().slice(0,10);
+renderAll();
+initClassAuth();
+</script>
+</body>
+</html>
