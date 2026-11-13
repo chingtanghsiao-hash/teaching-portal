@@ -52,15 +52,20 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
         .print-sheet .doc-sub{text-align:center;font-size:13px;color:#333;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px;line-height:1.8}
         .print-sheet h2{font-size:16px;margin:16px 0 6px;padding:4px 8px;background:#f0f0f0;border:1px solid #000;border-left:6px solid #000;box-sizing:border-box;width:100%}
         .print-sheet h3{font-size:14px;margin:12px 0 4px}
-        .print-sheet table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0;table-layout:auto;box-sizing:border-box}
-        .print-sheet th,.print-sheet td{border:1px solid #000;padding:6px 7px;text-align:left;vertical-align:middle;box-sizing:border-box}
-        .print-sheet th{background:#f0f0f0;font-weight:700;text-align:center;white-space:nowrap}
+        .print-sheet table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0;table-layout:fixed;box-sizing:border-box}
+        .print-sheet th,.print-sheet td{border:1px solid #000;padding:6px 7px;text-align:center;vertical-align:middle;box-sizing:border-box}
+        .print-sheet th{background:#f0f0f0;font-weight:700;white-space:nowrap}
         .print-sheet td{white-space:normal}
         .print-sheet .num{text-align:center}
         .print-sheet .muted{color:#333;font-size:12.5px}
         .print-sheet .photo{width:105px;height:135px;object-fit:cover;border:1px solid #000;display:block;margin:0 auto}
         .print-sheet .sign-row{display:flex;justify-content:space-between;margin-top:26px;font-size:14px}
         .print-sheet .avoid-break{page-break-inside:avoid}
+        /* 學生詳情操行表：標題和內容都置中、欄寬固定、一排一個項目，不再兩兩併排 */
+        .att-detail-table{width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:collapse!important;margin-top:8px!important}
+        .att-detail-table th,.att-detail-table td{text-align:center!important;white-space:normal!important;padding:9px 8px!important;vertical-align:middle!important}
+        .att-detail-table th{background:#f1f5f9!important}
+        .att-detail-table td{border-bottom:1px solid #f1f5f9!important}
         #loginGate{position:fixed;inset:0;background:#0f3b5f;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
         #loginGate .gate-box{background:#fff;width:100%;max-width:420px;border-radius:16px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
         #loginGate h2{margin:0 0 6px;font-size:22px;color:#0f3b5f}
@@ -210,7 +215,7 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
 <div class="panel"><h2>科目彙整（各年級學年成績對照）</h2><p class="desc">上面是全班各科目、各年級的學年成績平均；下面可選一位學生，看他自己的科目在各年級的學年成績對照。這兩個表都會一直保留。</p><div id="gradesSubjectTable"></div><div style="margin-top:16px"><div class="row"><label>個別學生科目對照 — 選一位學生</label><select id="filterGradeSubjectStudent" onchange="renderGrades()"></select></div><div id="gradesSubjectStudentTable"></div></div></div>
 </section>
 <section id="tab-attendance" class="hidden">
-<div class="panel"><h2>📋 出缺席狀況 — 操行報表匯入（Excel / CSV）</h2><p class="desc">對應「115 學年度第 1 學期操行報表（資處三忠）」：座號、姓名、曠課、遲到、事假、病假、公假、產前假、娩假、流產假、育嬰假、生理假、喪假、病假1、病假2、事假1、升降缺、升降遲、早缺、早遲、嘉獎、小功、大功、警告、小過、大過、累嘉獎、累小功、累大功、累警告、累小過、累大過、留察、輔導、全勤。每一次匯入新會自動記錄時間（匯入當年的年月日時分秒），不會被覆蓋。</p>
+<div class="panel"><h2>📋 出缺席狀況 — 操行報表匯入（Excel / CSV）</h2><p class="desc">對應「115 學年度第 1 學期操行報表（資處三忠）」：座號、姓名、曠課、遲到、事假、病假、公假、產前假、娩假、流產假、育嬰假、生理假、喪假、病假1、病假2、事假1、升降缺、升降遲、早缺、早遲、嘉獎、小功、大功、警告、小過、大過、累嘉獎、累小功、累大功、累警告、累小過、累大過、留察、輔導、全勤。每一次匯入新會自動記錄時間（匯入當年的年月日時分秒），不會被覆蓋。匯入後會自動整理到每位學生的「詳細資料」裡，詳情裡只留有紀錄的項目，0 會略過，全勤會保留。</p>
 <div class="grid3">
 <div><label>學期（報表學期）</label><input id="attSemester" value="115-1"></div>
 <div><label>報表日期（報表上的統計截止日，可自填）</label><input id="attReportDate" type="date" value="2026-11-13"></div>
@@ -226,7 +231,7 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
 <div class="row" style="margin-top:10px"><button class="btn" onclick="parseAttendancePreview()">🔍 解析預覽</button><button class="btn green" onclick="confirmAttendanceImport()">✅ 確認匯入到出缺席狀況（自動記錄時間）</button><button class="btn gray" onclick="clearAttendanceInput()">清除</button><button class="btn orange" onclick="fillAttendanceExample()">填入範例格式（假資料）</button></div>
 <div id="attPreview" style="margin-top:14px"></div>
 </div>
-<div class="panel"><h2>已匯入的出缺席 / 操行紀錄</h2><p class="desc">每一次匯入都是一筆，含學期、報表日期、記錄時間，不會被覆蓋。點「查看」看該次完整表格，點「匯出 CSV」可下載該次報表。</p>
+<div class="panel"><h2>已匯入的出缺席 / 操行紀錄</h2><p class="desc">每一次匯入都是一筆，含學期、報表日期、記錄時間，不會被覆蓋。點「查看」看該次完整表格（完整表格會保留全部 0，方便對帳），點「匯出 CSV」可下載該次報表。匯入後，點學生名單的「詳情」就能看到該生的操行整理（詳情裡 0 會略過，全勤保留）。</p>
 <div id="attHistory"></div></div>
 <div class="panel" id="attDetailPanel" style="display:none"><h2 id="attDetailTitle">明細</h2><div class="row"><input id="attDetailSearch" placeholder="搜尋 座號 / 姓名" oninput="renderAttendanceDetail()" style="flex:1;min-width:200px"><button class="btn" onclick="printAttendanceBatch()">🖨 列印這批操行報表</button><button class="btn gray" onclick="closeAttendanceDetail()">關閉明細</button></div><div id="attDetailTable" style="margin-top:12px"></div></div>
 </section>
@@ -259,6 +264,7 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
 </div></div>
 
 <div class="modal" id="detailModal"><div class="modal-box"><div class="row" style="justify-content:space-between"><h3 id="detailTitle">學生詳情</h3><div style="display:flex;gap:6px"><button class="btn small" style="background:#0f3b5f;color:#fff" onclick="printStudentDetail()">🖨 列印這位學生</button><button class="btn red small" onclick="deleteStudent(currentSid)">🗑 刪除這位學生</button><button class="btn gray small" onclick="closeModal('detailModal')">✕ 關閉</button></div></div><div id="detailPhoto" style="margin-bottom:12px"></div><div id="detailInfo"></div><div id="detailStats" style="margin:12px 0"></div><div id="detailCadreIep" style="margin:10px 0"></div>
+<h4 style="margin-top:18px">📋 出缺席 / 操行（操行報表）</h4><p style="font-size:12px;color:#64748b;margin:4px 0 8px">只顯示有紀錄的項目，數字為 0 的已略過；全勤一定保留。</p><div id="detailAttendance"></div>
 <h4>＋ 新增輔導紀錄</h4>
 <div style="border:1px solid #cbd5e1;background:#f0fdf4;padding:12px;border-radius:10px;margin-bottom:12px"><b>📄 匯入輔導紀錄 CSV</b><p style="font-size:13px;color:#475569;margin:6px 0">直接選輔導紀錄 .csv 檔案，系統會按欄位讀出姓名、學號、事件類別、輔導內容，存成這位學生的輔導紀錄，也會自動填到下面表單給你確認。一個 CSV 可以一次匯入多筆（每列一筆）。<br><b>讀不到姓名/學號時，會自動用這位學生當備援，不會直接失敗。</b> <button class="btn gray small" onclick="downloadCounselCsvTemplate()">⬇ 下載 CSV 範本</button></p><input type="file" id="cPdfInput" accept=".csv" onchange="handleCounselCsv(this,'detail')"><div id="cPdfMsg"></div><div style="margin-top:8px"><label>或把 CSV 文字貼到這裡</label><textarea id="cPdfText" placeholder="把 CSV 文字貼到這裡，第一列是欄位名稱，例如：學號,姓名,發生日期,事件類別,導師輔導內容…" style="min-height:70px"></textarea><button class="btn gray small" style="margin-top:6px" onclick="parseCounselCsvFromBox('detail')">🔍 用這段 CSV 解析</button></div><div id="cPdfDebug" style="font-size:12px;color:#475569;line-height:1.6;margin-top:6px"></div></div>
 <div class="grid3"><div><label>學年度</label><input id="cSchoolYear" placeholder="例如 115" value="115"></div><div><label>學期</label><select id="cSemester"><option>上學期</option><option>下學期</option></select></div><div><label>填表日期</label><input type="date" id="cFormDate"></div></div>
@@ -1315,6 +1321,7 @@ function renderDetail(){
   _set('detailRecords',rs.length?rs.map(r=>r.type==='counseling'?counselCardHTML(r):`<div style="border:1px solid #e2e8f0;border-radius:10px;padding:10px;margin-bottom:10px">（舊學習記錄）${esc(r.date||'')} · ${esc(r.subject||'')} · ${esc(r.comment||'')} <button class="btn red small" onclick="deleteRecord(${r.id})">刪除</button></div>`).join(''):'<p>尚無輔導紀錄</p>');
   let _pEl=document.getElementById('detailPhoto'); if(_pEl){ let _url=studentPhotos[currentSid]; _pEl.innerHTML=_url?`<img src="${_url}" style="width:110px;height:110px;object-fit:cover;border-radius:12px;border:1px solid #e2e8f0" alt=""> <span style="font-size:12px;color:#64748b">大頭照（到「學生照片」可更換 / 刪除）</span>`:`<span style="font-size:13px;color:#64748b">尚無照片，到「學生照片」用「${esc(s.seat)}.jpg」檔名匯入即可。</span>`; }
   let _gEl=document.getElementById('detailGrades'); if(_gEl) _gEl.innerHTML=gradesCardHTML(currentSid);
+  let _aEl=document.getElementById('detailAttendance'); if(_aEl) _aEl.innerHTML=(typeof attendanceCardHTML==='function'?attendanceCardHTML(s):'<p style="color:#64748b">尚無操行報表匯入紀錄。</p>');
   let lab=document.getElementById('cStudentLabel'); if(lab) lab.value=s.seat+'號 '+s.name+'（'+s.sid+'）';
   let cf=document.getElementById('cFormDate'); if(cf&&!cf.value) cf.value=new Date().toISOString().slice(0,10);
 }
@@ -1385,29 +1392,189 @@ function exportCSV(){if(!students.length){alert('尚無學生');return;}let head
 function exportCadreCSV(){let header='職務,姓名\n';let body=cadres.map(c=>`${c.role},${c.name}`).join('\n');downloadFile('幹部名單.csv',header+body);}
 function exportIepCSV(){let header='座號,姓名,性別,程度,報名身分別,註冊狀況\n';let body=ieps.map(x=>[x.seat,x.name,x.gender,x.level,x.detail,x.reg].map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');downloadFile('IEP.csv',header+body);}
 function downloadFile(name,content){let blob=new Blob(['\uFEFF'+content],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
-/* ---------- 出缺席 / 操行 ---------- */
+/* ---------- 出缺席 / 操行（匯入 + 整理到學生詳情，詳情略過 0、保留全勤、表格對齊） ---------- */
 const ATT_FIELDS=['曠課','遲到','事假','病假','公假','產前假','娩假','流產假','育嬰假','生理假','喪假','病假1','病假2','事假1','升降缺','升降遲','早缺','早遲','嘉獎','小功','大功','警告','小過','大過','累嘉獎','累小功','累大功','累警告','累小過','累大過','留察','輔導','全勤'];
 function attHeader(){ return ['座號','姓名'].concat(ATT_FIELDS); }
-function splitAttLine(line){ line=String(line||'').trim(); if(!line) return []; if(line.includes('\t')) return line.split('\t').map(s=>s.trim()); if(line.includes(',')) return line.split(',').map(s=>s.trim().replace(/^"|"$/g,'')); return line.split(/\s+/); }
-function parseAttendanceText(text){
-  let lines=String(text||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l); if(!lines.length) return [];
-  let header=splitAttLine(lines[0]); let startIdx=0; let colMap={};
-  if(header.includes('座號') && header.includes('姓名')){ header.forEach((h,i)=>{ colMap[h]=i; }); startIdx=1; } else { attHeader().forEach((h,i)=>{ colMap[h]=i; }); }
-  let rows=[]; for(let k=startIdx;k<lines.length;k++){ let cells=splitAttLine(lines[k]); if(cells.length<2) continue; let seat=cells[colMap['座號']??0]||''; let name=cells[colMap['姓名']??1]||''; if(!seat && !name) continue; let r={seat:String(seat), name:String(name)}; ATT_FIELDS.forEach(f=>{ let idx=colMap[f]; let v=(idx!==undefined && cells[idx]!==undefined) ? String(cells[idx]).trim() : ''; r[f]=v; }); rows.push(r); } return rows;
+function attCell(r, col){ if(col==='座號') return r.seat||''; if(col==='姓名') return r.name||''; return r[col]||''; }
+function splitAttLine(line){
+  line=String(line||'').trim(); if(!line) return [];
+  if(line.includes('\t')) return line.split('\t').map(s=>s.trim());
+  if(line.includes(',')) return line.split(',').map(s=>s.trim().replace(/^"|"$/g,''));
+  return line.split(/\s+/);
 }
-function renderAttendancePreview(){ let el=document.getElementById('attPreview'); if(!el) return; if(!parsedAttendance.length){ el.innerHTML='<p style="color:#64748b">尚無解析結果，請先貼上或選檔案，再按「解析預覽」。</p>'; return; } let h=attHeader(); el.innerHTML='<p><b>預覽 '+parsedAttendance.length+' 筆</b>（還沒匯入，按「確認匯入」才會存入）</p><div class="table-scroll"><table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+parsedAttendance.map(r=>'<tr>'+h.map(x=>'<td>'+esc(r[x]||'')+'</td>').join('')+'</tr>').join('')+'</table></div>'; }
-function parseAttendancePreview(){ let text=document.getElementById('attPaste').value; if(!text.trim()){ alert('請先貼上操行報表，或用方法一選檔案。'); return; } parsedAttendance=parseAttendanceText(text); if(!parsedAttendance.length){ alert('解析不到資料，請確認有含標題列：座號、姓名、曠課…'); return; } renderAttendancePreview(); }
+function normAttCell(s){ return String(s||'').replace(/[\s　]/g,'').replace(/['"]/g,''); }
+function parseAttendanceText(text){
+  let rawLines=String(text||'').split(/\r?\n/);
+  let lines=rawLines.map(l=>l.trim()).filter(l=>l);
+  if(!lines.length) return [];
+  let headerIdx=-1;
+  for(let i=0;i<lines.length;i++){
+    let cells=splitAttLine(lines[i]).map(normAttCell);
+    let hasSeat=cells.some(c=>c.includes('座號'));
+    let hasName=cells.some(c=>c.includes('姓名'));
+    if(hasSeat && hasName){ headerIdx=i; break; }
+  }
+  let colMap={}; let startIdx=0;
+  if(headerIdx>=0){
+    let header=splitAttLine(lines[headerIdx]);
+    if(headerIdx+1<lines.length){
+      let nxt=splitAttLine(lines[headerIdx+1]);
+      let nNxt=nxt.map(normAttCell);
+      let isHeaderCont=nxt.length>=3 && nNxt.every(c=>ATT_FIELDS.includes(c) || c==='' );
+      let startsWithAtt=nNxt[0] && ATT_FIELDS.includes(nNxt[0]);
+      if(isHeaderCont && startsWithAtt){ header=header.concat(nxt); startIdx=headerIdx+2; } else { startIdx=headerIdx+1; }
+    } else { startIdx=headerIdx+1; }
+    header.forEach((h,i)=>{
+      let n=normAttCell(h);
+      if(n.includes('座號')) colMap['座號']=i;
+      else if(n.includes('姓名')) colMap['姓名']=i;
+      else if(ATT_FIELDS.includes(n)) colMap[n]=i;
+    });
+  } else { attHeader().forEach((h,i)=>{ colMap[h]=i; }); startIdx=0; }
+  if(colMap['座號']==null || colMap['姓名']==null){ attHeader().forEach((h,i)=>{ colMap[h]=i; }); if(headerIdx>=0) startIdx=headerIdx+1; }
+  let rows=[];
+  for(let k=startIdx;k<lines.length;k++){
+    let cells=splitAttLine(lines[k]);
+    let nCells=cells.map(normAttCell);
+    if(nCells.some(c=>c.includes('座號')) && nCells.some(c=>c.includes('姓名'))) continue;
+    if(cells.length>=3 && nCells.every(c=>ATT_FIELDS.includes(c) || c==='')) continue;
+    if(cells.length<2) continue;
+    let seat=cells[colMap['座號']??0]||'';
+    let name=cells[colMap['姓名']??1]||'';
+    if(!seat && !name){ let nonEmpty=cells.filter(c=>c!==''); if(nonEmpty.length>=2){ seat=nonEmpty[0]; name=nonEmpty[1]; } }
+    if(!seat && !name) continue;
+    if(normAttCell(seat).includes('座號') || normAttCell(name).includes('姓名')) continue;
+    if(normAttCell(seat).includes('合計') || normAttCell(name).includes('合計')) continue;
+    let r={seat:String(seat), name:String(name)};
+    ATT_FIELDS.forEach(f=>{ let idx=colMap[f]; let v=(idx!==undefined && cells[idx]!==undefined) ? String(cells[idx]).trim() : ''; r[f]=v; });
+    rows.push(r);
+  }
+  return rows;
+}
+function getAttendanceForStudent(s){
+  if(!Array.isArray(attendanceBatches)) return [];
+  let out=[];
+  attendanceBatches.forEach(b=>{
+    let row=(b.rows||[]).find(x=>String(x.seat)===String(s.seat) || x.name===s.name);
+    if(row) out.push({batch:b, row});
+  });
+  return out;
+}
+function isZeroAttValue(v){
+  if(v==null) return true;
+  let s=String(v).trim();
+  if(s==='' || s==='0' || s==='0.0' || s==='否' || s==='無' || s==='-' || s==='—') return true;
+  if(/^[\d.\-]+$/.test(s)){ let n=parseFloat(s); return isNaN(n) || n===0; }
+  return false;
+}
+function attDetailEntries(row){
+  let g1=['曠課','遲到','事假','病假','公假','產前假','娩假','流產假','育嬰假','生理假','喪假','病假1','病假2','事假1','升降缺','升降遲','早缺','早遲'];
+  let g2=['嘉獎','小功','大功','警告','小過','大過','累嘉獎','累小功','累大功','累警告','累小過','累大過','留察','輔導'];
+  let e1=g1.filter(f=>!isZeroAttValue(row[f])).map(f=>({field:f, value:String(row[f]).trim(), group:'缺席 / 假別'}));
+  let e2=g2.filter(f=>!isZeroAttValue(row[f])).map(f=>({field:f, value:String(row[f]).trim(), group:'獎懲 / 累計'}));
+  return e1.concat(e2);
+}
+/* 對齊關鍵：不再兩兩併排，一排一個項目；表格用 fixed 欄寬 50%/50%，th 和 td 都置中 */
+function attDetailTableHTML(entries){
+  let groups=[['缺席 / 假別', entries.filter(e=>e.group==='缺席 / 假別')], ['獎懲 / 累計', entries.filter(e=>e.group==='獎懲 / 累計')]];
+  return groups.filter(g=>g[1].length).map(g=>{
+    return '<div style="margin-top:10px"><b style="font-size:13px">'+g[0]+'</b><table class="att-detail-table"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><tr><th>項目</th><th>數量</th></tr>'+g[1].map(e=>'<tr><td>'+esc(e.field)+'</td><td>'+esc(e.value)+'</td></tr>').join('')+'</table></div>';
+  }).join('');
+}
+function attendanceCardHTML(s){
+  let list=getAttendanceForStudent(s);
+  if(!list.length) return '<p style="color:#64748b">尚無操行報表匯入紀錄。到「出缺席 / 操行」匯入後，就會自動整理到這裡。</p>';
+  return list.map(({batch,row},idx)=>{
+    let entries=attDetailEntries(row);
+    let fullAtt=String(row['全勤']||'').trim();
+    let fullBadge='';
+    if(fullAtt==='是') fullBadge='<span class="tag green">全勤 是</span>';
+    else if(fullAtt==='否') fullBadge='<span class="tag">全勤 否</span>';
+    else if(fullAtt) fullBadge='<span class="tag">全勤 '+esc(fullAtt)+'</span>';
+    let body='';
+    if(!entries.length){
+      body='<p style="color:#64748b;margin:8px 0">本批無缺席 / 獎懲紀錄（數字為 0 的已略過），只保留全勤：'+(fullAtt||'—')+'</p>';
+    } else {
+      body=attDetailTableHTML(entries);
+    }
+    return '<div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin-bottom:12px"><b>'+(idx===0?'最新 · ':'')+esc(batch.semester)+'（報表 '+(batch.reportDate||'')+'，記錄 '+(batch.recordedAt||'')+'）</b><div style="margin:8px 0">'+fullBadge+' <span style="font-size:12px;color:#64748b">0 的已略過，只顯示有紀錄的項目</span></div>'+body+'</div>';
+  }).join('');
+}
+function renderAttendancePreview(){
+  let el=document.getElementById('attPreview'); if(!el) return;
+  if(!parsedAttendance.length){ el.innerHTML='<p style="color:#64748b">尚無解析結果，請先貼上或選檔案，再按「解析預覽」。</p>'; return; }
+  let h=attHeader();
+  let blankCount=parsedAttendance.filter(r=>!r.seat && !r.name).length;
+  let warn='';
+  if(parsedAttendance.every(r=>!r.seat || !r.name)){ warn='<p style="color:#dc2626;background:#fef2f2;border:1px solid #fecaca;padding:8px;border-radius:8px">⚠️ 座號 / 姓名沒讀到，請不要匯入。請檢查貼上的第一行是不是標題列（要含 座號、姓名），或直接用方法一重新選 Excel 檔案。</p>'; }
+  else if(blankCount>0){ warn='<p style="color:#b45309">⚠️ 有 '+blankCount+' 筆座號/姓名空白，已自動跳過空行，請確認預覽。</p>'; }
+  el.innerHTML=warn+'<p><b>預覽 '+parsedAttendance.length+' 筆</b>（還沒匯入，按「確認匯入」才會存入）</p><div class="table-scroll"><table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+parsedAttendance.slice(0,10).map(r=>'<tr>'+h.map(x=>'<td>'+esc(attCell(r,x))+'</td>').join('')+'</tr>').join('')+'</table></div>'+(parsedAttendance.length>10?'<p style="color:#64748b">只顯示前 10 筆預覽，匯入後會完整存入 '+parsedAttendance.length+' 筆。</p>':'');
+}
+function parseAttendancePreview(){
+  let text=document.getElementById('attPaste').value;
+  if(!text.trim()){ alert('請先貼上操行報表，或用方法一選檔案。'); return; }
+  parsedAttendance=parseAttendanceText(text);
+  if(!parsedAttendance.length){ alert('解析不到資料，請確認有含標題列：座號、姓名、曠課…'); return; }
+  if(parsedAttendance.every(r=>!r.seat || !r.name)){ alert('座號 / 姓名沒讀到，請不要匯入。\n請確認貼上的第一行是標題列（要含 座號、姓名），或改用方法一重新選 Excel 檔案。'); }
+  renderAttendancePreview();
+}
 function clearAttendanceInput(){ document.getElementById('attPaste').value=''; document.getElementById('attFileInput').value=''; parsedAttendance=[]; document.getElementById('attPreview').innerHTML=''; }
-function fillAttendanceExample(){ let h=attHeader().join('\t'); let ex1=['01','王小明','0','0','0','0','35','0','0','0','0','0','0','0','0','0','0','6','0','0','0','0','0','0','1','0','5','0','0','0','否','否','是'].join('\t'); let ex2=['02','陳小華','0','1','2','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','1','0','0','0','0','0','1','0','0','0','否','否','是'].join('\t'); document.getElementById('attPaste').value=h+'\n'+ex1+'\n'+ex2; parsedAttendance=parseAttendanceText(document.getElementById('attPaste').value); renderAttendancePreview(); }
-async function handleAttendanceFile(input){ let file=input.files[0]; if(!file) return; try{ if(file.name.toLowerCase().endsWith('.csv')){ let text=await file.text(); document.getElementById('attPaste').value=text; parsedAttendance=parseAttendanceText(text); } else { if(typeof XLSX==='undefined'){ alert('需要網路載入 Excel 解析工具，請改用貼上方式。'); return; } let buf=await file.arrayBuffer(); let wb=XLSX.read(buf,{cellDates:true}); let ws=wb.Sheets[wb.SheetNames[0]]; let rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true}); let text=rows.map(r=>r.map(c=>c==null?'':String(c)).join('\t')).join('\n'); document.getElementById('attPaste').value=text; parsedAttendance=parseAttendanceText(text); } renderAttendancePreview(); }catch(e){ alert('檔案解析失敗：'+e.message); } }
-function confirmAttendanceImport(){ if(!parsedAttendance.length){ let t=document.getElementById('attPaste').value; if(t.trim()){ parsedAttendance=parseAttendanceText(t); } } if(!parsedAttendance.length){ alert('尚無可匯入的資料，請先貼上或選檔案並按「解析預覽」。'); return; } let semester=document.getElementById('attSemester').value.trim()||'115-1'; let reportDate=document.getElementById('attReportDate').value||''; let now=new Date(); let recordedAt=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0'); document.getElementById('attRecordedAt').value=recordedAt; let batch={ id:Date.now(), semester, reportDate, recordedAt, count:parsedAttendance.length, rows:JSON.parse(JSON.stringify(parsedAttendance)) }; attendanceBatches.unshift(batch); save(); alert('✅ 已匯入 '+parsedAttendance.length+' 筆（'+semester+'，報表日期 '+ (reportDate||'未填') +'，記錄時間 '+recordedAt+'）。'); parsedAttendance=[]; document.getElementById('attPaste').value=''; document.getElementById('attFileInput').value=''; document.getElementById('attPreview').innerHTML=''; viewingAttendanceId=batch.id; renderAttendance(); }
-function renderAttendance(){ let el=document.getElementById('attHistory'); if(!el) return; if(!attendanceBatches.length){ el.innerHTML='<p style="color:#64748b">尚無匯入紀錄。請用上方方法一或方法二匯入。</p>'; return; } el.innerHTML='<div class="table-scroll"><table><tr><th>學期</th><th>報表日期</th><th>記錄時間</th><th>人數</th><th>操作</th></tr>'+attendanceBatches.map(b=>'<tr><td>'+esc(b.semester)+'</td><td>'+esc(b.reportDate||'')+'</td><td>'+esc(b.recordedAt||'')+'</td><td>'+(b.rows?b.rows.length:b.count||0)+'</td><td><button class="btn small" onclick="viewAttendanceBatch('+b.id+')">查看</button> <button class="btn small green" onclick="exportAttendanceBatch('+b.id+')">匯出 CSV</button> <button class="btn small red" onclick="deleteAttendanceBatch('+b.id+')">刪除</button></td></tr>').join('')+'</table></div>'; renderAttendanceDetail(); }
+function fillAttendanceExample(){
+  let h=attHeader().join('\t');
+  let ex1=['01','王小明','0','0','0','0','35','0','0','0','0','0','0','0','0','0','0','6','0','0','0','0','0','0','1','0','5','0','0','0','否','否','是'].join('\t');
+  let ex2=['02','陳小華','0','1','2','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','1','0','0','0','0','0','1','0','0','0','否','否','否'].join('\t');
+  document.getElementById('attPaste').value=h+'\n'+ex1+'\n'+ex2;
+  parsedAttendance=parseAttendanceText(document.getElementById('attPaste').value);
+  renderAttendancePreview();
+}
+async function handleAttendanceFile(input){
+  let file=input.files[0]; if(!file) return;
+  try{
+    if(file.name.toLowerCase().endsWith('.csv')){ let text=await file.text(); document.getElementById('attPaste').value=text; parsedAttendance=parseAttendanceText(text); }
+    else { if(typeof XLSX==='undefined'){ alert('需要網路載入 Excel 解析工具，請改用貼上方式。'); return; } let buf=await file.arrayBuffer(); let wb=XLSX.read(buf,{cellDates:true}); let ws=wb.Sheets[wb.SheetNames[0]]; let rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true}); let text=rows.map(r=>r.map(c=>c==null?'':String(c)).join('\t')).join('\n'); document.getElementById('attPaste').value=text; parsedAttendance=parseAttendanceText(text); }
+    if(parsedAttendance.length && parsedAttendance.every(r=>!r.seat || !r.name)){ alert('座號 / 姓名沒讀到，請不要匯入。\n可能是檔案前面有標題行或空欄，已嘗試自動對欄但仍失敗，請把 Excel 裡「座號、姓名」那一行確認後，改用貼上方式再試。'); }
+    renderAttendancePreview();
+  }catch(e){ alert('檔案解析失敗：'+e.message); }
+}
+function confirmAttendanceImport(){
+  if(!parsedAttendance.length){ let t=document.getElementById('attPaste').value; if(t.trim()){ parsedAttendance=parseAttendanceText(t); } }
+  if(!parsedAttendance.length){ alert('尚無可匯入的資料，請先貼上或選檔案並按「解析預覽」。'); return; }
+  if(parsedAttendance.every(r=>!r.seat || !r.name)){ alert('座號 / 姓名都沒讀到，無法匯入。請先修正來源表格再重新匯入。'); return; }
+  let semester=document.getElementById('attSemester').value.trim()||'115-1';
+  let reportDate=document.getElementById('attReportDate').value||'';
+  let now=new Date(); let recordedAt=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('attRecordedAt').value=recordedAt;
+  let batch={ id:Date.now(), semester, reportDate, recordedAt, count:parsedAttendance.length, rows:JSON.parse(JSON.stringify(parsedAttendance)) };
+  attendanceBatches.unshift(batch); save();
+  alert('✅ 已匯入 '+parsedAttendance.length+' 筆（'+semester+'，報表日期 '+ (reportDate||'未填') +'，記錄時間 '+recordedAt+'）。匯入後，點每位學生的「詳情」就能看到他的操行整理（0 會略過，全勤保留）。');
+  parsedAttendance=[]; document.getElementById('attPaste').value=''; document.getElementById('attFileInput').value=''; document.getElementById('attPreview').innerHTML='';
+  viewingAttendanceId=batch.id; renderAttendance();
+  if(typeof renderDetail==='function' && currentSid) { try{ renderDetail(); }catch(e){} }
+}
+function renderAttendance(){
+  let el=document.getElementById('attHistory'); if(!el) return;
+  if(!attendanceBatches.length){ el.innerHTML='<p style="color:#64748b">尚無匯入紀錄。請用上方方法一或方法二匯入。</p>'; return; }
+  el.innerHTML='<div class="table-scroll"><table><tr><th>學期</th><th>報表日期</th><th>記錄時間</th><th>人數</th><th>操作</th></tr>'+attendanceBatches.map(b=>{
+    let blank=(b.rows||[]).filter(r=>!r.seat || !r.name).length;
+    let warn=blank>0 ? '<br><span style="color:#dc2626;font-size:12px">⚠️ 有 '+blank+' 筆座號/姓名空白，建議刪除重匯</span>' : '';
+    return '<tr><td>'+esc(b.semester)+'</td><td>'+esc(b.reportDate||'')+'</td><td>'+esc(b.recordedAt||'')+'</td><td>'+(b.rows?b.rows.length:b.count||0)+warn+'</td><td><button class="btn small" onclick="viewAttendanceBatch('+b.id+')">查看</button> <button class="btn small green" onclick="exportAttendanceBatch('+b.id+')">匯出 CSV</button> <button class="btn small red" onclick="deleteAttendanceBatch('+b.id+')">刪除</button></td></tr>';
+  }).join('')+'</table></div>';
+  renderAttendanceDetail();
+}
 function viewAttendanceBatch(id){ viewingAttendanceId=id; document.getElementById('attDetailPanel').style.display='block'; renderAttendanceDetail(); document.getElementById('attDetailPanel').scrollIntoView({behavior:'smooth'}); }
 function closeAttendanceDetail(){ viewingAttendanceId=null; document.getElementById('attDetailPanel').style.display='none'; }
-function renderAttendanceDetail(){ if(viewingAttendanceId==null) return; let b=attendanceBatches.find(x=>x.id===viewingAttendanceId); if(!b){ document.getElementById('attDetailPanel').style.display='none'; return; } document.getElementById('attDetailTitle').textContent='明細 — '+b.semester+'（報表 '+ (b.reportDate||'') +'，記錄 '+ (b.recordedAt||'') +'）共 '+(b.rows?b.rows.length:0)+' 筆'; let q=(document.getElementById('attDetailSearch').value||'').trim(); let rows=(b.rows||[]).filter(r=>!q || (r.seat||'').includes(q) || (r.name||'').includes(q)); let h=attHeader(); document.getElementById('attDetailTable').innerHTML='<div class="table-scroll"><table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+h.map(x=>'<td>'+esc(r[x]||'')+'</td>').join('')+'</tr>').join('')+'</table></div>'; }
-function deleteAttendanceBatch(id){ if(!confirm('確定刪除這次匯入的出缺席紀錄嗎？')) return; attendanceBatches=attendanceBatches.filter(b=>b.id!==id); if(viewingAttendanceId===id) closeAttendanceDetail(); save(); }
-function exportAttendanceBatch(id){ let b=attendanceBatches.find(x=>x.id===id); if(!b || !b.rows || !b.rows.length){ alert('尚無資料'); return; } let h=attHeader(); let body=b.rows.map(r=>h.map(x=>'"'+String(r[x]||'').replace(/"/g,'""')+'"').join(',')).join('\n'); let content='學期,報表日期,記錄時間\n'+'"'+b.semester+'","'+(b.reportDate||'')+'","'+(b.recordedAt||'')+'"\n\n'+h.join(',')+'\n'+body; let blob=new Blob(['\uFEFF'+content],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='出缺席操行_'+b.semester+'_'+(b.reportDate||'')+'.csv'; a.click(); }
-/* ---------- 列印：學生詳情（A4 公文表格，照片跨列同表） ---------- */
+function renderAttendanceDetail(){
+  if(viewingAttendanceId==null) return;
+  let b=attendanceBatches.find(x=>x.id===viewingAttendanceId); if(!b){ document.getElementById('attDetailPanel').style.display='none'; return; }
+  document.getElementById('attDetailTitle').textContent='明細 — '+b.semester+'（報表 '+ (b.reportDate||'') +'，記錄 '+ (b.recordedAt||'') +'）共 '+(b.rows?b.rows.length:0)+' 筆';
+  let q=(document.getElementById('attDetailSearch').value||'').trim();
+  let rows=(b.rows||[]).filter(r=>!q || (r.seat||'').includes(q) || (r.name||'').includes(q));
+  let h=attHeader();
+  document.getElementById('attDetailTable').innerHTML='<div class="table-scroll"><table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+h.map(x=>'<td>'+esc(attCell(r,x))+'</td>').join('')+'</tr>').join('')+'</table></div>';
+}
+function deleteAttendanceBatch(id){ if(!confirm('確定刪除這次匯入的出缺席紀錄嗎？刪除後，學生詳情裡的操行整理也會一起消失。')) return; attendanceBatches=attendanceBatches.filter(b=>b.id!==id); if(viewingAttendanceId===id) closeAttendanceDetail(); save(); if(typeof renderDetail==='function' && currentSid){ try{ renderDetail(); }catch(e){} } }
+function exportAttendanceBatch(id){ let b=attendanceBatches.find(x=>x.id===id); if(!b || !b.rows || !b.rows.length){ alert('尚無資料'); return; } let h=attHeader(); let body=b.rows.map(r=>h.map(x=>'"'+String(attCell(r,x)).replace(/"/g,'""')+'"').join(',')).join('\n'); let content='學期,報表日期,記錄時間\n'+'"'+b.semester+'","'+(b.reportDate||'')+'","'+(b.recordedAt||'')+'"\n\n'+h.join(',')+'\n'+body; let blob=new Blob(['\uFEFF'+content],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='出缺席操行_'+b.semester+'_'+(b.reportDate||'')+'.csv'; a.click(); }
+/* ---------- 列印：學生詳情（A4 公文表格，操行掠過 0、保留全勤、表格對齊） ---------- */
 function escPrint(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function tryParseJson(v){ if(v==null) return v; if(typeof v==='object') return v; if(typeof v!=='string') return v; let s=v.trim(); if((s.startsWith('{') && s.endsWith('}')) || (s.startsWith('[') && s.endsWith(']'))){ try{ return JSON.parse(s); }catch(e){ return v; } } return v; }
 function fmtVal(v){ if(v==null || v==='') return '—'; if(typeof v==='object') return escPrint(JSON.stringify(v)); return escPrint(v); }
@@ -1441,13 +1608,12 @@ function renderGradesPrint(grades){
 function printStudentDetail(){
   let s=students.find(x=>x.sid===currentSid); if(!s){ alert('找不到這位學生，請先點「詳情」再列印。'); return; }
   let cadresOf=cadres.filter(c=>c.name===s.name); let iepOf=ieps.find(x=>x.name===s.name); let grades=studentGrades[s.sid]||{}; let myRecords=records.filter(r=>String(r.sid)===String(s.sid)||r.name===s.name);
-  let attRow=null, attBatch=null; for(let b of attendanceBatches||[]){ let r=(b.rows||[]).find(x=>String(x.seat)===String(s.seat)||x.name===s.name); if(r){ attRow=r; attBatch=b; break; } }
+  let attList=(typeof getAttendanceForStudent==='function'?getAttendanceForStudent(s):[]);
   let photo=studentPhotos[s.sid]||studentPhotos[s.seat]||'';
   let now=new Date(); let printTime=now.getFullYear()+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   let photoCell=photo?'<img class="photo" src="'+photo+'">':'<div style="width:105px;height:135px;border:1px solid #000;display:flex;align-items:center;justify-content:center;font-size:13px">無照片</div>';
   let html='<div class="print-sheet">';
   html+='<h1>學 生 資 料 表</h1><div class="doc-sub">'+escPrint(s.dept||'資料處理科')+'　'+escPrint(s.className||'')+'　座號 '+escPrint(s.seat||'')+'　學號 '+escPrint(s.sid||'')+'<br>列印時間：'+printTime+'　｜　僅供校內輔導使用，請勿外流</div>';
-  // 關鍵修正：照片用 rowspan 放在同一個表格，不用 flex，表格就不會被擠到跑版
   html+='<table><tr><th style="width:15%">姓名</th><td style="width:28%">'+escPrint(s.name)+'</td><th style="width:15%">性別</th><td style="width:22%">'+escPrint(s.gender||'')+'</td><td rowspan="3" style="width:120px;text-align:center;vertical-align:middle;padding:4px">'+photoCell+'</td></tr><tr><th>科別</th><td>'+escPrint(s.dept||'')+'</td><th>班級</th><td>'+escPrint(s.className||'')+'</td></tr><tr><th>座號</th><td>'+escPrint(s.seat||'')+'</td><th>學號</th><td>'+escPrint(s.sid||'')+'</td></tr></table>';
   html+='<h2>一、基本資料</h2><table>';
   let rows=[['身分證統一編號',s.idNo||'','報名身分別',s.identity||''],['經濟狀況',s.economy||'一般','出生', (s.birthY?'民國'+s.birthY+'年 '+s.birthM+'月 '+s.birthD+'日':'') + (s.birthDate?'（西元 '+s.birthDate+'）':'')],['畢業國中',s.gradSchool||'','家長姓名',s.parentName||''],['學生手機',s.studentPhone||'','家長手機',s.parentPhone||''],['電話（市話）',s.homePhone||'','郵遞區號',s.zip||''],['地址',s.address||'','',''],];
@@ -1455,14 +1621,23 @@ function printStudentDetail(){
   html+='</table>';
   html+='<h2>二、幹部 / IEP</h2><table><tr><th style="width:18%">幹部</th><td>'+(cadresOf.length?escPrint(cadresOf.map(c=>c.role).join('、')):'無')+'</td></tr><tr><th>IEP / 特教</th><td>'+(iepOf?escPrint('座號 '+iepOf.seat+' · 程度 '+iepOf.level+' · '+iepOf.detail+' · 註冊：'+iepOf.reg):'無')+'</td></tr></table>';
   html+='<h2>三、成績 / 評語</h2>'+renderGradesPrint(grades);
-  html+='<h2>四、出缺席 / 操行（最新一筆）</h2>';
-  if(!attRow){ html+='<p>尚無出缺席 / 操行匯入紀錄</p>'; }
+  html+='<h2>四、出缺席 / 操行（操行報表，共 '+attList.length+' 批 · 數字為 0 已略過，全勤保留）</h2>';
+  if(!attList.length){ html+='<p>尚無出缺席 / 操行匯入紀錄</p>'; }
   else{
-    html+='<p class="muted">來源：'+escPrint(attBatch.semester)+' · 報表日期 '+escPrint(attBatch.reportDate||'')+' · 記錄時間 '+escPrint(attBatch.recordedAt||'')+'</p>';
-    let g1=['曠課','遲到','事假','病假','公假','產前假','娩假','流產假','育嬰假','生理假','喪假','病假1','病假2','事假1','升降缺','升降遲','早缺','早遲'];
-    let g2=['嘉獎','小功','大功','警告','小過','大過','累嘉獎','累小功','累大功','累警告','累小過','累大過','留察','輔導','全勤'];
-    html+='<table><tr><th colspan="9">缺席 / 假別</th></tr><tr>'+g1.slice(0,9).map(h=>'<th>'+h+'</th>').join('')+'</tr><tr>'+g1.slice(0,9).map(h=>'<td class="num">'+escPrint(attRow[h]||'')+'</td>').join('')+'</tr><tr>'+g1.slice(9).map(h=>'<th>'+h+'</th>').join('')+'</tr><tr>'+g1.slice(9).map(h=>'<td class="num">'+escPrint(attRow[h]||'')+'</td>').join('')+'</tr></table>';
-    html+='<table><tr><th colspan="8">獎懲 / 累計</th></tr><tr>'+g2.slice(0,8).map(h=>'<th>'+h+'</th>').join('')+'</tr><tr>'+g2.slice(0,8).map(h=>'<td class="num">'+escPrint(attRow[h]||'')+'</td>').join('')+'</tr><tr>'+g2.slice(8).map(h=>'<th>'+h+'</th>').join('')+'</tr><tr>'+g2.slice(8).map(h=>'<td class="num">'+escPrint(attRow[h]||'')+'</td>').join('')+'</tr></table>';
+    attList.forEach(({batch,row},bi)=>{
+      let entries=(typeof attDetailEntries==='function'?attDetailEntries(row):[]);
+      let fullAtt=String(row['全勤']||'').trim();
+      html+='<h3>'+(bi===0?'最新 · ':'')+escPrint(batch.semester)+'（報表 '+escPrint(batch.reportDate||'')+'，記錄 '+escPrint(batch.recordedAt||'')+'） · 全勤：'+escPrint(fullAtt||'—')+'</h3>';
+      if(!entries.length){ html+='<p>本批無缺席 / 獎懲紀錄（數字為 0 已略過），只保留全勤。</p>'; }
+      else{
+        let groups=[['缺席 / 假別', entries.filter(e=>e.group==='缺席 / 假別')], ['獎懲 / 累計', entries.filter(e=>e.group==='獎懲 / 累計')]];
+        groups.filter(g=>g[1].length).forEach(g=>{
+          html+='<table><colgroup><col style="width:50%"><col style="width:50%"></colgroup><tr><th colspan="2">'+g[0]+'</th></tr><tr><th>項目</th><th>數量</th></tr>';
+          g[1].forEach(e=>{ html+='<tr><td class="num">'+escPrint(e.field)+'</td><td class="num">'+escPrint(e.value)+'</td></tr>'; });
+          html+='</table>';
+        });
+      }
+    });
   }
   html+='<h2>五、輔導紀錄（共 '+myRecords.length+' 筆）</h2>';
   if(!myRecords.length){ html+='<p>尚無輔導紀錄</p>'; }
@@ -1479,7 +1654,7 @@ function printAttendanceBatch(){
   let b=attendanceBatches.find(x=>x.id===viewingAttendanceId); if(!b){ alert('找不到這批資料。'); return; }
   let now=new Date(); let printTime=now.getFullYear()+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   let h=attHeader(); let html='<div class="print-sheet"><h1>出缺席 / 操行報表</h1><div class="doc-sub">'+escPrint(b.semester)+' · 報表日期 '+escPrint(b.reportDate||'')+' · 記錄時間 '+escPrint(b.recordedAt||'')+'<br>列印 '+printTime+' · 共 '+(b.rows?b.rows.length:0)+' 人</div>';
-  html+='<table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+(b.rows||[]).map(r=>'<tr>'+h.map(x=>'<td class="num">'+escPrint(r[x]||'')+'</td>').join('')+'</tr>').join('')+'</table>';
+  html+='<table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+(b.rows||[]).map(r=>'<tr>'+h.map(x=>'<td class="num">'+escPrint(attCell(r,x))+'</td>').join('')+'</tr>').join('')+'</table>';
   html+='<div class="sign-row"><span>導師簽名：________________</span><span>日期：____ / ____ / ____</span></div></div>';
   document.getElementById('printArea').innerHTML=html;
   setTimeout(()=>window.print(), 150);
