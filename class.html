@@ -68,6 +68,8 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
     <div class="row">
       <button class="btn" style="flex:1" onclick="handleLogin()">登入</button>
     </div>
+    <div style="margin-top:10px;text-align:center"><button onclick="checkClassConnection()" style="background:none;border:none;color:#0f3b5f;text-decoration:underline;cursor:pointer;font-size:12px">點這裡檢查連線 / 表格有沒有建立</button></div>
+    <div id="connCheck" style="font-size:12px;color:#475569;line-height:1.6;margin-top:6px"></div>
     <p style="margin-top:12px;font-size:12px;color:#94a3b8">登入狀態存在瀏覽器裡，同一台電腦、同一瀏覽器、同一網址只需登入一次。換電腦、換瀏覽器、清除瀏覽資料才需要再登一次。</p>
   </div>
 </div>
@@ -279,14 +281,39 @@ function setSyncUI(text, isLoggedIn){
 }
 function openLoginGate(){ document.getElementById('loginGate').style.display='flex'; }
 async function handleLogin(){
-  if(!supabaseClient){ document.getElementById('loginError').textContent='雲端服務未載入，請檢查網路後重新整理。'; return; }
+  const errEl=document.getElementById('loginError');
+  if(!supabaseClient){ errEl.textContent='雲端服務未載入（Supabase CDN 被擋住），請檢查網路、改用手機網路或換瀏覽器再試。'; return; }
   const email=document.getElementById('loginEmail').value.trim();
   const password=document.getElementById('loginPassword').value;
-  if(!email||!password){ document.getElementById('loginError').textContent='請輸入 Email 和密碼。'; return; }
-  document.getElementById('loginError').textContent='登入中…';
-  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
-  if(error){ document.getElementById('loginError').textContent='登入失敗：'+error.message; return; }
-  currentUser=data.user; document.getElementById('loginError').textContent='';
+  if(!email||!password){ errEl.textContent='請輸入 Email 和密碼。'; return; }
+  errEl.textContent='登入中…';
+  try{
+    const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+    if(error){
+      let msg='登入失敗：'+error.message;
+      if(error.message.includes('Invalid login')) msg='登入失敗：Email 或密碼錯誤。請確認和理財網站同一組帳號，密碼有分大小寫。';
+      if(error.message.includes('Email not confirmed')) msg='登入失敗：Email 還沒驗證。請到 Supabase → Authentication → 關掉 Confirm email，或到信箱收驗證信。';
+      if(error.message.includes('Failed to fetch')||error.message.includes('Network')) msg='登入失敗：連不到 Supabase，請檢查網路、學校網路是否擋住，或改用手機熱點再試。';
+      errEl.textContent=msg; return;
+    }
+    currentUser=data.user; errEl.textContent='登入成功，正在載入雲端資料…';
+    setSyncUI('同步中…', true);
+    await loadFromCloud();
+    errEl.textContent='';
+  }catch(e){ errEl.textContent='登入發生錯誤：'+(e.message||e); }
+}
+async function checkClassConnection(){
+  const el=document.getElementById('connCheck');
+  el.textContent='檢查中…';
+  if(!supabaseClient){ el.textContent='❌ Supabase CDN 沒載入，請檢查網路。'; return; }
+  try{
+    const {data:ses}=await supabaseClient.auth.getSession();
+    let s='登入狀態：'+(ses && ses.session ? '已登入 '+ses.session.user.email : '未登入')+'\n';
+    const {data,error}=await supabaseClient.from('class_data').select('updated_at').limit(1);
+    if(error) s+='表格檢查：❌ '+error.message+'\n→ 請到 Supabase 跑 class_supabase_setup.sql';
+    else s+='表格檢查：✅ class_data 存在，可以同步';
+    el.textContent=s;
+  }catch(e){ el.textContent='檢查失敗：'+e.message; }
 }
 async function handleLogout(){
   if(!supabaseClient) return;
@@ -322,7 +349,18 @@ async function loadFromCloud(){
   if(!supabaseClient || !currentUser) return;
   setSyncUI('同步中…', true);
   const {data,error}=await supabaseClient.from('class_data').select('data, updated_at').eq('user_id', currentUser.id).maybeSingle();
-  if(error){ console.error(error); setSyncUI('雲端讀取失敗，顯示本機資料：'+error.message, true); return; }
+  if(error){
+    console.error(error);
+    if(error.message && (error.message.includes('does not exist') || error.message.includes('relation') || error.code==='42P01')){
+      setSyncUI('已登入，但雲端表格 class_data 還沒建立，先顯示本機資料。請到 Supabase 跑 class_supabase_setup.sql 再重新整理。', true);
+    } else if(error.message && error.message.includes('permission denied')){
+      setSyncUI('已登入，但雲端權限不足（permission denied），先顯示本機資料。請到 Supabase 重跑 class_supabase_setup.sql（已含 GRANT）再重新整理。', true);
+    } else {
+      setSyncUI('雲端讀取失敗，顯示本機資料：'+error.message, true);
+    }
+    renderAll();
+    return;
+  }
   if(data && data.data && Object.keys(data.data).length>0){
     applyClassData(data.data);
     cloudLoaded=true; lastCloudUpdatedAt=data.updated_at||null;
@@ -360,7 +398,7 @@ async function initClassAuth(){
   if(data && data.session && data.session.user){ currentUser=data.session.user; await loadFromCloud(); }
   else setSyncUI('未登入，請登入才可觀看', false);
   supabaseClient.auth.onAuthStateChange(async (event, session)=>{
-    if(event==='SIGNED_IN' && session && session.user){ if(!currentUser || currentUser.id!==session.user.id || !cloudLoaded){ currentUser=session.user; await loadFromCloud(); } }
+    if(event==='SIGNED_IN' && session && session.user){ currentUser=session.user; if(!cloudLoaded) await loadFromCloud(); }
     else if(event==='SIGNED_OUT'){ currentUser=null; cloudLoaded=false; setSyncUI('已登出，請登入才可觀看', false); }
     else if(event==='TOKEN_REFRESHED' && session && session.user){ currentUser=session.user; }
     else if(event==='INITIAL_SESSION' && session && session.user){ if(!cloudLoaded){ currentUser=session.user; await loadFromCloud(); } }
