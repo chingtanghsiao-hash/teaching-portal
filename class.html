@@ -68,8 +68,6 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
     <div class="row">
       <button class="btn" style="flex:1" onclick="handleLogin()">登入</button>
     </div>
-    <div style="margin-top:10px;text-align:center"><button onclick="checkClassConnection()" style="background:none;border:none;color:#0f3b5f;text-decoration:underline;cursor:pointer;font-size:12px">點這裡檢查連線 / 表格有沒有建立</button></div>
-    <div id="connCheck" style="font-size:12px;color:#475569;line-height:1.6;margin-top:6px"></div>
     <p style="margin-top:12px;font-size:12px;color:#94a3b8">登入狀態存在瀏覽器裡，同一台電腦、同一瀏覽器、同一網址只需登入一次。換電腦、換瀏覽器、清除瀏覽資料才需要再登一次。</p>
   </div>
 </div>
@@ -90,6 +88,7 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
 <button onclick="showTab('import',this)">📥 匯入 Excel</button>
 <button onclick="showTab('learning',this)">🗂 輔導紀錄</button>
 <button onclick="showTab('grades',this)">🏆 成績 / 評語</button>
+<button onclick="showTab('attendance',this)">📋 出缺席 / 操行</button>
 <button onclick="showTab('photos',this)">📷 學生照片</button>
 <button onclick="showTab('help',this)">❓ 說明</button>
 </nav>
@@ -185,7 +184,28 @@ label{font-size:13px;color:#475569;display:block;margin:10px 0 4px}
 <div class="panel"><h2>彙整總表（各年級對照）</h2><p class="desc">每一位學生一列，一年級 / 二年級 / 三年級並排對照：學年平均、上 / 下學期名次、實得學分。這個表會一直保留。</p><div class="row"><input id="filterGradeName" placeholder="搜尋學生姓名 / 學號" oninput="renderGrades()" style="flex:1;min-width:220px"><select id="filterGradeYear" onchange="renderGrades()"><option value="">全部年級</option><option>一年級</option><option>二年級</option><option>三年級</option></select><button class="btn gray" onclick="clearAllGrades()">🗑 清除全部成績</button></div><div id="gradesTable"></div></div>
 <div class="panel"><h2>科目彙整（各年級學年成績對照）</h2><p class="desc">上面是全班各科目、各年級的學年成績平均；下面可選一位學生，看他自己的科目在各年級的學年成績對照。這兩個表都會一直保留。</p><div id="gradesSubjectTable"></div><div style="margin-top:16px"><div class="row"><label>個別學生科目對照 — 選一位學生</label><select id="filterGradeSubjectStudent" onchange="renderGrades()"></select></div><div id="gradesSubjectStudentTable"></div></div></div>
 </section>
-<section id="tab-photos" class="hidden">
+<section id="tab-attendance" class="hidden">
+<div class="panel"><h2>📋 出缺席狀況 — 操行報表匯入（Excel / CSV）</h2><p class="desc">對應「115 學年度第 1 學期操行報表（資處三忠）」：座號、姓名、曠課、遲到、事假、病假、公假、產前假、娩假、流產假、育嬰假、生理假、喪假、病假1、病假2、事假1、升降缺、升降遲、早缺、早遲、嘉獎、小功、大功、警告、小過、大過、累嘉獎、累小功、累大功、累警告、累小過、累大過、留察、輔導、全勤。每一次匯入新會自動記錄時間（匯入當年的年月日時分秒），不會被覆蓋。</p>
+<div class="grid3">
+<div><label>學期（報表學期）</label><input id="attSemester" value="115-1"></div>
+<div><label>報表日期（報表上的統計截止日，可自填）</label><input id="attReportDate" type="date" value="2026-11-13"></div>
+<div><label>記錄時間（匯入時自動產生，不需手填）</label><input id="attRecordedAt" placeholder="按下確認匯入時自動填入" readonly style="background:#f8fafc;color:#64748b"></div>
+</div>
+</div>
+<div class="panel"><h2>方法一：選取 Excel / CSV 版操行報表</h2><p class="desc">選教學組提供的操行報表 .xlsx / .xls / .csv 檔案，系統會自動把第一個工作表或表格填到下方貼上區，再按「解析預覽」即可，不用再選 PDF。</p>
+<div class="row"><input type="file" id="attFileInput" accept=".xlsx,.xls,.csv" onchange="handleAttendanceFile(this)"></div>
+<div class="row" style="margin-top:10px"><button class="btn green" onclick="confirmAttendanceImport()">✅ 確認匯入（用上面已解析的結果）</button><span style="font-size:13px;color:#64748b">選完檔案會自動解析並顯示在下方預覽，確認無誤再按這裡匯入。選同一個檔案沒反應時，先點「清除」再重新選，或重新整理頁面。</span></div>
+</div>
+<div class="panel"><h2>方法二：貼上操行報表表格</h2><p class="desc">在 Excel 全選表格 → 複製 → 貼到下方，每一行要含標題列：座號、姓名、曠課、遲到、事假、病假、公假、產前假、娩假、流產假、育嬰假、生理假、喪假、病假1、病假2、事假1、升降缺、升降遲、早缺、早遲、嘉獎、小功、大功、警告、小過、大過、累嘉獎、累小功、累大功、累警告、累小過、累大過、留察、輔導、全勤。</p>
+<textarea id="attPaste" placeholder="在這裡貼上操行報表（從 Excel 複製，含標題列）" style="min-height:160px"></textarea>
+<div class="row" style="margin-top:10px"><button class="btn" onclick="parseAttendancePreview()">🔍 解析預覽</button><button class="btn green" onclick="confirmAttendanceImport()">✅ 確認匯入到出缺席狀況（自動記錄時間）</button><button class="btn gray" onclick="clearAttendanceInput()">清除</button><button class="btn orange" onclick="fillAttendanceExample()">填入範例格式（假資料）</button></div>
+<div id="attPreview" style="margin-top:14px"></div>
+</div>
+<div class="panel"><h2>已匯入的出缺席 / 操行紀錄</h2><p class="desc">每一次匯入都是一筆，含學期、報表日期、記錄時間，不會被覆蓋。點「查看」看該次完整表格，點「匯出 CSV」可下載該次報表。</p>
+<div id="attHistory"></div></div>
+<div class="panel" id="attDetailPanel" style="display:none"><h2 id="attDetailTitle">明細</h2><div class="row"><input id="attDetailSearch" placeholder="搜尋 座號 / 姓名" oninput="renderAttendanceDetail()" style="flex:1;min-width:200px"><button class="btn gray" onclick="closeAttendanceDetail()">關閉明細</button></div><div id="attDetailTable" style="margin-top:12px"></div></div>
+</section>
+<section id="tab-photos"  class="hidden">
 <div class="panel"><h2>學生照片 — 依座號匯入大頭照</h2><p class="desc">一次可選多張照片。檔名用座號開頭即可認人，例如：<b>01.jpg、01_呂家羽.jpg、1.jpg、07_朱品諺.jpg</b>。如果檔名沒有座號，會再從檔名裡的姓名去對。同一位學生匯入新照片會直接覆蓋舊的。照片會自動縮小、壓縮後保存，不會把 localStorage 塞爆。</p>
 <div class="row"><label>選擇照片（可一次選多張，jpg / png）</label><input type="file" id="photoFile" accept="image/*" multiple onchange="handlePhotoFiles(this)"></div>
 <div id="photoMsg"></div></div>
@@ -259,42 +279,14 @@ function setSyncUI(text, isLoggedIn){
 }
 function openLoginGate(){ document.getElementById('loginGate').style.display='flex'; }
 async function handleLogin(){
-  const errEl=document.getElementById('loginError');
-  if(!supabaseClient){ errEl.textContent='雲端服務未載入（Supabase CDN 被擋住），請檢查網路、改用手機網路或換瀏覽器再試。'; return; }
+  if(!supabaseClient){ document.getElementById('loginError').textContent='雲端服務未載入，請檢查網路後重新整理。'; return; }
   const email=document.getElementById('loginEmail').value.trim();
   const password=document.getElementById('loginPassword').value;
-  if(!email||!password){ errEl.textContent='請輸入 Email 和密碼。'; return; }
-  errEl.textContent='登入中…';
-  try{
-    const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
-    if(error){
-      let msg='登入失敗：'+error.message;
-      if(error.message.includes('Invalid login')) msg='登入失敗：Email 或密碼錯誤。請確認和理財網站同一組帳號，密碼有分大小寫。';
-      if(error.message.includes('Email not confirmed')) msg='登入失敗：Email 還沒驗證。請到 Supabase → Authentication → 關掉 Confirm email，或到信箱收驗證信。';
-      if(error.message.includes('Failed to fetch')||error.message.includes('Network')) msg='登入失敗：連不到 Supabase，請檢查網路、學校網路是否擋住，或改用手機熱點再試。';
-      errEl.textContent=msg; return;
-    }
-    currentUser=data.user; errEl.textContent='登入成功，正在載入雲端資料…';
-    // 直接載入，不只靠 onAuthStateChange（之前就是靠它，沒觸發就一直卡在登入頁）
-    setSyncUI('同步中…', true);
-    await loadFromCloud();
-    errEl.textContent='';
-  }catch(e){
-    errEl.textContent='登入發生錯誤：'+(e.message||e);
-  }
-}
-async function checkClassConnection(){
-  const el=document.getElementById('connCheck');
-  el.textContent='檢查中…';
-  if(!supabaseClient){ el.textContent='❌ Supabase CDN 沒載入，請檢查網路。'; return; }
-  try{
-    const {data:ses}=await supabaseClient.auth.getSession();
-    let s='登入狀態：'+(ses && ses.session ? '已登入 '+ses.session.user.email : '未登入')+'\n';
-    const {data,error}=await supabaseClient.from('class_data').select('updated_at').limit(1);
-    if(error) s+='表格檢查：❌ '+error.message+'\n→ 請到 Supabase 跑 class_supabase_setup.sql';
-    else s+='表格檢查：✅ class_data 存在，可以同步';
-    el.textContent=s;
-  }catch(e){ el.textContent='檢查失敗：'+e.message; }
+  if(!email||!password){ document.getElementById('loginError').textContent='請輸入 Email 和密碼。'; return; }
+  document.getElementById('loginError').textContent='登入中…';
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error){ document.getElementById('loginError').textContent='登入失敗：'+error.message; return; }
+  currentUser=data.user; document.getElementById('loginError').textContent='';
 }
 async function handleLogout(){
   if(!supabaseClient) return;
@@ -302,7 +294,7 @@ async function handleLogout(){
   currentUser=null; cloudLoaded=false;
   setSyncUI('已登出，請登入才可觀看', false);
 }
-function getAllClassData(){ return { students, cadres, ieps, records, counselPdfs, studentGrades, studentPhotos, updatedAt: new Date().toISOString() }; }
+function getAllClassData(){ return { students, cadres, ieps, records, counselPdfs, studentGrades, studentPhotos, attendanceBatches, updatedAt: new Date().toISOString() }; }
 function applyClassData(d){
   if(!d) return;
   if(Array.isArray(d.students)) students=d.students;
@@ -312,6 +304,7 @@ function applyClassData(d){
   if(d.counselPdfs && typeof d.counselPdfs==='object') counselPdfs=d.counselPdfs;
   if(d.studentGrades && typeof d.studentGrades==='object') studentGrades=d.studentGrades;
   if(d.studentPhotos && typeof d.studentPhotos==='object') studentPhotos=d.studentPhotos;
+  if(Array.isArray(d.attendanceBatches)) attendanceBatches=d.attendanceBatches;
 }
 function saveLocalOnly(){
   try{
@@ -322,25 +315,14 @@ function saveLocalOnly(){
     localStorage.setItem('zichu_counsel_pdfs_v1', JSON.stringify(counselPdfs));
     localStorage.setItem('zichu_grades_v1', JSON.stringify(studentGrades));
     localStorage.setItem('zichu_photos_v1', JSON.stringify(studentPhotos));
+    localStorage.setItem('zichu_attendance_v1', JSON.stringify(attendanceBatches));
   }catch(e){}
 }
 async function loadFromCloud(){
   if(!supabaseClient || !currentUser) return;
   setSyncUI('同步中…', true);
   const {data,error}=await supabaseClient.from('class_data').select('data, updated_at').eq('user_id', currentUser.id).maybeSingle();
-  if(error){
-    console.error(error);
-    // 表格還沒建立 → 先放行顯示本機資料，並明確告訴要去跑 SQL，不要卡在登入頁
-    if(error.message && (error.message.includes('does not exist') || error.message.includes('relation') || error.code==='42P01')){
-      setSyncUI('已登入，但雲端表格 class_data 還沒建立，先顯示本機資料。請到 Supabase 跑 class_supabase_setup.sql 再重新整理。', true);
-    } else if(error.message && error.message.includes('permission denied')){
-      setSyncUI('已登入，但雲端權限不足（permission denied），先顯示本機資料。請到 Supabase 重跑 class_supabase_setup.sql（已含 GRANT）再重新整理。', true);
-    } else {
-      setSyncUI('雲端讀取失敗，顯示本機資料：'+error.message, true);
-    }
-    renderAll();
-    return;
-  }
+  if(error){ console.error(error); setSyncUI('雲端讀取失敗，顯示本機資料：'+error.message, true); return; }
   if(data && data.data && Object.keys(data.data).length>0){
     applyClassData(data.data);
     cloudLoaded=true; lastCloudUpdatedAt=data.updated_at||null;
@@ -378,7 +360,7 @@ async function initClassAuth(){
   if(data && data.session && data.session.user){ currentUser=data.session.user; await loadFromCloud(); }
   else setSyncUI('未登入，請登入才可觀看', false);
   supabaseClient.auth.onAuthStateChange(async (event, session)=>{
-    if(event==='SIGNED_IN' && session && session.user){ currentUser=session.user; if(!cloudLoaded) await loadFromCloud(); }
+    if(event==='SIGNED_IN' && session && session.user){ if(!currentUser || currentUser.id!==session.user.id || !cloudLoaded){ currentUser=session.user; await loadFromCloud(); } }
     else if(event==='SIGNED_OUT'){ currentUser=null; cloudLoaded=false; setSyncUI('已登出，請登入才可觀看', false); }
     else if(event==='TOKEN_REFRESHED' && session && session.user){ currentUser=session.user; }
     else if(event==='INITIAL_SESSION' && session && session.user){ if(!cloudLoaded){ currentUser=session.user; await loadFromCloud(); } }
@@ -405,7 +387,9 @@ let counselPdfs=JSON.parse(localStorage.getItem('zichu_counsel_pdfs_v1')||'{}');
 let studentGrades=JSON.parse(localStorage.getItem('zichu_grades_v1')||'{}');
 let studentPhotos=JSON.parse(localStorage.getItem('zichu_photos_v1')||'{}');
 let parsedImport=[]; let currentSid=null;
-function save(){localStorage.setItem('zichu_students_v2',JSON.stringify(students));localStorage.setItem('zichu_cadres_v2',JSON.stringify(cadres));localStorage.setItem('zichu_ieps_v2',JSON.stringify(ieps));localStorage.setItem('zichu_records_v2',JSON.stringify(records));localStorage.setItem('zichu_counsel_pdfs_v1',JSON.stringify(counselPdfs));localStorage.setItem('zichu_grades_v1',JSON.stringify(studentGrades));localStorage.setItem('zichu_photos_v1',JSON.stringify(studentPhotos));renderAll(); saveToCloud(false);}
+let attendanceBatches=JSON.parse(localStorage.getItem('zichu_attendance_v1')||'[]');
+let parsedAttendance=[]; let viewingAttendanceId=null;
+function save(){localStorage.setItem('zichu_students_v2',JSON.stringify(students));localStorage.setItem('zichu_cadres_v2',JSON.stringify(cadres));localStorage.setItem('zichu_ieps_v2',JSON.stringify(ieps));localStorage.setItem('zichu_records_v2',JSON.stringify(records));localStorage.setItem('zichu_counsel_pdfs_v1',JSON.stringify(counselPdfs));localStorage.setItem('zichu_grades_v1',JSON.stringify(studentGrades));localStorage.setItem('zichu_photos_v1',JSON.stringify(studentPhotos));localStorage.setItem('zichu_attendance_v1',JSON.stringify(attendanceBatches));renderAll(); saveToCloud(false);}
 function showTab(id,btn){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById('tab-'+id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 function clean(v){if(v==null)return '';let s=String(v).trim();if(s.startsWith("'"))s=s.slice(1);return s.trim();}
@@ -417,7 +401,7 @@ function getStudent(sid){return students.find(s=>s.sid===sid)}
 function getCadreByName(name){return cadres.filter(c=>c.name===name).map(c=>c.role)}
 function getIepByName(name){return ieps.find(i=>i.name===name)}
 function excelDateToISO(v){if(!v)return '';if(v instanceof Date)return v.toISOString().slice(0,10);if(typeof v==='number'){let d=new Date(Math.round((v-25569)*86400*1000));return d.toISOString().slice(0,10);}let s=clean(v);let m=s.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);if(m)return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;return s;}
-function renderAll(){renderDashboard();renderStudents();renderCadres();renderIeps();renderLearning();if(typeof renderGrades==='function')renderGrades();if(typeof renderPhotos==='function')renderPhotos();fillStudentSelects();}
+function renderAll(){renderDashboard();renderStudents();renderCadres();renderIeps();renderLearning();if(typeof renderGrades==='function')renderGrades();if(typeof renderPhotos==='function')renderPhotos();if(typeof renderAttendance==='function')renderAttendance();fillStudentSelects();}
 
 /* ---------- 輔導紀錄：對應「資料處理科 學生輔導紀錄表」PDF ---------- */
 const COUNSEL_EVENT_TYPES=["遲到早退","服儀不整","上課秩序","作業未交","手機使用不當","同儕衝突","言語不當","損壞公物","抽菸 / 違禁品","其他"];
@@ -1340,6 +1324,155 @@ function exportCSV(){if(!students.length){alert('尚無學生');return;}let head
 function exportCadreCSV(){let header='職務,姓名\n';let body=cadres.map(c=>`${c.role},${c.name}`).join('\n');downloadFile('幹部名單.csv',header+body);}
 function exportIepCSV(){let header='座號,姓名,性別,程度,報名身分別,註冊狀況\n';let body=ieps.map(x=>[x.seat,x.name,x.gender,x.level,x.detail,x.reg].map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');downloadFile('IEP.csv',header+body);}
 function downloadFile(name,content){let blob=new Blob(['\uFEFF'+content],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+/* ---------- 出缺席 / 操行 ---------- */
+const ATT_FIELDS=['曠課','遲到','事假','病假','公假','產前假','娩假','流產假','育嬰假','生理假','喪假','病假1','病假2','事假1','升降缺','升降遲','早缺','早遲','嘉獎','小功','大功','警告','小過','大過','累嘉獎','累小功','累大功','累警告','累小過','累大過','留察','輔導','全勤'];
+function attHeader(){ return ['座號','姓名'].concat(ATT_FIELDS); }
+function splitAttLine(line){
+  line=String(line||'').trim(); if(!line) return [];
+  if(line.includes('\t')) return line.split('\t').map(s=>s.trim());
+  if(line.includes(',')) return line.split(',').map(s=>s.trim().replace(/^"|"$/g,''));
+  return line.split(/\s+/);
+}
+function parseAttendanceText(text){
+  let lines=String(text||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
+  if(!lines.length) return [];
+  let header=splitAttLine(lines[0]);
+  // 找到標題列：含 座號 + 姓名 就當標題列，不然整份當資料
+  let startIdx=0; let colMap={};
+  if(header.includes('座號') && header.includes('姓名')){
+    header.forEach((h,i)=>{ colMap[h]=i; });
+    startIdx=1;
+  } else {
+    // 沒標題列，假設順序就是 座號、姓名 + ATT_FIELDS
+    attHeader().forEach((h,i)=>{ colMap[h]=i; });
+  }
+  let rows=[];
+  for(let k=startIdx;k<lines.length;k++){
+    let cells=splitAttLine(lines[k]);
+    if(cells.length<2) continue;
+    let seat=cells[colMap['座號']??0]||'';
+    let name=cells[colMap['姓名']??1]||'';
+    if(!seat && !name) continue;
+    let r={seat:String(seat), name:String(name)};
+    ATT_FIELDS.forEach(f=>{
+      let idx=colMap[f];
+      let v=(idx!==undefined && cells[idx]!==undefined) ? String(cells[idx]).trim() : '';
+      r[f]=v;
+    });
+    rows.push(r);
+  }
+  return rows;
+}
+function renderAttendancePreview(){
+  let el=document.getElementById('attPreview');
+  if(!el) return;
+  if(!parsedAttendance.length){ el.innerHTML='<p style="color:#64748b">尚無解析結果，請先貼上或選檔案，再按「解析預覽」。</p>'; return; }
+  let h=attHeader();
+  el.innerHTML='<p><b>預覽 '+parsedAttendance.length+' 筆</b>（還沒匯入，按「確認匯入」才會存入）</p><div class="table-scroll"><table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+parsedAttendance.map(r=>'<tr>'+h.map(x=>'<td>'+esc(r[x]||'')+'</td>').join('')+'</tr>').join('')+'</table></div>';
+}
+function parseAttendancePreview(){
+  let text=document.getElementById('attPaste').value;
+  if(!text.trim()){ alert('請先貼上操行報表，或用方法一選檔案。'); return; }
+  parsedAttendance=parseAttendanceText(text);
+  if(!parsedAttendance.length){ alert('解析不到資料，請確認有含標題列：座號、姓名、曠課…'); return; }
+  renderAttendancePreview();
+}
+function clearAttendanceInput(){
+  document.getElementById('attPaste').value='';
+  document.getElementById('attFileInput').value='';
+  parsedAttendance=[];
+  document.getElementById('attPreview').innerHTML='';
+}
+function fillAttendanceExample(){
+  let h=attHeader().join('\t');
+  let ex1=['01','王小明','0','0','0','0','35','0','0','0','0','0','0','0','0','0','0','6','0','0','0','0','0','0','1','0','5','0','0','0','否','否','是'].join('\t');
+  let ex2=['02','陳小華','0','1','2','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','1','0','0','0','0','0','1','0','0','0','否','否','是'].join('\t');
+  document.getElementById('attPaste').value=h+'\n'+ex1+'\n'+ex2;
+  parsedAttendance=parseAttendanceText(document.getElementById('attPaste').value);
+  renderAttendancePreview();
+}
+async function handleAttendanceFile(input){
+  let file=input.files[0]; if(!file) return;
+  try{
+    if(file.name.toLowerCase().endsWith('.csv')){
+      let text=await file.text();
+      document.getElementById('attPaste').value=text;
+      parsedAttendance=parseAttendanceText(text);
+    } else {
+      if(typeof XLSX==='undefined'){ alert('需要網路載入 Excel 解析工具，請改用貼上方式。'); return; }
+      let buf=await file.arrayBuffer();
+      let wb=XLSX.read(buf,{cellDates:true});
+      let ws=wb.Sheets[wb.SheetNames[0]];
+      let rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});
+      let text=rows.map(r=>r.map(c=>c==null?'':String(c)).join('\t')).join('\n');
+      document.getElementById('attPaste').value=text;
+      parsedAttendance=parseAttendanceText(text);
+    }
+    renderAttendancePreview();
+  }catch(e){ alert('檔案解析失敗：'+e.message); }
+}
+function confirmAttendanceImport(){
+  if(!parsedAttendance.length){
+    // 若貼上區有內容但還沒解析，先自動解析
+    let t=document.getElementById('attPaste').value;
+    if(t.trim()){ parsedAttendance=parseAttendanceText(t); }
+  }
+  if(!parsedAttendance.length){ alert('尚無可匯入的資料，請先貼上或選檔案並按「解析預覽」。'); return; }
+  let semester=document.getElementById('attSemester').value.trim()||'115-1';
+  let reportDate=document.getElementById('attReportDate').value||'';
+  let now=new Date();
+  let recordedAt=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('attRecordedAt').value=recordedAt;
+  let batch={ id:Date.now(), semester, reportDate, recordedAt, count:parsedAttendance.length, rows:JSON.parse(JSON.stringify(parsedAttendance)) };
+  attendanceBatches.unshift(batch);
+  save();
+  alert('✅ 已匯入 '+parsedAttendance.length+' 筆（'+semester+'，報表日期 '+ (reportDate||'未填') +'，記錄時間 '+recordedAt+'）。');
+  parsedAttendance=[];
+  document.getElementById('attPaste').value='';
+  document.getElementById('attFileInput').value='';
+  document.getElementById('attPreview').innerHTML='';
+  viewingAttendanceId=batch.id;
+  renderAttendance();
+}
+function renderAttendance(){
+  let el=document.getElementById('attHistory');
+  if(!el) return;
+  if(!attendanceBatches.length){ el.innerHTML='<p style="color:#64748b">尚無匯入紀錄。請用上方方法一或方法二匯入。</p>'; return; }
+  el.innerHTML='<div class="table-scroll"><table><tr><th>學期</th><th>報表日期</th><th>記錄時間</th><th>人數</th><th>操作</th></tr>'+attendanceBatches.map(b=>'<tr><td>'+esc(b.semester)+'</td><td>'+esc(b.reportDate||'')+'</td><td>'+esc(b.recordedAt||'')+'</td><td>'+(b.rows?b.rows.length:b.count||0)+'</td><td><button class="btn small" onclick="viewAttendanceBatch('+b.id+')">查看</button> <button class="btn small green" onclick="exportAttendanceBatch('+b.id+')">匯出 CSV</button> <button class="btn small red" onclick="deleteAttendanceBatch('+b.id+')">刪除</button></td></tr>').join('')+'</table></div>';
+  renderAttendanceDetail();
+}
+function viewAttendanceBatch(id){
+  viewingAttendanceId=id;
+  document.getElementById('attDetailPanel').style.display='block';
+  renderAttendanceDetail();
+  document.getElementById('attDetailPanel').scrollIntoView({behavior:'smooth'});
+}
+function closeAttendanceDetail(){ viewingAttendanceId=null; document.getElementById('attDetailPanel').style.display='none'; }
+function renderAttendanceDetail(){
+  if(viewingAttendanceId==null) return;
+  let b=attendanceBatches.find(x=>x.id===viewingAttendanceId);
+  if(!b){ document.getElementById('attDetailPanel').style.display='none'; return; }
+  document.getElementById('attDetailTitle').textContent='明細 — '+b.semester+'（報表 '+ (b.reportDate||'') +'，記錄 '+ (b.recordedAt||'') +'）共 '+(b.rows?b.rows.length:0)+' 筆';
+  let q=(document.getElementById('attDetailSearch').value||'').trim();
+  let rows=(b.rows||[]).filter(r=>!q || (r.seat||'').includes(q) || (r.name||'').includes(q));
+  let h=attHeader();
+  document.getElementById('attDetailTable').innerHTML='<div class="table-scroll"><table><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+rows.map(r=>'<tr>'+h.map(x=>'<td>'+esc(r[x]||'')+'</td>').join('')+'</tr>').join('')+'</table></div>';
+}
+function deleteAttendanceBatch(id){
+  if(!confirm('確定刪除這次匯入的出缺席紀錄嗎？')) return;
+  attendanceBatches=attendanceBatches.filter(b=>b.id!==id);
+  if(viewingAttendanceId===id) closeAttendanceDetail();
+  save();
+}
+function exportAttendanceBatch(id){
+  let b=attendanceBatches.find(x=>x.id===id);
+  if(!b || !b.rows || !b.rows.length){ alert('尚無資料'); return; }
+  let h=attHeader();
+  let body=b.rows.map(r=>h.map(x=>'"'+String(r[x]||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  let content='學期,報表日期,記錄時間\n'+'"'+b.semester+'","'+(b.reportDate||'')+'","'+(b.recordedAt||'')+'"\n\n'+h.join(',')+'\n'+body;
+  let blob=new Blob(['\uFEFF'+content],{type:'text/csv'});
+  let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='出缺席操行_'+b.semester+'_'+(b.reportDate||'')+'.csv'; a.click();
+}
 function clearAll(){if(!confirm('確定清除全部學生、幹部、IEP、輔導紀錄嗎？請先匯出備份。'))return;if(!confirm('再次確認：真的要清除全部嗎？清除後無法復原。'))return;if(!confirm('最後確認：按確定將清空全部資料，按取消就不會清。'))return;students=[];cadres=[];ieps=[];records=[];counselPdfs={};save();}
 function loadSample(){
   if(students.length&&!confirm('已有資料，要加入假資料範例嗎？'))return;
