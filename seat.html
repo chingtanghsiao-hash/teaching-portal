@@ -892,7 +892,7 @@ async function cloudUpload(silent){
   const data = getAllData();
   if(!silent) setSyncStatus('上傳中…');
   const { error } = await supabaseClient.from('seating_settings').upsert({ teacher_uid: currentUser.id, class_name: 'default', data: data, updated_at: data.updated_at }, { onConflict: 'teacher_uid,class_name' });
-  if(error){ console.error(error); setSyncStatus('雲端上傳失敗：' + error.message); showSyncHelp(); if(!silent) alert('雲端上傳失敗：' + error.message + '\n請先到 Supabase 建表，或先用「匯出備份檔」帶到另一台電腦。'); return false; }
+  if(error){ console.error(error); setSyncStatus('雲端上傳失敗：' + error.message + '（通常是 grant 沒開，照下面紅框 SQL 再跑一次）'); showSyncHelp(); if(!silent) alert('雲端上傳失敗：' + error.message + '\n請先到 Supabase 建表，或先用「匯出備份檔」帶到另一台電腦。'); return false; }
   try{ localStorage.setItem('seating_updated_at_v1', data.updated_at); }catch(e){}
   setSyncStatus('已上傳到雲端：' + new Date(data.updated_at).toLocaleString() + '，換電腦登入就會自動下載。');
   return true;
@@ -917,7 +917,7 @@ async function cloudDownload(silent){
 function showSyncHelp(){
   const h = el('syncHelp'); if(!h) return;
   h.style.display='block';
-  h.innerHTML = '雲端表還沒建立。請到 Supabase → SQL Editor 貼上這段 SQL 執行一次，之後就能跨電腦同步：<br><br><code style="display:block;white-space:pre-wrap;background:#fff;border:1px solid #fecaca;padding:8px;border-radius:6px">create table if not exists seating_settings ( teacher_uid uuid not null, class_name text not null default \'default\', data jsonb not null, updated_at timestamptz default now(), primary key (teacher_uid, class_name) );<br>alter table seating_settings enable row level security;<br>create policy "teacher own" on seating_settings for all using (auth.uid() = teacher_uid) with check (auth.uid() = teacher_uid);</code><br>建好表之後，再按一次「上傳到雲端」就好。在這之前，請先用「匯出備份檔」把資料帶到另一台電腦。';
+  h.innerHTML = '雲端權限還沒開。請到 Supabase → SQL Editor，把下面整段貼上、按 Run 執行一次，再回來按「上傳到雲端」：<br><br><code style="display:block;white-space:pre-wrap;background:#fff;border:1px solid #fecaca;padding:8px;border-radius:6px">create table if not exists seating_settings ( teacher_uid uuid not null, class_name text not null default \'default\', data jsonb not null, updated_at timestamptz default now(), primary key (teacher_uid, class_name) );<br>alter table seating_settings enable row level security;<br>drop policy if exists "teacher own" on seating_settings;<br>create policy "teacher own" on seating_settings for all using (auth.uid() = teacher_uid) with check (auth.uid() = teacher_uid);<br>grant all on table seating_settings to authenticated;<br>grant all on table seating_settings to service_role;</code><br>重點是最後兩行 grant，沒有這兩行就會出現你現在這個 permission denied。執行完不用重建表，直接再按一次「上傳到雲端」就好。';
 }
 function exportBackup(){
   const data = getAllData();
